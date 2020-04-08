@@ -1,12 +1,10 @@
-= Workshop Environment
-:experimental:
+== Preface - What happens when you run your applications distributed, scaled and in the cloud ...
 
-== First Step: Set Your Username!
+You are a developer or an architect creating world-class applications and solutions. Well, all applications don't necessarily live in just one box, and for the recent past, Cloud is not just one more computer but a lot more. All applications use a network to speak to each other, whether they speak to a database, a web service or storage, or other services. That's the world we all live in!
 
-In the above box, enter the user ID you were assigned:
+Creating a distributed application means you care about latency, performance, and, most importantly, the responsiveness to your end-users. End users could be systems or humans; whats important is that you have a timely and consistent response. If that's the challenging world we all live in, don't worry, there are a lot many things one can do to optimize the stack. Most importantly, this workshop focuses on one thing i.e. Red Hat Data Grid.
 
-image::setuser.png[Set User ID above, 900]
+So what is Red Hat Data Grid? 
+Red Hat Data Grid 8.0 provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable your applications to perform better with its in-memory solution. 
 
-This will customize the links and copy/paste code for this workshop. If you accidently type the wrong username, just click the green recycle icon to reset it.
 
-Throughout this lab you'll discover how Quarkus can make your development of cloud native apps faster and more productive.
