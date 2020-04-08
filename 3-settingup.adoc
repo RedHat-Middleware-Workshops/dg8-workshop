@@ -1,0 +1,17 @@
+== Setting up
+
+
+
+== Creating your workspace
+
+
+=== Step 1: Name your workspace. 
+
+
+=== Step 2: Choose your Stack
+
+
+=== Step 3: Import the lab project from github
+
+
+== Working with Che/CodeReady

@@ -1,0 +1,48 @@
+== APPENDIX: Setting up my own machine for the lab
+
+The labs are designed to run entirely on openshift, there is no mandatory requirement to install the following components. The following instructions are means of guidance for anyone who wants to try them out on their own machine. 
+
+*Recommended path is to use the Openshift RHMI/Integreatly environment provided in this workshop.
+
+=== Java Development Kit
+
+We need a JDK 8+ installed on our machine. Latest JDK can downloaded from:
+
+* http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8]
+* http://openjdk.java.net/install/[OpenJDK]
+
+You can use either Oracle JDK or OpenJDK.
+
+=== Apache Maven
+
+You need Apache Maven 3.5+. If you don't have it already:
+
+* Download Apache Maven from https://maven.apache.org/download.cgi.
+* Unzip to a directory of your choice and add it to the `PATH`.
+
+
+=== IDE
+
+We recommend you use an IDE. You can use Eclipse, IntelliJ, VS Code or Netbeans.
+
+==== No IDE ?
+
+If you don't have an IDE, here are the steps to get started with Eclipse.
+
+1. First download Eclipse from http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/oxygen1[the download page].
+2. In the _Download Links_ section, be sure to select the right version for your operating system. Once selected it brings you to a download page with a
+`Download` button.
+3. Once downloaded, unzip it.
+4. In the destination directory, you should find an `Eclipse` binary that you can execute.
+5. Eclipse asks you to create a workspace.
+6. Once launched, click on the _Workbench_ arrow (top right corner).
+
+=== Getting the code
+
+[source]
+----
+git clone https://github.com/jbossdemocentral/sso-kubernetes-workshop.git
+----
+
+
+

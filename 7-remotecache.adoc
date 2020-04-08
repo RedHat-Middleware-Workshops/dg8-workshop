@@ -1,0 +1,21 @@
+== Using Cache on a Remote server
+
+
+=== What's an Operator and how does it help us?
+
+
+=== Installing
+
+
+
+=== Project details
+
+=== Protobuf
+
+=== Marshallers
+
+=== Deploying to Openshift and scaling
+
+
+=== Enabling Near Cache
+

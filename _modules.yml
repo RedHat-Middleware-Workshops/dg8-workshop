@@ -1,0 +1,31 @@
+config:
+    renderer: asciidoc
+
+modules:
+  1-aboutthisworkshop.adoc:
+    name: Preface
+  2-dgin10mins.adoc:
+    name: DataGrid in 10 mins
+  3-settingup.adoc:
+    name: Setting up
+  4-cache.adoc:
+    name: What is Cache
+  5-embedded.adoc:
+    name: Embedded Local Cache
+  6-embeddedclustered.adoc:
+    name: Embedded Clustered Cache
+  7-remotecache.adoc:
+    name: Remote Cache
+  8-jpahibernatecache.adoc:
+    name: Caching with JPA/Hibernate
+  9-replication.adoc:
+    name: Cross Site replication
+  10-sessionexternalization.adoc:
+    name: Externalizing Sessions
+  appendix.adoc:
+    name: Setting up your own environment
+  conclusion.adoc:
+    name: You made it!
+  references.adoc:
+    name: References
+

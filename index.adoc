@@ -1,0 +1,22 @@
+= Red Hat Datagrid - From zero to hero
+Syed Shaaf
+v0.1, April, 2020
+:toc: left
+:toclevels: 4
+:imagesdir: images
+:docinfo1:
+:icons: font
+
+include::chapters/1-aboutthisworkshop.adoc[Preface]
+include::chapters/2-dgin10mins.adoc[DataGrid in 10 mins]
+include::chapters/3-settingup.adoc[Setting up]
+include::chapters/4-cache.adoc[What is Cache]
+include::chapters/5-embedded.adoc[Embedded Local Cache]
+include::chapters/6-embeddedclustered.adoc[Embedded Clustered Cache]
+include::chapters/7-remotecache.adoc[Remote Cache]
+include::chapters/8-jpahibernatecache.adoc[Caching with JPA/Hibernate]
+include::chapters/9-replication.adoc[Cross Site replication]
+include::chapters/10-sessionexternalization.adoc[Externalizing Sessions]
+include::chapters/appendix.adoc[Setting up your own environment]
+include::chapters/conclusion.adoc[You made it!]
+include::chapters/references.adoc[References]
