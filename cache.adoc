@@ -1,5 +1,64 @@
-== What is Caching?
+= What is Caching?
+
+image::caching.png[Caching, 900]
 
 
 
-=== Cache patterns
+
+==== Local cache
+The primary use for Red Hat Data Grid is to provide a fast in-memory cache of frequently accessed data. Suppose you have a slow data source (database, web service, text file, etc): you could load some or all of that data in memory so that it’s just a memory access away from your code. Using Red Hat Data Grid is better than using a simple ConcurrentHashMap, since it has additional useful features such as expiration and eviction.
+
+==== As a clustered cache
+If your data doesn’t fit in a single node, or you want to invalidate entries across multiple instances of your application, Red Hat Data Grid can scale horizontally to several hundred nodes.
+
+==== As a clustering building block for your applications
+If you need to make your application cluster-aware, integrate Red Hat Data Grid and get access to features like topology change notifications, cluster communication and clustered execution.
+
+==== As a remote cache
+If you want to be able to scale your caching layer independently from your application, or you need to make your data available to different applications, possibly even using different languages / platforms, use Red Hat Data Grid Server and its various clients.
+
+==== As a data grid
+You can use Red Hat Data Grid as your primary store and use its powerful features such as transactions, notifications, queries, distributed execution, distributed streams, analytics to process data quickly.
+
+==== As a geographical backup for your data
+Red Hat Data Grid supports replication between clusters, allowing you to backup your data across geographically remote sites.
+
+
+== Cache patterns
+
+=== The Embedded CacheManager
+The CacheManager is Red Hat Data Grid’s main entry point. You use a CacheManager to
+
+configure and obtain caches
+
+manage and monitor your nodes
+
+execute code across a cluster
+
+more…​
+
+Depending on whether you are embedding Red Hat Data Grid in your application or you are using it remotely, you will be dealing with either an EmbeddedCacheManager or a RemoteCacheManager. While they share some methods and properties, be aware that there are semantic differences between them. The following chapters focus mostly on the embedded implementation. For details on the remote implementation refer to Hot Rod Java Client.
+
+CacheManagers are heavyweight objects, and we foresee no more than one CacheManager being used per JVM (unless specific setups require more than one; but either way, this would be a minimal and finite number of instances).
+
+The simplest way to create a CacheManager is:
+
+
+[source, java, role="copypaste"]
+----
+EmbeddedCacheManager manager = new DefaultCacheManager();
+----
+
+which starts the most basic, local mode, non-clustered cache manager with no caches. CacheManagers have a lifecycle and the default constructors also call start(). Overloaded versions of the constructors are available, that do not start the CacheManager, although keep in mind that CacheManagers need to be started before they can be used to create Cache instances.
+
+Once constructed, CacheManagers should be made available to any component that require to interact with it via some form of application-wide scope such as JNDI, a ServletContext or via some other mechanism such as an IoC container.
+
+When you are done with a CacheManager, you must stop it so that it can release its resources:
+
+[source, java, role="copypaste"]
+----
+manager.stop();
+----
+
+This will ensure all caches within its scope are properly stopped, thread pools are shutdown. If the CacheManager was clustered it will also leave the cluster gracefully.
+

@@ -1,17 +1,48 @@
-== Setting up
+== First Step: Set Your Username!
 
+In the above box, enter the user ID you were assigned:
 
+image::setuser.png[Set User ID above, 900]
 
-== Creating your workspace
+This will customize the links and copy/paste code for this workshop. If you accidently type the wrong username, just click the green recycle icon to reset it.
 
+Throughout this lab you'll discover how Quarkus can make your development of cloud native apps faster and more productive.
 
-=== Step 1: Name your workspace. 
+== Click-to-Copy
 
+You will see various code and command blocks throughout these exercises which can be copy/pasted directly by clicking anywhere on the block of text:
 
-=== Step 2: Choose your Stack
+[source,java,role="copypaste"]
+----
+/* A sample Java snippet that you can copy/paste by clicking */
+public class CopyMeDirectly {
+    public static void main(String[] args) {
+        System.out.println("You can copy this whole class with a click!");
+    }
+}
+----
 
+Simply click once and the whole block is copied to your clipboard, ready to be pasted with kbd:[CTRL+V] (or kbd:[Command+V] on Mac OS).
 
-=== Step 3: Import the lab project from github
+There are also Linux shell commands that can also be copied and pasted into a Terminal in your Development Environment:
 
+[source,sh,role="copypaste"]
+----
+echo "This is a bash shell command that you can copy/paste by clicking"
+----
 
-== Working with Che/CodeReady
+== The Workshop Environment You Are Using
+
+Your workshop environment consists of several components which have been pre-installed and are ready to use. Depending on which parts of the workshop you’re doing, you will use one or more of:
+
+* https://www.openshift.com/[Red Hat OpenShift,window=_blank] - You’ll use one or more )**projects** (Kubernetes namespaces) that are your own and are isolated from other workshop students
+* https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces,window=_blank] - based on *Eclipse Che*, it’s a cloud-based, in-browser IDE (similar to IntelliJ IDEA, VSCode, Eclipse IDE). You’ve been provisioned your own personal workspace for use with this workshop. You’ll write, test, and deploy code from here.
+* https://www.redhat.com/en/products/runtimes[Red Hat Runtimes, window=_blank] - a collection of cloud-native runtimes like Spring Boot, Node.js, and https://quarkus.io[Quarkus, window=_blank]
+
+You’ll be provided clickable URLs throughout the workshop to access the services that have been installed for you.
+
+== How to complete this workshop
+
+Click the "Next >" button at the bottom to advance to the next topic. You can also use the menu on the left to move around the instructions at will.
+
+Good luck, and let’s get started!

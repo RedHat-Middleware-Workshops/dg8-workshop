@@ -11,7 +11,7 @@ modules:
   cache:
     name: What is Cache
   embedded:
-    name: Embedded Local Cache
+    name: Caching 101, Lets get started with your first app
   embeddedclustered:
     name: Embedded Clustered Cache
   remotecache:

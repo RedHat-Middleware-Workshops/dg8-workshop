@@ -21,7 +21,6 @@ services:
       - KEYCLOAK_URL=http://keycloak.url.com:4444
       - ROUTE_SUBDOMAIN=apps.yoursubdomain.com
       - CONTENT_URL_PREFIX="file:///app-data/"
-      - WORKSHOPS_URLS="file:///app-data/_dg8-workshop-guides.yml"
       - USER_NAME=userNN
       - USER_PASSWORD=passNN
       - LOG_TO_STDOUT=true 

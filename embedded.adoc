@@ -1,3 +1,45 @@
+The most common usecase for a Cache is a local or embedded cache. 
+
+image::embeddedcache.png[Embedded Caching, 900]
+
+=== Embedded Cache, Some basics
+The CacheManager is Red Hat Data Grid’s main entry point. You use a CacheManager to
+
+configure and obtain caches
+
+manage and monitor your nodes
+
+execute code across a cluster
+
+more…​
+
+Depending on whether you are embedding Red Hat Data Grid in your application or you are using it remotely, you will be dealing with either an EmbeddedCacheManager or a RemoteCacheManager. While they share some methods and properties, be aware that there are semantic differences between them. The following chapters focus mostly on the embedded implementation. For details on the remote implementation refer to Hot Rod Java Client.
+
+
+CacheManagers are heavyweight objects, and we foresee no more than one CacheManager being used per JVM (unless specific setups require more than one; but either way, this would be a minimal and finite number of instances).
+
+The simplest way to create a CacheManager is:
+
+
+[source, java, role="copypaste"]
+----
+EmbeddedCacheManager manager = new DefaultCacheManager();
+----
+
+which starts the most basic, local mode, non-clustered cache manager with no caches. CacheManagers have a lifecycle and the default constructors also call start(). Overloaded versions of the constructors are available, that do not start the CacheManager, although keep in mind that CacheManagers need to be started before they can be used to create Cache instances.
+
+Once constructed, CacheManagers should be made available to any component that require to interact with it via some form of application-wide scope such as JNDI, a ServletContext or via some other mechanism such as an IoC container.
+
+When you are done with a CacheManager, you must stop it so that it can release its resources:
+
+[source, java, role="copypaste"]
+----
+manager.stop();
+----
+
+This will ensure all caches within its scope are properly stopped, thread pools are shutdown. If the CacheManager was clustered it will also leave the cluster gracefully.
+
+
 == Your first app with Caching
 
 === Project details
