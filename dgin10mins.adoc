@@ -42,6 +42,19 @@ Try the docs: Getting Started with the Data Grid CLI.
 === Enhanced observability 
 Now you can use the /metrics endpoint for integration with Prometheus. Moreover, Red Hat Data Grid 8 is also compatible with Eclipse Microprofile Metrics API. More specific metrics and gauges are included. For more details, check the documentation here. Data Grid 8.0 also offers improved statistics and management operations via JMX and updates to logging with coarse-grained logging categories and support for logs in JSON format.
 
+
+
+=== Using Red Hat Data Grid
+==== As a data grid
+You can use Red Hat Data Grid as your primary store and use its powerful features such as transactions, notifications, queries, distributed execution, distributed streams, analytics to process data quickly.
+
+==== As a clustering building block for your applications
+If you need to make your application cluster-aware, integrate Red Hat Data Grid and get access to features like topology change notifications, cluster communication and clustered execution.
+
+==== As a geographical backup for your data
+Red Hat Data Grid supports replication between clusters, allowing you to backup your data across geographically remote sites.
+
+
 === Additional Resources:
 Traditional zip deployments are available on the CSP.
 The container distribution and operator are available in the RHCC.
