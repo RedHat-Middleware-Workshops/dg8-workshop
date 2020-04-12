@@ -354,7 +354,62 @@ If you might have noticed at the class declaration we are using the following an
 <3> and `api` is the path to our resource. e.g. localhost:8080/api
 
 === Run the Service
-<TODO>
+
+First lets login to Openshift. You will find the button in the right corner in MyWorkspace menu. 
+Click `Login to Openshift` 
+
+image::logintoOpenshiftTerminal.png[cdw, 400, align="center"]
+
+Next open a a new Terminal 
+
+image::newterminal.png[cdw, 400, align="center"]
+
+Lets create a new project. execute the following command on the terminal
+[source, shell, role="copypaste"]
+----
+oc new project lab1
+----
+
+now move to our project directory cd `dg8-embedded-quarkus`
+[source, shell, role="copypaste"]
+----
+cd dg8-embedded-quarkus
+----
+
+Lets run our project
+[source, shell, role="copypaste"]
+----
+mvn quarkus:dev:
+----
+This will enable Live coding on our project and open up a browser view, click on the link in the browser view, which will open a browser tab. e.g. shown in the image below.
+
+image::embeddedprojectliveview.png[cdw, 400, align="center"]
+
+Now open another terminal and change to the scripts directory
+
+[source, shell, role="copypaste"]
+----
+cd dg8-embedded-quarkus/scripts
+----
+
+in this directory we have a load.sh file. Open this file in CodeReadyWorkspace and change the variable EP to the applicaiton route from the browser
+and run load.sh 
+[source, shell, role="copypaste"]
+----
+./load.sh 
+----
+
+We just created a curl GET and PATCH requests. 
+- The first request a GET Request creates an entry
+- Where as the second one updates an entry. 
+
+All of the above actions are going directly into our Cache as expected. And you should see a JSON response in the terminal. 
+If you goto your endpoint/api in the browser you will also see the same JSON data there as well. 
+
+So what we have successfully done so far. Read, Write and update our Cache. 
+
+Lets move on to the next step and do some more interesing additions to our project. 
+
 
 
 === Expiration of Entries
@@ -396,6 +451,25 @@ In the above code, we have used TimeUnit and we specify 5 as the unit which is s
     DAYS;
 ----
 
+Okay now its time to test this change. 
+Go back into the terminal and run the load.sh again
+
+and run load.sh 
+[source, shell, role="copypaste"]
+----
+./load.sh 
+----
+
+now run a CURL Get request
+[source, shell, role="copypaste"]
+----
+EP=SET YOUR END POINT HERE
+curl $EP/api
+----
+
+perfect. now wait for 5 seconds and run this command again, and you will see it does not return anything. This is becuase we set the timespan to 5 seconds.
+
+
 In the previous step we used the overloaded put() method to store mortal entries. But since we want all of our entries to expire with the same lifespan, we can configure the cache to have default expiration values. To do this we will construct the DefaultCacheManager by passing in a org.infinispan.configuration.cache.Configuration object. A configuration in Infinispan is mostly immutable, aside from some runtime-tunable parameters, and is constructed by means of a ConfigurationBuilder. Using the above use-case, let's create a cache configuration where we want to set the default expiration of entries to 5 seconds. 
 Add the following line to your ScoreService onStart method; right under the `ConfigurationBuilder` instantiation 
 
@@ -404,9 +478,25 @@ Add the following line to your ScoreService onStart method; right under the `Con
     config.expiration().lifespan(5, TimeUnit.SECONDS);
 ----
 
+and run load.sh 
+[source, shell, role="copypaste"]
+----
+./load.sh 
+----
+
+now run a CURL Get request
+[source, shell, role="copypaste"]
+----
+EP=SET YOUR END POINT HERE
+curl $EP/api
+----
+
+perfect. now wait for 5 seconds and run this command again, and you will see it does not return anything. This is becuase we set the timespan to 5 seconds for the CacheManager.
+
+
 Now this is a configuration change for the cache and this will expire all entries after 5 seconds. 
 
-Next task for you is to change the lifespan to 5 minutes. 
+*Challenge yourself*: Next task for you is to change the lifespan to 5 minutes and see if that works for you.
 
 [NOTE]
 ====
@@ -518,9 +608,32 @@ Add the following line to the config
     scoreCache.addListener(new CacheListener());
 ----
 
-Now if we update the entries in our cache or create new ones; we will see a notification on the our console. 
+Now if we update the entries in our cache or create new ones; we will see a notification on the our console. Lets test this out. 
 
+Run load.sh 
+[source, shell, role="copypaste"]
+----
+./load.sh 
+----
 
+now run a CURL Get request
+[source, shell, role="copypaste"]
+----
+EP=SET YOUR END POINT HERE
+curl $EP/api
+----
+
+Now check the terminal where you ran `mvn quarkus:dev` you should see messages like follows
+[source, shell, role="copypaste"]
+----
+ Entry for CACHE_ENTRY_CREATED created 
+ Entry for CACHE_ENTRY_CREATED created 
+
+ Entry for CACHE_ENTRY_MODIFIED modified
+ Entry for CACHE_ENTRY_MODIFIED modified
+----
+
+Congratulations we are at the end of this lab!
 
 === Recap
 <1> You created our own Cache and learnt how to us EmbeddedCacheManager
