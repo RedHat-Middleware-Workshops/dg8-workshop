@@ -1,11 +1,185 @@
 == Embeded Cache with a cluster
+In this lab we are going to cluster the embedded cache. Inifinispan does this very nicely. We do not need to change a lot of configuration to achieve this.
+After configuration, we will deploy our application to Openshift and see how the cluster will work in a cloud environment. 
+Following diagram illustrates the topology we want to achieve. Although clustering cache nodes can be in 100s, we will start with a couple of them and see how we can get the feature set we need for a cache.
+
+image::clusteredembeddedcache.png[Caching, 900]
 
 === Clustering
 
-=== Grouping
+Open the ScoreService.java again in our project `dg8-embedded-quarkus`
 
-=== Stream
+We are going to add the following lines of code to our onStart method
 
-=== Externalizing Configuration
+[source, java, role="copypaste"]
+----
+        GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
+        global.transport().clusterName("ScoreCard");
+        cacheManager = new DefaultCacheManager(global.build());
+----
 
-=== Deploying to Openshift and scaling
+
+[source, java, role="copypaste"]
+----
+    void onStart(@Observes @Priority(value = 1) StartupEvent ev){
+        GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
+        global.transport().clusterName("ScoreCard");
+        cacheManager = new DefaultCacheManager(global.build());
+        
+        ConfigurationBuilder config = new ConfigurationBuilder();
+
+        config.expiration().lifespan(5, TimeUnit.MINUTES);
+                .clustering().cacheMode(CacheMode.REPL_SYNC)
+
+        cacheManager.defineConfiguration("scoreboard", config.build());
+        scoreCache = cacheManager.getCache("scoreboard");
+        scoreCache.addListener(new CacheListener());
+
+
+        log.info("Cache initialized");
+
+    }
+----
+
+
+Also open the CacheListener and make sure that the following line is changed to `@Listener(clustered = true)`
+[source, java, role="copypaste"]
+----
+@Listener
+----
+
+By doing this we are making sure we have a clustered listener.
+
+This all looks in order. lets compile our application. 
+
+Open a terminal from the right hand "MyWorkspace" menu.
+
+[source, shell, role="copypaste"]
+----
+mvn compile package
+----
+
+If all of this is working lets make sure we can deploy this applicaiton. 
+
+First run the following command to add the Openshift extension for Quarkus
+The Openshift extension makes it easy to deploy your application to openshift, rather then taking all the different steps from an oc command line, you can do that through your maven build. 
+
+run the following in your terminal, you should see a build successfull message when done.
+[source, shell, role="copypaste"]
+----
+mvn quarkus:add-extension -Dextensions="openshift"
+----
+
+Now open the application.properties file in `src/main/resources/application.properites`
+
+Add the following properties to it
+
+[source, shell, role="copypaste"]
+----
+quarkus.http.cors=true
+quarkus.openshift.expose=true <1>
+
+# if you dont set this and dont have a valid cert the deployment wont happen
+quarkus.kubernetes-client.trust-certs=true <2>
+----
+
+<1> The first property makes sure that once our application is deployed it will expose a route
+<2> The second property makes sure that incase you dont have valid certificates the build wont stop. in our case that can likely be the case since its not a production environment rather a demo one.
+
+Now go to your MyWorkspace menu and Login to Openshift. 
+
+Perfect everything is inorder. 
+
+Lets first create an image namespace for our application
+
+[source, shell, role="copypaste"]
+----
+mvn clean package -Dquarkus.container-image.build=true
+----
+
+You should see a build successful message at the end. That mean everything worked out. 
+
+Now lets deploy our application to Openshift
+
+[source, shell, role="copypaste"]
+----
+mvn clean package -Dquarkus.kubernetes.deploy=true
+----
+
+Also remmember next time we need to deploy we just need to run the above deploy command again. thats all!
+
+Lets wait for this build to be successfull! 
+
+
+Now log into to the openshift console and navigate to your newly created project lab2
+You should see something as follows 
+
+image::lab2ocpoverview.png[Caching, 900]
+
+
+Click on resources, And at the bottom you will see the route to your application. 
+
+Now open another terminal and change to the scripts directory
+
+[source, shell, role="copypaste"]
+----
+cd dg8-embedded-quarkus/scripts
+----
+
+in this directory we have a load.sh file. Open this file in CodeReadyWorkspace and change the variable EP to the applicaiton route from the browser
+and run load.sh 
+[source, shell, role="copypaste"]
+----
+./load.sh 
+----
+
+Go back to the resrouce view of your application and then click view logs, you should see something as follows. 
+
+image::lab2applogvieweventcreated.png[Caching, 900]
+
+Notice that the event has been recieved for Created entry.
+
+Now go back to the overview page for the applicaiton and Click on the pod scaler and scale to 2 pods.
+
+image::lab2podscaler.png[Caching, 900]
+
+Go back to the resrouce view of your application and then click view logs for the newly created pod, you should see something as follows. 
+
+image::lab2applogvieweventcreated.png[Caching, 900]
+Notice that the event has been recieved for Created entry.
+
+This is because we have used the property replicated sync in our cache intiailization
+
+[source, java, role="copypaste"]
+----
+        config.expiration().lifespan(5, TimeUnit.MINUTES)
+                .clustering().cacheMode(CacheMode.REPL_SYNC)
+----
+
+Open ScoreService and change the above to
+[source, java, role="copypaste"]
+----
+        config.expiration().lifespan(5, TimeUnit.MINUTES)
+                .clustering().cacheMode(CacheMode.DIST_SYNC)
+----
+
+Now lets deploy our application to Openshift
+
+[source, shell, role="copypaste"]
+----
+mvn clean package -Dquarkus.kubernetes.deploy=true
+----
+
+Go through the same procedure with this new build as well, and see how the keys will now be distributed. you can add more data to the load.sh script to see more effects.
+
+
+Congratulations we are at the end of this lab!
+
+=== Recap
+<1> You created our own Cache and learnt how to us EmbeddedCacheManager
+<2> You learnt how to use ConfigurationBuilder and Configuration objects to define our Configurations for the Cache and CacheManager
+<3> You learnt about how to create and Embedded Cluster
+<4> You learnt how to deploy a Quarkus application with emebedded cache and scale it. 
+
+**Congratulations!!* you have completed the second lab of this workshop. Lets move to the next lab and learn how we can create a remote cache and how it can benefit our applications.
+

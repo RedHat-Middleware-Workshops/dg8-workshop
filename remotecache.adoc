@@ -300,7 +300,7 @@ Now from the terminal use the oc command line to apply it.
 oc apply -f cr_minimal.yaml
 ----
 
-you can watch the Red Hat Data Grid Operator creating the instances by running the following command.
+You can watch the Red Hat Data Grid Operator creating the instances by running the following command.
 
 [source, shell, role="copypaste"]
 ----
@@ -347,33 +347,48 @@ Lets go fill that password field in the above properties file.
 Run the following command on the terminal and the password will be shown, then copy that password and add it to the password field `quarkus.infinispan-client.auth-password=`. 
 [source, shell, role="copypaste"]
 ----
-`oc get secret datagrid-service-generated-secret \                                                                                                                                                             
--o jsonpath="{.data.identities\.yaml}" | base64 --decode`
+
+    oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode
+
 ----
 
 Save the application.properties file.
 
 
 Lets go ahead and deploy the application to openshift. 
-Open a terminal in CodeReady workspace and run the following command to build an s2i namespace for our applications image.
+Now go to your MyWorkspace menu and Login to Openshift. 
+
+Perfect everything is inorder. 
+
+Lets first create an image namespace for our application
 
 [source, shell, role="copypaste"]
 ----
 mvn clean package -Dquarkus.container-image.build=true
 ----
 
-You should see a Build Successful message from the above command. Once you have that message proceed to the second command below to deploy the application itself. 
+You should see a build successful message at the end. That mean everything worked out. 
+
+Now lets deploy our application to Openshift
 
 [source, shell, role="copypaste"]
 ----
 mvn clean package -Dquarkus.kubernetes.deploy=true
 ----
 
-You should see a Build Successful message from this run as well. 
+Also remmember next time we need to deploy we just need to run the above deploy command again. thats all!
+
+Lets wait for this build to be successfull! 
+
 
 Now navigate to the openshift console
 
-<TODO>
+image::gameserviceocp.png[cdw, 700, align="center"]
+
+And click on the resources/routes to navigate to the application
+
+image::gamerestservice.png[cdw, 700, align="center"]
+
 
 
 === Enabling Near Cache
@@ -407,14 +422,6 @@ infinispan.client.hotrod.near_cache.cache_name_pattern=*i8n-.
 ----
 
 Lets go ahead and deploy the application to openshift. 
-Open a terminal in CodeReady workspace and run the following command to build an s2i namespace for our applications image.
-
-[source, shell, role="copypaste"]
-----
-mvn clean package -Dquarkus.container-image.build=true
-----
-
-You should see a Build Successful message from the above command. Once you have that message proceed to the second command below to deploy the application itself. 
 
 [source, shell, role="copypaste"]
 ----
