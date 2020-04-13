@@ -75,41 +75,46 @@ Add the following to your main method in class Exercise1
 
 [source, java, role="copypaste"]
 ----
-        DefaultCacheManager cacheManager = new DefaultCacheManager();
+    // TODO: Construct a simple local cache manager with default configuration
+    DefaultCacheManager cacheManager = new DefaultCacheManager();
 ----
 
 Now that we have cacheManager, we can now define what a Cache should look like. We could choose many features from the system, e.g. if we were adding grouping, streams, listeners, strategies for eviction or clustering etc, we would do that here. The following example just takes the default configuration
 
 [source, java, role="copypaste"]
 ----
-        cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+    // TODO: Define local cache configuration
+    cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
 ----
 
 Perfect so now we have defined our Cache, time for us to get that cache from our CacheManager. We have also defined that our Cache will have both our Key and Value as Strings.
 
 [source, java, role="copypaste"]
 ----
-        Cache<String, String> cache = cacheManager.getCache("local");
+    // TODO: Obtain the local cache
+    Cache<String, String> cache = cacheManager.getCache("local");
 ----
 
 Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
 [source, java, role="copypaste"]
 ----
-        cache.put("key", "value");
+    // TODO: Store a value
+    cache.put("key", "value");
 ----
 
 Here we will get the value by specifying the key. here the key will be the same as we used in our previous line `cache.put`; By specifying a key to the Cache, you can get the value stored in it; the same process is also use for an update.
 [source, java, role="copypaste"]
 ----
-        System.out.printf("key = %s\n", cache.get("key"));
+    // TODO: Retrieve the value and print it out
+    System.out.printf("key = %s\n", cache.get("key"));
 ----
 
 Finally CacheManager is a heavy object, it does alot, so no need to keep it going on. When done, we close that instance by calling the `stop()` method.
 
 [source, java, role="copypaste"]
 ----
-
-        cacheManager.stop();
+    // TODO: Stop the cache manager and release all resources
+    cacheManager.stop();
 ----
 
 Great so, now we have typed all our code. lets try to run this example.
@@ -119,11 +124,11 @@ Open a terminal in your CodeReady Workspace, you can do this by using the menu o
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise2
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 ----
 
 You should be able to see an output similar to the following.
-[source, java, role="copypaste"]
+[source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
 Apr 13, 2020 5:34:46 PM org.infinispan.factories.GlobalComponentRegistry preStart
@@ -134,6 +139,63 @@ key = value
 ----
 
 === Exercise 2: JSR-107 JCache
+The term Cache is generally reffered to a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple java.util packages do now have all the capabilities required and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to defind temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed usecases.
+
+Lets take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan
+
+[source, java, role="copypaste"]
+----
+        // TODO: Construct a simple local cache manager with default configuration
+        CachingProvider jcacheProvider = Caching.getCachingProvider();
+        CacheManager cacheManager = jcacheProvider.getCacheManager();
+        MutableConfiguration<String, String> configuration = new MutableConfiguration<>();
+        configuration.setTypes(String.class, String.class);
+        
+        // TODO: create a cache using the supplied configuration
+        Cache<String, String> cache = cacheManager.createCache("myCache", configuration);
+----
+Lets take a more indepth look at the code above
+<1> We use a CachingProvider which is part of the standards API. 
+<2> The Caching provider inturn gives us a cacheManager.
+<3> We create a configuration object for our Cache. A MutlableConfiguration
+<4> and here we also set the Type of our Cache, if you remember this is different from our previous exercise, since we are using the JSR-107 API now.
+<5> and finally we get our cache
+
+
+
+Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
+[source, java, role="copypaste"]
+----
+        // Store and retrieve value
+        cache.put("key", "value");
+        System.out.printf("key = %s\n", cache.get("key"));
+----
+
+And then lets close our CacheManager.
+[source, java, role="copypaste"]
+----
+        // TODO: Stop the cache manager and release all resources
+        cacheManager.close();
+----
+
+Run the above exercise as follows in the CodeReady terminal
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise2
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, java, role="copypaste"]
+----
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
+Apr 13, 2020 6:17:56 PM org.infinispan.factories.GlobalComponentRegistry preStart
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 6:17:56 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+key = value
+----
+
 
 === Exercise 3: Functional programming and Cache
 
