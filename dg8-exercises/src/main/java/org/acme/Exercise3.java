@@ -34,13 +34,11 @@ public class Exercise3 {
         CompletableFuture<Void> writeFuture2 = writeOnlyMap.eval("key2", "value2",
                 (v, writeView) -> writeView.set(v));
 
-        // When each write-only operation completes, execute a read-only operation to retrieve the value
-        CompletableFuture<String> readFuture1 =
-                writeFuture1.thenCompose(r -> readOnlyMap.eval("key1", EntryView.ReadEntryView::get));
-        CompletableFuture<String> readFuture2 =
-                writeFuture2.thenCompose(r -> readOnlyMap.eval("key2", EntryView.ReadEntryView::get));
+        // TODO When each write-only operation completes, execute a read-only operation to retrieve the value
 
-        // When the read-only operation completes, print it out
+
+        // TODO When the read-only operation completes, print it out
+
         System.out.printf("Created entries: %n");
         CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) ->
                 System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
@@ -51,16 +49,10 @@ public class Exercise3 {
         // Create a read-write map
         FunctionalMap.ReadWriteMap<String, String> readWriteMap = ReadWriteMapImpl.create(functionalMap);
 
+        
         // Use read-write multi-key based operation to write new values
         // together with lifespan and return previous values
-        Map<String, String> data = new HashMap<>();
-        data.put("key1", "newValue1");
-        data.put("key2", "newValue2");
-        Traversable<String> previousValues = readWriteMap.evalMany(data, (v, readWriteView) -> {
-            String prev = readWriteView.find().orElse(null);
-            readWriteView.set(v, new MetaLifespan(Duration.ofHours(1).toMillis()));
-            return prev;
-        });
+        // TODO
 
         // Use read-only multi-key operation to read current values for multiple keys
         Traversable<EntryView.ReadEntryView<String, String>> entryViews =

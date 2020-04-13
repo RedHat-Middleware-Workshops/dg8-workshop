@@ -32,12 +32,11 @@ public class Exercise6 {
         cache.put("person1", new Person("William", "Shakespeare"));
         cache.put("person2", new Person("William", "Wordsworth"));
         cache.put("person3", new Person("John", "Milton"));
-        // Obtain a query factory for the cache
-        QueryFactory queryFactory = Search.getQueryFactory(cache);
-        // Construct a query
-        Query query = queryFactory.from(Person.class).having("name").eq("William").toBuilder().build();
-        // Execute the query
-        List<Person> matches = query.list();
+        
+        // TODO: Obtain a query factory for the cache
+
+
+        
         // List the results
         matches.forEach(person -> System.out.printf("Match: %s", person));
         // Stop the cache manager and release all resources

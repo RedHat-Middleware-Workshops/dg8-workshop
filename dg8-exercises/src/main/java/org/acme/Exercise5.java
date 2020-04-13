@@ -25,22 +25,24 @@ public class Exercise5 {
         Cache<String, String> cache = cacheManager.administration()
                 .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
                 .getOrCreateCache("cache", cacheConfig);
-        // Obtain the transaction manager
-        TransactionManager transactionManager = cache.getAdvancedCache().getTransactionManager();
-        // Perform some operations within a transaction and commit it
-        transactionManager.begin();
-        cache.put("key1", "value1");
-        cache.put("key2", "value2");
-        transactionManager.commit();
+        
+        //TODO Obtain the transaction manager
+
+        
+        // TODO Perform some operations within a transaction and commit it
+
+        
+
+
         // Display the current cache contents
         System.out.printf("key1 = %s\nkey2 = %s\n", cache.get("key1"), cache.get("key2"));
-        // Perform some operations within a transaction and roll it back
-        transactionManager.begin();
-        cache.put("key1", "value3");
-        cache.put("key2", "value4");
-        transactionManager.rollback();
+        
+        //TODO Perform some operations within a transaction and roll it back
+
+        
         // Display the current cache contents
         System.out.printf("key1 = %s\nkey2 = %s\n", cache.get("key1"), cache.get("key2"));
+        
         // Stop the cache manager and release all resources
         cacheManager.stop();
     }

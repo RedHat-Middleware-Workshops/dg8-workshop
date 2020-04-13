@@ -17,7 +17,7 @@ modules:
   remotecache:
     name: Remote Cache
   exercises:
-    name: Learn Red Hat Data Grid
+    name: Getting started with Data Grid
   replication:
     name: Cross Site replication
   sessionexternalization:

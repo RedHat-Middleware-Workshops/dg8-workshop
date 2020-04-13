@@ -22,8 +22,8 @@ modules:
   - about
   - settingup
   - dgin10mins
-  - cache
   - exercises
+  - cache
   - embedded
   - embeddedclustered
   - remotecache
