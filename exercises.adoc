@@ -61,4 +61,16 @@ The Terminal window in CodeReady Workspaces. You can open a terminal window for 
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
 
 
-=== Exercise 1
+=== Exercise 1: Creating a local Cache
+
+
+
+=== Exercise 2: JSR-107 JCache
+
+=== Exercise 3: Functional programming and Cache
+
+=== Exercise 4: Streaming data from the Cache
+
+=== Exercise 5: Using Transactions
+
+=== Exercise 6: Queries to the Cache with Lucene

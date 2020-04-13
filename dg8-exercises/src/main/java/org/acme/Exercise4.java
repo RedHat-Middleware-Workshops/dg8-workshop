@@ -7,6 +7,7 @@ import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 
+// Streams
 public class Exercise4 {
 
     public static void main(String[] args) {
