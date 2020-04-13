@@ -53,65 +53,8 @@ In our first service we will do exactly that. We will store this data in our Emb
 === Project details
 You can choose multiple runtimes to impelement this service, in our case today the example uses Quarkus. A Kubernetes Native Java stack tailored for OpenJDK HotSpot and GraalVM, crafted from the best of breed Java libraries and standards. Quarkus is also known for some of its cool features e.g Live Coding which we will also use in our labs. It makes it easier to code and see our changes as we do that. 
 
-Time to checkout our template project. 
-
-You will be using Red Hat CodeReady Workspaces, an online IDE based on Eclipe Che{:target="_blank"}{:target="_blank"}. Changes to files are auto-saved every You will be using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. *Changes to files are auto-saved every few seconds*, so you don’t need to explicitly save changes.
-
-To get started, {{ ECLIPSE_CHE_URL }}[access the Che instance, window=_blank] and log in using the username and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
-
-image::che-login.png[cdw, 700, align="center"]
-
-Once you log in, you’ll be placed on your personal dashboard. Click on the name of the pre-created workspace on the left, as shown below (the name will be different depending on your assigned number). You can also click on the name of the workspace in the center, and then click on the green button that says _Open_ on the top right hand side of the screen.
-
-This IDE is based on Eclipse Che (which is in turn based on MicroSoft VS Code editor).
-
-You can see icons on the left for navigating between project explorer, search, version control (e.g. Git), debugging, and other plugins.  You’ll use these during the course of this workshop. Feel free to click on them and see what they do:
-
-image::crw-icons.png[cdw, 400, align="center"]
-
-[NOTE]
-====
-If things get weird or your browser appears, you can simply reload the browser tab to refresh the view.
-====
-
-Many features of CodeReady Workspaces are accessed via *Commands*. You can see a few of the commands listed with links on the home page (e.g. _New File.._, _Git Clone.._, and others).
-
-If you ever need to run commands that you don't see in a menu, you can press kbd:[F1] to open the command window, or the more traditional kbd:[Control+SHIFT+P] (or kbd:[Command+SHIFT+P] on Mac OS X).
-
-Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
-
-image::gitclonepage.png[cdw, 600, align="center"]
-
-Step through the prompts, using the following value for **Repository URL**:
-
-[source, shell, role="copypaste"]
-----
-
-https://github.com/sshaaf/dg8-embedded-quarkus.git
-
-----
-
-image::gitcloneembedded.png[crw, 600, align="center"]
-
-Next, select `$CHE_PROJECTS_ROOT` in the drop-down menu for destination directory:
-
-image::projectplace.png[crw, 600, align="center"]
-
-And click *Select Repository Location*.
-
-Once imported, choose **Add to workspace** when prompted.
-
-The project should now be imported into your workspace and as an example screenshot as below you should be able to see your project as well.`dg8-embedded-quarkus`
-
-image::workspaceview.png[crw, 600, align="center"]
-
-[NOTE]
-====
-The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right:
-====
-
-image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
-
+Navigate to the project `dg8-embedded-quarkus`
+This is a template project, and you will be writing code into this project.
 As you can see there is already some files inplace. Lets take a look into what these files are and do.
 
 
