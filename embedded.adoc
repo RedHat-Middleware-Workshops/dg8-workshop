@@ -266,6 +266,11 @@ And we also want to be able to get one entry from our cache. following method wi
         }
         return entity;
     }
+
+    @GET
+    public List<Score> getAll() {
+        return scoreService.getAll();
+    }
 ----
 
 And incase we wanted to update an entry. that would normally the case when we the player is playing the round. so the score will be updated. 

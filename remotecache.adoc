@@ -1,6 +1,3 @@
-== Using Cache on a Remote server
-
-
 === HotRod Client
 Hot Rod is a binary TCP protocol that Infinispan offers high-performance client-server interactions with the following capabilities:
 - Load balancing. Hot Rod clients can send requests across Infinispan clusters using different strategies to increase reliability.

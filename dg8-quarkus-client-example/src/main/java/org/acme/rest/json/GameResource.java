@@ -28,23 +28,6 @@ import static org.acme.rest.json.Init.GAME_CACHE;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GameResource {
 
-    @Inject
-    @Remote(GAME_CACHE)
-    RemoteCache<String, Game> gameStore;
-
-    public GameResource() {
-    }
-
-    @GET
-    public Set<Game> list() {
-        return new HashSet<>(gameStore.values());
-    }
-
-    @POST
-    public Set<String> add(Game game) {
-        gameStore.putAsync(game.getName(), game);
-        return gameStore.keySet();
-    }
 
     @DELETE
     public Game delete(Game game) {
