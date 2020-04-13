@@ -28,11 +28,8 @@ public class Exercise3 {
         FunctionalMap.WriteOnlyMap<String, String> writeOnlyMap = WriteOnlyMapImpl.create(functionalMap);
         FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
 
-        // Execute two parallel write-only operation to store key/value pairs
-        CompletableFuture<Void> writeFuture1 = writeOnlyMap.eval("key1", "value1",
-                (v, writeView) -> writeView.set(v));
-        CompletableFuture<Void> writeFuture2 = writeOnlyMap.eval("key2", "value2",
-                (v, writeView) -> writeView.set(v));
+        //TODO  Execute two parallel write-only operation to store key/value pairs
+
 
         // TODO When each write-only operation completes, execute a read-only operation to retrieve the value
 
