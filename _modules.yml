@@ -16,8 +16,8 @@ modules:
     name: Embedded Clustered Cache
   remotecache:
     name: Remote Cache
-  reactiveapi:
-    name: Reactive API
+  exercises:
+    name: Learn Red Hat Data Grid
   replication:
     name: Cross Site replication
   sessionexternalization:

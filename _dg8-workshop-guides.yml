@@ -23,10 +23,10 @@ modules:
   - settingup
   - dgin10mins
   - cache
+  - exercises
   - embedded
   - embeddedclustered
   - remotecache
-  - reactiveapi
   - replication
   - sessionexternalization
   - conclusion
