@@ -60,10 +60,78 @@ The Terminal window in CodeReady Workspaces. You can open a terminal window for 
 
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
 
+We will be doing the exercises in this section and for that we have a project called `dg8-exercises`, Open each exercise file e.g. Exercise1.java is for Exercise 1. There are a total of 6 exercises and we will walk through the different concepts.
+
 
 === Exercise 1: Creating a local Cache
+First a bit about Maps. Why Maps are good for Cache? Maps are fast, they use methods like hashcode() and equals to determine how to add data to the map. Which also means they can be fast enough to O(1) time to read and write the data. That is excpetional performance, and thats exactly what you want from a cache. Data storage is in Key and Value pairs. So you have a key which is unique to your value. There is a lot more to Maps, but lets start with a basic Cahce how-to.
 
+A CacheManager is the primary mechanism for retrieving a Cache instance, and is often used as a starting point to using the Cache.
+Essentially if you were using a Map object you would just create a Map and store all your K,V in it. However when you use a tool like Red Hat Data Grid/Inifinispan you get more then just a simple map e.g. Listeners, events etc. all of which we will talk about in further sections. 
 
+CacheManagers are heavyweight objects, and its not recommended to have more than one CacheManager being used per JVM (unless specific configuration requirements require more than one; but either way, this would be a minimal and finite number of instances). 
+
+Add the following to your main method in class Exercise1
+
+[source, java, role="copypaste"]
+----
+        DefaultCacheManager cacheManager = new DefaultCacheManager();
+----
+
+Now that we have cacheManager, we can now define what a Cache should look like. We could choose many features from the system, e.g. if we were adding grouping, streams, listeners, strategies for eviction or clustering etc, we would do that here. The following example just takes the default configuration
+
+[source, java, role="copypaste"]
+----
+        cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+----
+
+Perfect so now we have defined our Cache, time for us to get that cache from our CacheManager. We have also defined that our Cache will have both our Key and Value as Strings.
+
+[source, java, role="copypaste"]
+----
+        Cache<String, String> cache = cacheManager.getCache("local");
+----
+
+Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
+[source, java, role="copypaste"]
+----
+        cache.put("key", "value");
+----
+
+Here we will get the value by specifying the key. here the key will be the same as we used in our previous line `cache.put`; By specifying a key to the Cache, you can get the value stored in it; the same process is also use for an update.
+[source, java, role="copypaste"]
+----
+        System.out.printf("key = %s\n", cache.get("key"));
+----
+
+Finally CacheManager is a heavy object, it does alot, so no need to keep it going on. When done, we close that instance by calling the `stop()` method.
+
+[source, java, role="copypaste"]
+----
+
+        cacheManager.stop();
+----
+
+Great so, now we have typed all our code. lets try to run this example.
+
+Open a terminal in your CodeReady Workspace, you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal` and a terminal should open in your browser.
+
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise2
+----
+
+You should be able to see an output similar to the following.
+[source, java, role="copypaste"]
+----
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
+Apr 13, 2020 5:34:46 PM org.infinispan.factories.GlobalComponentRegistry preStart
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 5:34:46 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+key = value
+----
 
 === Exercise 2: JSR-107 JCache
 
