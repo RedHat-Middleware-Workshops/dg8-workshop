@@ -20,8 +20,8 @@ vars:
 modules:
   activate:
   - about
-  - dgin10mins
   - settingup
+  - dgin10mins
   - exercises
   - embedded
   - embeddedclustered
