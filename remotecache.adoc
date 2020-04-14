@@ -196,62 +196,6 @@ The following are two simple GET and POST method implementation.
 
 Perfect. We are all set to deploy our application to Openshift and see how the RemoteCache will work.
 
-
-=== Deployment: What's an Operator and how does it help us?
-An Operator is a method of packaging, deploying and managing a Kubernetes-native application. A Kubernetes-native application is an application that is both deployed on Kubernetes and managed using the Kubernetes APIs and kubectl tooling. An Operator is essentially a custom controller.
-A controller is a core concept in Kubernetes and is implemented as a software loop that runs continuously on the Kubernetes master nodes comparing, and if necessary, reconciling the expressed desired state and the current state of an object. Objects are well known resources like Pods, Services, ConfigMaps, or PersistentVolumes. Operators apply this model at the level of entire applications and are, in effect, application-specific controllers.
-
-The Operator is a piece of software running in a Pod on the cluster, interacting with the Kubernetes API server. It introduces new object types through Custom Resource Definitions, an extension mechanism in Kubernetes. These custom objects are the primary interface for a user; consistent with the resource-based interaction model on the Kubernetes cluster.
-
-An Operator watches for these custom resource types and is notified about their presence or modification. When the Operator receives this notification it will start running a loop to ensure that all the required connections for the application service represented by these objects are actually available and configured in the way the user expressed in the object’s specification.
-
-The Operator Lifecycle Manager (OLM) is the backplane that facilitates management of operators on a Kubernetes cluster. Operators that provide popular applications as a service are going to be long-lived workloads with, potentially, lots of permissions on the cluster.
-
-With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a team access to an Operator for their slice of the cluster.
-
-Red Hat Data Grid 8.0 comes with an Operator. The administrators of the cluster have already installed the Data Grid Operator, what we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
-
-=== Installing
-Assuming you have already logged in to openshift from the CodeReady terminal, if not you can do it now. Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. Following is the screen shot showing you how to do that.
-
-<TODO>
-
-
-Lets start by installing a basic Red Hat Data Grid Cluster. 
-
-[source, yaml, role="copypaste"]
-----
-    apiVersion: infinispan.org/v1
-    kind: Infinispan <1>
-    metadata:
-    name: datagrid-service <2>
-    spec:
-    replicas: 2 <3>
-----
-
-Create a file with name cr_minimal.yaml copy and paste the above defination and save it.
-
-Before applying this defination, lets take a look how its constructed. 
-<1> tells Kubernetes/Openshift that the Custom resource type is Infinispan
-<2> we specify the name of our cluster as datagrid-service
-<3> and finally we specify the replicas we want for our service.
-
-Now from the terminal use the oc command line to apply it. 
-[source, shell, role="copypaste"]
-----
-oc apply -f cr_minimal.yaml
-----
-
-You can watch the Red Hat Data Grid Operator creating the instances by running the following command.
-
-[source, shell, role="copypaste"]
-----
-oc get pods -w
-----
-
-Perfect now we have a running Red Hat Data Grid cluster. 
-
-
 === Deploying to Openshift and scaling
 
 Lets prepare to deploy the application to Openshift

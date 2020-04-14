@@ -1,0 +1,4 @@
+The Data Grid REST API lets you monitor, maintain, and manage Data Grid deployments and provides access to your data.
+Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate some of them. 
+For more details on the documentation on the Red Hat Data Grid REST API. Please visit the documentation page.
+

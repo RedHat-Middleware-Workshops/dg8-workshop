@@ -8,18 +8,18 @@ modules:
     name: DataGrid in 10 mins
   settingup:
     name: Setting up
-  cache:
-    name: What is Cache
   embedded:
     name: Caching 101, Lets get started with your first app
   embeddedclustered:
     name: Embedded Clustered Cache
+  installation:
+    name: Operators and RHDG 8
   remotecache:
     name: Remote Cache
+  restapi:
+    name: REST API
   exercises:
     name: Getting started with Data Grid
-  replication:
-    name: Cross Site replication
   sessionexternalization:
     name: Externalizing Sessions
   appendix:

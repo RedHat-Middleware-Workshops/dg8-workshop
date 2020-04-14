@@ -20,14 +20,14 @@ vars:
 modules:
   activate:
   - about
-  - settingup
   - dgin10mins
+  - settingup
   - exercises
-  - cache
   - embedded
   - embeddedclustered
+  - installation
   - remotecache
-  - replication
+  - restapi
   - sessionexternalization
   - conclusion
   - appendix
