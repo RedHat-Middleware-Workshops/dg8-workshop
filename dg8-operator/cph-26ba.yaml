@@ -1,0 +1,22 @@
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: example1-infinispan
+spec:
+  replicas: 1
+  expose:
+    type: LoadBalancer
+  service:
+    type: DataGrid
+    sites:
+      local:
+        name: cph
+        expose:
+          type: LoadBalancer
+      locations:
+      - name: cph
+        url: openshift://api.cluster-cph-26ba.cph-26ba.example.opentlc.com:6443
+        secretName: cph-token
+      - name: nyc
+        url: openshift://api.cluster-nyc-2ebf.nyc-2ebf.example.opentlc.com:6443
+        secretName: nyc-token

@@ -1,0 +1,50 @@
+/**
+  * @Indexed
+  */
+message Pokemon  {
+  repeated string abilities = 1;
+  optional float against_bug = 2;
+  optional float against_dark = 3;
+  optional float against_dragon = 4;
+  optional float against_electric = 5;
+  optional float against_fairy = 6;
+  optional float against_fight = 7;
+  optional float against_fire = 8;
+  optional float against_flying = 9;
+  optional float against_ghost = 10;
+  optional float against_grass = 11;
+  optional float against_ground = 12;
+  optional float against_ice = 13;
+  optional float against_normal = 14;
+  optional float against_poison = 15;
+  optional float against_psychic = 16;
+  optional float against_rock = 17;
+  optional float against_steel = 18;
+  optional float against_water = 19;
+  optional int32 attack = 20;
+  optional int32 base_egg_steps = 21;
+  optional int32 base_happiness = 22;
+  optional int32 base_total = 23;
+  optional string capture_rate = 24;
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+  optional string classfication = 25;
+  optional int32 defense = 26;
+  optional int32 experience_growth = 27;
+  optional float height_m = 28;
+  optional int32 hp = 29;
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+  optional string japanese_name = 30;
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+  optional string name = 31;
+  optional float percentage_male = 32;
+  optional int32 pokedex_number = 33;
+  optional int32 sp_attack = 34;
+  optional int32 sp_defense = 35;
+  optional int32 speed = 36;
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+  optional string type1 = 37;
+  optional string type2 = 38;
+  optional float weight_kg = 39;
+  optional int32 generation = 40;
+  optional int32 is_legendary = 41;
+}

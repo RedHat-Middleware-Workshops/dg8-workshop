@@ -1,0 +1,498 @@
+
+Lets delve down into some of the basic features of a Red Hat Data Grid. Our workshop includes alot more indepth material going forward, but its important we set up a solid base with understanding more about Red Hat Data Grid and Infinispan. In this section we have a bunch of exercises that we will go through. 
+
+=== About your workspace environment today
+
+You will be using Red Hat CodeReady Workspaces, an online IDE based on Eclipe Che{:target="_blank"}{:target="_blank"}. Changes to files are auto-saved every You will be using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. *Changes to files are auto-saved every few seconds*, so you don’t need to explicitly save changes.
+
+To get started, {{ ECLIPSE_CHE_URL }}[access the Che instance, window=_blank] and log in using the username and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
+
+image::che-login.png[cdw, 700, align="center"]
+
+Once you log in, you’ll be placed on your personal dashboard. Click on the name of the pre-created workspace on the left, as shown below (the name will be different depending on your assigned number). You can also click on the name of the workspace in the center, and then click on the green button that says _Open_ on the top right hand side of the screen.
+
+This IDE is based on Eclipse Che (which is in turn based on MicroSoft VS Code editor).
+
+You can see icons on the left for navigating between project explorer, search, version control (e.g. Git), debugging, and other plugins.  You’ll use these during the course of this workshop. Feel free to click on them and see what they do:
+
+image::crw-icons.png[cdw, 400, align="center"]
+
+[NOTE]
+====
+If things get weird or your browser appears, you can simply reload the browser tab to refresh the view.
+====
+
+Many features of CodeReady Workspaces are accessed via *Commands*. You can see a few of the commands listed with links on the home page (e.g. _New File.._, _Git Clone.._, and others).
+
+If you ever need to run commands that you don't see in a menu, you can press kbd:[F1] to open the command window, or the more traditional kbd:[Control+SHIFT+P] (or kbd:[Command+SHIFT+P] on Mac OS X).
+
+Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
+
+image::gitclonepage.png[cdw, 600, align="center"]
+
+Step through the prompts, using the following value for **Repository URL**:
+
+[source, shell, role="copypaste"]
+----
+
+https://github.com/sshaaf/dg8-workshop.git
+
+----
+
+image::gitcloneembedded.png[crw, 600, align="center"]
+
+Next, select `$CHE_PROJECTS_ROOT` in the drop-down menu for destination directory:
+
+image::projectplace.png[crw, 600, align="center"]
+
+And click *Select Repository Location*.
+
+Once imported, choose **Add to workspace** when prompted.
+
+The project should now be imported into your workspace and as an example screenshot as below you should be able to see your project as well.`dg8-embedded-quarkus`
+
+image::workspaceview.png[crw, 800, align="center"]
+
+[NOTE]
+====
+The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right:
+====
+
+image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
+
+We will be doing the exercises in this section and for that we have a project called `dg8-exercises`, Open each exercise file e.g. Exercise1.java is for Exercise 1. There are a total of 6 exercises and we will walk through the different concepts.
+
+
+[IMPORTANT]
+====
+Also important, in case you run one of your Exercise1 Commands, and compilation fails. You would want to run it at some point with the corrections. Just click the command again from the MyWorkspace menu and you will see the following dialog box, Click `Restart Task`.
+==== 
+image::reruntask.png[codeready-workspace-rerun, align="center"]
+
+
+[IMPORTANT]
+====
+Where you see the // TODO Comment in the code snippets, you will see the same in the Exercise java files. Your task is to write that code in the Exercise java file under the right //TODO
+
+** Make sure that you uncomment the code before you start your exercise; the uncomment marks are should be marked as follows
+
+*UNCOMMENT When starting this exercise*
+====
+
+
+=== Exercise 1: Creating a local Cache
+First a bit about Maps. Why Maps are good for Cache? Maps are fast, they use methods like hashcode() and equals to determine how to add data to the map. Which also means they can be fast enough to O(1) time to read and write the data. That is excpetional performance, and thats exactly what you want from a cache. Data storage is in Key and Value pairs. So you have a key which is unique to your value. There is a lot more to Maps, but lets start with a basic Cahce how-to.
+
+A CacheManager is the primary mechanism for retrieving a Cache instance, and is often used as a starting point to using the Cache.
+Essentially if you were using a Map object you would just create a Map and store all your K,V in it. However when you use a tool like Red Hat Data Grid/Inifinispan you get more then just a simple map e.g. Listeners, events etc. all of which we will talk about in further sections. 
+
+CacheManagers are heavyweight objects, and its not recommended to have more than one CacheManager being used per JVM (unless specific configuration requirements require more than one; but either way, this would be a minimal and finite number of instances). 
+
+Add the following to your main method in class Exercise1
+
+[source, java, role="copypaste"]
+----
+    // TODO: Construct a simple local cache manager with default configuration
+    DefaultCacheManager cacheManager = new DefaultCacheManager();
+----
+
+Now that we have cacheManager, we can now define what a Cache should look like. We could choose many features from the system, e.g. if we were adding grouping, streams, listeners, strategies for eviction or clustering etc, we would do that here. The following example just takes the default configuration
+
+[source, java, role="copypaste"]
+----
+    // TODO: Define local cache configuration
+    cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+----
+
+Perfect so now we have defined our Cache, time for us to get that cache from our CacheManager. We have also defined that our Cache will have both our Key and Value as Strings.
+
+[source, java, role="copypaste"]
+----
+    // TODO: Obtain the local cache
+    Cache<String, String> cache = cacheManager.getCache("local");
+----
+
+Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
+[source, java, role="copypaste"]
+----
+    // TODO: Store a value
+    cache.put("key", "value");
+----
+
+Here we will get the value by specifying the key. here the key will be the same as we used in our previous line `cache.put`; By specifying a key to the Cache, you can get the value stored in it; the same process is also use for an update.
+[source, java, role="copypaste"]
+----
+    // TODO: Retrieve the value and print it out
+    System.out.printf("key = %s\n", cache.get("key"));
+----
+
+Finally CacheManager is a heavy object, it does alot, so no need to keep it going on. When done, we close that instance by calling the `stop()` method.
+
+[source, java, role="copypaste"]
+----
+    // TODO: Stop the cache manager and release all resources
+    cacheManager.stop();
+----
+
+Great so, now we have typed all our code. lets try to run this example.
+
+Open a terminal in your CodeReady Workspace, you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal` and a terminal should open in your browser. You can also choose to execute the command `Exercise1` in your MyWorkspace Menu on the right
+
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise1
+----
+
+You should be able to see an output similar to the following.
+[source, shell, role="copypaste"]
+----
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
+Apr 13, 2020 5:34:46 PM org.infinispan.factories.GlobalComponentRegistry preStart
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 5:34:46 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+key = value
+----
+
+=== Exercise 2: JSR-107 JCache
+The term Cache is generally reffered to a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple java.util packages do now have all the capabilities required and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to defind temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed usecases.
+
+Lets take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan
+
+[source, java, role="copypaste"]
+----
+        // TODO: Construct a simple local cache manager with default configuration
+        CachingProvider jcacheProvider = Caching.getCachingProvider();
+        CacheManager cacheManager = jcacheProvider.getCacheManager();
+        MutableConfiguration<String, String> configuration = new MutableConfiguration<>();
+        configuration.setTypes(String.class, String.class);
+        
+        // TODO: create a cache using the supplied configuration
+        Cache<String, String> cache = cacheManager.createCache("myCache", configuration);
+----
+Lets take a more indepth look at the code above
+<1> We use a CachingProvider which is part of the standards API. 
+<2> The Caching provider inturn gives us a cacheManager.
+<3> We create a configuration object for our Cache. A MutlableConfiguration
+<4> and here we also set the Type of our Cache, if you remember this is different from our previous exercise, since we are using the JSR-107 API now.
+<5> and finally we get our cache
+
+
+
+Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
+[source, java, role="copypaste"]
+----
+        // Store and retrieve value
+        cache.put("key", "value");
+        System.out.printf("key = %s\n", cache.get("key"));
+----
+
+And then lets close our CacheManager.
+[source, java, role="copypaste"]
+----
+        // TODO: Stop the cache manager and release all resources
+        cacheManager.close();
+----
+
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise2
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, shell, role="copypaste"]
+----
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
+Apr 13, 2020 6:17:56 PM org.infinispan.factories.GlobalComponentRegistry preStart
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 6:17:56 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+key = value
+----
+
+
+=== Exercise 3: Functional API
+The approach taken by the Functional Map API when working with multiple keys is to provide a lazy, pull-style API. All multi-key operations take a collection parameter which indicates the keys to work with (and sometimes contain value information too), and a function to execute for each key/value pair. Each function’s ability depends on the entry view received as function parameter, which changes depending on the underlying map: ReadEntryView for ReadOnlyMap, WriteEntryView for WriteOnlyMap, or ReadWriteView for ReadWriteMap. The return type for all multi-key operations, except the ones from WriteOnlyMap, return an instance of Traversable which exposes methods for working with the returned data from each function execution. Let’s see an example:
+
+- This example demonstrates some of the key aspects of working with multiple entries using the Functional Map API:
+- As explained in the previous blog post, all data-handling methods (including multi-key methods) for WriteOnlyMap return CompletableFuture<Void>, because there’s nothing the function can provide that could not be computed in advance or outside the function.
+
+Normally, the order of the Traversable matches the order of the input collection though this is not currently guaranteed.
+
+There is a special type of multi-key operations which work on all keys/entries stored in Infinispan. The behaviour is very similar to the multi-key operations shown above, with the exception that they do not take a collection of keys (and/or values) as parameters:
+
+There’s a few interesting things to note about working with all entries using the Functional Map API:
+- When working with all entries, the order of the Traversable is not guaranteed.
+- Read-only’s keys() and entries() offer the possibility to traverse all keys and entries present in the cache. When traversing entries, both keys and values including metadata are available. Contrary to Java’s ConcurrentMap, there’s no possibility to navigate only the values (and metadata) since there’s little to be gained from such method and once a key’s entry has been retrieved, there’s no extra cost to provide the key as well.
+
+
+Lets start by initializing our Cache with the DefaultCacheManager as we have done so in the previous labs. However we will use the functional API and hence after getting the Cache our Map implementation will be different. How to use the Functional API? 
+Using an asynchronous API, all methods that return a single result, return a CompletableFuture which wraps the result. To avoid blocking, it offers the possibility to receive callbacks when the CompletableFuture has completed, or it can be chained or composes with other CompletableFuture instances. 
+
+[source, java, role="copypaste"]
+----
+        DefaultCacheManager cacheManager = new DefaultCacheManager();
+        cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+        AdvancedCache<String, String> cache = cacheManager.<String, String>getCache("local").getAdvancedCache();
+        FunctionalMapImpl<String, String> functionalMap = FunctionalMapImpl.create(cache);
+        FunctionalMap.WriteOnlyMap<String, String> writeOnlyMap = WriteOnlyMapImpl.create(functionalMap);<1>
+        FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
+----
+
+Next what you would want to do is asynchronously write to this Cache.
+
+[source, java, role="copypaste"]
+----
+        // TODO Execute two parallel write-only operation to store key/value pairs
+        CompletableFuture<Void> writeFuture1 = writeOnlyMap.eval("key1", "value1",
+                (v, writeView) -> writeView.set(v)); <1>
+        CompletableFuture<Void> writeFuture2 = writeOnlyMap.eval("key2", "value2",
+                (v, writeView) -> writeView.set(v));
+----
+
+<1> Write-only operations require locks to be acquired but crucially they do not require reading previous value or metadata parameter information associated with the cached entry, which sometimes can be expensive since they involve talking to a remote node in the cluster or the persistence layer So, exposing write-only operations makes it easy to take advantage of this important optimisation.
+
+
+
+And now lets do a read operation in similar 
+[source, java, role="copypaste"]
+----
+        //TODO When each write-only operation completes, execute a read-only operation to retrieve the value
+        CompletableFuture<String> readFuture1 =
+                writeFuture1.thenCompose(r -> readOnlyMap.eval("key1", EntryView.ReadEntryView::get)); <1>
+        CompletableFuture<String> readFuture2 =
+                writeFuture2.thenCompose(r -> readOnlyMap.eval("key2", EntryView.ReadEntryView::get));
+----
+<1> Exposes read-only operations that can be executed against the functional map. The information that can be read per entry in the functional map. Read-only operations have the advantage that no locks are acquired for the duration of the operation.
+
+Finally lets print the operation as it completes.
+
+[source, java, role="copypaste"]
+----    
+        //TODO When the read-only operation completes, print it out
+        System.out.printf("Created entries: %n");
+        CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) ->
+                System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
+
+        // Wait for this read/write combination to finish
+        end.get();
+----
+
+So we have seen how a WriteOnly and ReadOnly Map works, lets also add the ReadWriteMap
+Read-write operations offer the possibility of writing values or metadata parameters, and returning previously stored information. Read-write operations are also crucial for implementing conditional, compare-and-swap (CAS) like operations. Locks are acquired before executing the read-write lambda. 
+
+[source, java, role="copypaste"]
+----
+        //TODO Create a read-write map
+        FunctionalMap.ReadWriteMap<String, String> readWriteMap = ReadWriteMapImpl.create(functionalMap);
+
+        // Use read-write multi-key based operation to write new values
+        // together with lifespan and return previous values
+        Map<String, String> data = new HashMap<>();
+        data.put("key1", "newValue1");
+        data.put("key2", "newValue2");
+        Traversable<String> previousValues = readWriteMap.evalMany(data, (v, readWriteView) -> {
+            String prev = readWriteView.find().orElse(null);
+            readWriteView.set(v, new MetaLifespan(Duration.ofHours(1).toMillis()));
+            return prev;
+        });
+----
+
+Now lets run our code and see how it works
+
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise3
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, shell, role="copypaste"]
+----
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 9:24:12 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Created entries: 
+key1 = value1
+key2 = value2
+Updated entries: 
+ReadOnlySnapshotView{key=key1, value=newValue1, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
+ReadOnlySnapshotView{key=key2, value=newValue2, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
+Previous entry values: 
+value1
+value2
+----
+
+=== Exercise 4: Streaming data from the Cache
+
+With Red Hat Data Grid/Infinispan you can use the Java Streams API and calculate analytics on exisiting data. Infinispan offers a simple way of passing lamdbas that do not need explicit casting and are Serializable. The ability to execute these streams in a distributed fashion they are serialized in a binary format.
+
+ Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through overloading of methods, Infinispan is able to offer a simple way of passing lambdas that are made to be Serializable without the need of explicit casting. Being able to produce binary formats for the lambdas is an important step for java streams executions to be distributed. 
+
+With the following we create a lambda to write data into our cache
+
+[source, java, role="copypaste"]
+----
+        // TODO: Store some values
+        int range = 10;
+        IntStream.range(0, range).boxed().forEach(i -> cache.put(i + "-key", i + "-value"));
+----
+
+And now we read that data summing up the values.
+[source, java, role="copypaste"]
+----
+        // TODO: Map and reduce the keys
+        int result = cache.keySet().stream()
+                .map(e -> Integer.valueOf(e.substring(0, e.indexOf("-"))))
+                .collect(() -> Collectors.summingInt(i -> i.intValue()));
+        System.out.printf("Result = %d\n", result);
+----
+
+Now lets run our code and see how it works
+
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise4
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, shell, role="copypaste"]
+----
+Apr 13, 2020 9:32:53 PM org.infinispan.factories.GlobalComponentRegistry preStart
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 9:32:53 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Result = 45
+----
+
+=== Exercise 5: Using Transactions
+
+Transactions are important in any business application. Usually transaction is used with dataset, and quite often related to a database, but thats not exactly true, if you have a distributed dataset, you will need transations for your business logic to prevail. Infinspan provides transations. You might have a scenario where the cluster adds a node, or where an entry has been written on another node. The infinispan transaction manager is aware of such events and handles them. You can read more about the design of transactions here: https://github.com/infinispan/infinispan-designs
+
+Lets get the TransactionManager from the cache
+[source, java, role="copypaste"]
+----
+    //TODO Obtain the transaction manager
+    TransactionManager transactionManager = cache.getAdvancedCache().getTransactionManager();
+----
+
+We begin our transaction , write two entries and then close it.
+
+[source, java, role="copypaste"]
+----
+        // TODO Perform some operations within a transaction and commit it
+        transactionManager.begin();
+        cache.put("key1", "value1");
+        cache.put("key2", "value2");
+        transactionManager.commit();
+----
+
+Lets also do a rollback scenario. So we write to entries and rollback
+
+[source, java, role="copypaste"]
+----
+        //TODO Perform some operations within a transaction and roll it back
+        transactionManager.begin();
+        cache.put("key1", "value3");
+        cache.put("key2", "value4");
+        transactionManager.rollback();
+----
+
+Now lets run our code and see how it works
+
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise5
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, shell, role="copypaste"]
+----
+INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
+Apr 13, 2020 9:40:50 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Apr 13, 2020 9:40:50 PM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
+INFO: ISPN000104: Using EmbeddedTransactionManager
+key1 = value1
+key2 = value2
+key1 = value1
+key2 = value2
+----
+
+So as you can see even though we wrote the new values, but by rolling back, they do not exist anymore. This is an awesome feature to have Transactions over the cache.
+
+
+=== Exercise 6: Queries to the Cache with Lucene
+Infinispan includes a highly scalable distributed Apache Lucene Directory implementation.
+
+This directory closely mimics the same semantics of the traditional filesystem and RAM-based directories, being able to work as a drop-in replacement for existing applications using Lucene and providing reliable index sharing and other features of Infinispan like node auto-discovery, automatic failover and rebalancing, optionally transactions, and can be backed by traditional storage solutions as filesystem, databases or cloud store engines.
+
+The implementation extends Lucene’s org.apache.lucene.store.Directory so it can be used to store the index in a cluster-wide shared memory, making it easy to distribute the index. Compared to rsync-based replication this solution is suited for use cases in which your application makes frequent changes to the index and you need them to be quickly distributed to all nodes. Consistency levels, synchronicity and guarantees, total elasticity and auto-discovery are all configurable; also changes applied to the index can optionally participate in a JTA transaction, optionally supporting XA transactions with recovery.
+
+Since Lucene is part of infinispan, We need to make sure that we have the right configuration for it. 
+
+[source, java, role="copypaste"]
+----
+        // Create cache config
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.indexing().index(Index.ALL) <1>
+                .addProperty("default.directory_provider", "ram") <2> 
+                .addProperty("lucene_version", "LUCENE_CURRENT"); <3> 
+
+        // Obtain the cache
+        Cache<String, Person> cache = cacheManager.administration()
+                .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
+                .getOrCreateCache("cache", builder.build());
+----
+
+<1> Here we are telling our Cache config that we want to index all entries
+<2> The storage for lucene will in the memory
+<3> and we want to give it a version
+
+Now lets add a bit of more code to the above example. 
+In the following code we get the QueryFactory and create a query. 
+
+[source, java, role="copypaste"]
+----
+        // TODO: Obtain a query factory for the cache
+        QueryFactory queryFactory = Search.getQueryFactory(cache);
+        // Construct a query
+        Query query = queryFactory.from(Person.class).having("name").eq("William").toBuilder().build();
+        // Execute the query
+        List<Person> matches = query.list();
+
+----
+
+
+Now lets run our code and see how it works
+
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
+[source, shell, role="copypaste"]
+----
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass=org.acme.Exercise6
+----
+
+You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+[source, shell, role="copypaste"]
+----
+INFO: HSEARCH000034: Hibernate Search 5.10.7.Final-redhat-00001
+Apr 13, 2020 9:57:45 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+INFO: HCANN000001: Hibernate Commons Annotations {5.0.5.Final}
+Apr 13, 2020 9:57:45 PM org.infinispan.query.impl.LifecycleManager createQueryInterceptorIfNeeded
+INFO: ISPN014003: Registering Query interceptor for cache cache
+Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, surname=Shakespeare][
+----                
+
+Its quite simple to add lucene based search to your Cache. Try to change the parameters a bit and experience this more. 
+
+**Congratulations!!* you have completed the first introductory exercises to Red Hat Data Grid 8.0. Lets move on to the next section and experience more indepth examples.
+

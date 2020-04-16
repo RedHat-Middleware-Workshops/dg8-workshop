@@ -1,0 +1,6 @@
+package quickstart;
+
+message Game{
+    required string name = 2;
+    required string description = 3;
+}

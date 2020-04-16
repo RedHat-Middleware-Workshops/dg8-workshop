@@ -1,0 +1,8 @@
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: datagrid-service
+spec:
+  replicas: 2
+  expose:
+    type: LoadBalancer

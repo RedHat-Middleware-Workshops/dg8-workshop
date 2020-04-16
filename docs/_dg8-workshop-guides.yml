@@ -1,0 +1,34 @@
+id: "dg8-workshop"
+name: "Red Hat Data Grid - From zero to hero"
+
+content:
+  url: https://raw.githubusercontent.com/sshaaf/dg8-workshop.git/development
+
+vars:
+  ROUTE_SUBDOMAIN:
+  MASTER_URL:
+  CONSOLE_URL:
+  ECLIPSE_CHE_URL:
+  KEYCLOAK_URL:
+  GIT_URL:
+  CHE_USER_NAME:
+  CHE_USER_PASSWORD:
+  OPENSHIFT_USER_NAME:
+  OPENSHIFT_USER_PASSWORD:
+  RHAMT_URL:
+
+modules:
+  activate:
+  - about
+  - settingup
+  - dgin10mins
+  - exercises
+  - embedded
+  - embeddedclustered
+  - installation
+  - remotecache
+  - restapi
+  - sessionexternalization
+  - conclusion
+  - appendix
+  - references
