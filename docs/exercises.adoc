@@ -73,6 +73,10 @@ image::reruntask.png[codeready-workspace-rerun, align="center"]
 [IMPORTANT]
 ====
 Where you see the // TODO Comment in the code snippets, you will see the same in the Exercise java files. Your task is to write that code in the Exercise java file under the right //TODO
+
+** Make sure that you uncomment the code before you start your exercise; the uncomment marks are should be marked as follows
+
+*UNCOMMENT When starting this exercise*
 ====
 
 
