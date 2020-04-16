@@ -18,6 +18,7 @@ We are going to add the following lines of code to our onStart method
         cacheManager = new DefaultCacheManager(global.build());
 ----
 
+Copy the and replace the onStart method in our ScoreService.java
 
 [source, java, role="copypaste"]
 ----
@@ -25,11 +26,11 @@ We are going to add the following lines of code to our onStart method
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
         global.transport().clusterName("ScoreCard");
         cacheManager = new DefaultCacheManager(global.build());
-        
+
         ConfigurationBuilder config = new ConfigurationBuilder();
 
-        config.expiration().lifespan(5, TimeUnit.MINUTES);
-                .clustering().cacheMode(CacheMode.REPL_SYNC)
+        config.expiration().lifespan(5, TimeUnit.MINUTES)
+                .clustering().cacheMode(CacheMode.DIST_SYNC);
 
         cacheManager.defineConfiguration("scoreboard", config.build());
         scoreCache = cacheManager.getCache("scoreboard");
@@ -40,7 +41,13 @@ We are going to add the following lines of code to our onStart method
 
     }
 ----
+<1> We define a global configuration, since we are going to be in a clustered mode, hence everytime a new instance of our app will be created it will have the global configuration parameters to talk to the other nodes if they are present.
 
+<2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks, which define properties for either UDP or TCP protocols. Here we have defined a unique clusterName for our app's embedded cache
+
+<3> We setup a distributed cache, which means that not all our nodes will have all the keys. 
+
+We will take a look into replicaiton and distribution furhter in this lab.
 
 Also open the CacheListener and make sure that the following line is changed to `@Listener(clustered = true)`
 [source, java, role="copypaste"]
@@ -48,16 +55,36 @@ Also open the CacheListener and make sure that the following line is changed to 
 @Listener
 ----
 
-By doing this we are making sure we have a clustered listener.
+By doing this we are making sure we have a clustered listener. And that we can listen to the cross cluster events. so we know exactly in case of key distribution.
 
 This all looks in order. lets compile our application. 
 
-Open a terminal from the right hand "MyWorkspace" menu.
+[NOTE]
+====
+It is suggested that at this moment you close all terminal windows that you might have opened in the previous labs. to keep a clear view of our lab
+====
 
-[source, shell, role="copypaste"]
-----
-mvn compile package
-----
+
+A quick look at our side bar menu on the right called `MyWorkspace`
+
+image::codeready-workspace-terminal.png[cdw, 400, align="center"]
+
+
+We will use this menu through out the labs. There is a bunch of commands created specifically for this workshop.
+
+First lets login to Openshift. You will find the button in the right corner in MyWorkspace menu. 
+Click `Login to Openshift` 
+
+Lets run our project click on the Command `Emebdded - Start Live Coding`
+This will enable Live coding, it will open up a small terminal to build your artifact and then open up a browser view
+
+Make sure you click on the Openlink 
+
+image::openlinkbox.png[cdw, 800, align="center"]
+
+You can also click on the link icon in the browser view, which will open a browser tab.
+
+image::embeddedprojectliveview.png[cdw, 800, align="center"]
 
 If all of this is working lets make sure we can deploy this applicaiton. 
 
@@ -88,7 +115,14 @@ quarkus.kubernetes-client.trust-certs=true <2>
 
 Now go to your MyWorkspace menu and Login to Openshift. 
 
-Perfect everything is inorder. 
+Perfect everything is inorder. Make sure you are logged into openshift. If you are not sure. You can run the following command in your terminal.
+[source, shell, role="copypaste"]
+----
+oc whoami
+----
+
+The command should return your user name: {{ USER_ID }} , is you are logged in.
+
 
 Lets first create an image namespace for our application
 
@@ -110,16 +144,40 @@ Also remmember next time we need to deploy we just need to run the above deploy 
 
 Lets wait for this build to be successfull! 
 
+=== Openshift Console
+First, open a new browser with the link:{{ CONSOLE_URL }}[OpenShift web console^]
 
-Now log into to the openshift console and navigate to your newly created project lab2
+image::openshift_login.png[openshift_login, 700]
+
+Login using:
+
+* Username: `{{ USER_ID }}`
+* Password: `{{ OPENSHIFT_USER_PASSWORD }}!`
+
+[NOTE]
+====
+When you access the link:{{ CONSOLE_URL }}[OpenShift web console] or other URLs via _HTTPS_ protocol, you might see browser warnings like `Your Connection is not secure` since this workshop uses self-signed certificates (which you should not do in production!). For example, if you’re using *Chrome*, to accept the warning, Click on `Advanced` then `Proceed to...` to access the page.
+====
+
+Other modern browsers most likely have similar procedures to accept the security exception.
+
+
 You should see something as follows 
+
+image::openshiftprojectview.png[Caching, 900]
+
+
+Click on the project name and you should see something similar
 
 image::lab2ocpoverview.png[Caching, 900]
 
+Click on resources, And at the bottom you will see the route to your application. You can also click at the route and it will take you to the application page, same as we have done in the previous lab. if append /api to the url you will be on the api endpoint.
 
-Click on resources, And at the bottom you will see the route to your application. 
+Now go back to the overview page for the applicaiton and Click on the pod scaler and scale to 2 pods.
 
-Now open another terminal and change to the scripts directory
+image::lab2podscaler.png[Caching, 900]
+
+Now open another terminal in CodeReady workspaces and change to the scripts directory
 
 [source, shell, role="copypaste"]
 ----
@@ -135,20 +193,18 @@ and run load.sh
 
 Go back to the resrouce view of your application and then click view logs, you should see something as follows. 
 
-image::lab2applogvieweventcreated.png[Caching, 900]
+Node1: 
 
-Notice that the event has been recieved for Created entry.
+image::distsyncnode1.png[Caching, 900]
 
-Now go back to the overview page for the applicaiton and Click on the pod scaler and scale to 2 pods.
+Node2: 
 
-image::lab2podscaler.png[Caching, 900]
+image::distsyncnode2.png[Caching, 900]
 
-Go back to the resrouce view of your application and then click view logs for the newly created pod, you should see something as follows. 
+Notice in the above screenshots how the keys are distributed between the two nodes. 
 
-image::lab2applogvieweventcreated.png[Caching, 900]
-Notice that the event has been recieved for Created entry.
-
-This is because we have used the property replicated sync in our cache intiailization
+This wont be the case if we were replicating these entries. 
+So lets go ahead and setup a replicated cache instead. Open the score service and change the Cache config as shown below. Remember the onStart method has the configuration.
 
 [source, java, role="copypaste"]
 ----
@@ -156,12 +212,16 @@ This is because we have used the property replicated sync in our cache intiailiz
                 .clustering().cacheMode(CacheMode.REPL_SYNC)
 ----
 
-Open ScoreService and change the above to
+Before we deploy we also need to make sure that the Listener is no longer listening to events clusterwide. we want to listen to events only on the node they are happening on. For this lets make a small config change to our Listener annotation in our class CacheListener
+
 [source, java, role="copypaste"]
 ----
-        config.expiration().lifespan(5, TimeUnit.MINUTES)
-                .clustering().cacheMode(CacheMode.DIST_SYNC)
+@Listener(primaryOnly = false)
 ----
+It is possible in a non transactional cache to receive duplicate events. This is possible when the primary owner of a key goes down while trying to perform a write operation such as a put. Infinispan internally will rectify the put operation by sending it to the new primary owner for the given key automatically, however there are no guarantees in regards to if the write was first replicated to backups. Thus more than 1 of the following write events (CacheEntryCreatedEvent, CacheEntryModifiedEvent & CacheEntryRemovedEvent) may be sent on a single operation.
+
+
+Perfect, now we are all set to deploy again.
 
 Now lets deploy our application to Openshift
 
@@ -170,7 +230,19 @@ Now lets deploy our application to Openshift
 mvn clean package -Dquarkus.kubernetes.deploy=true
 ----
 
-Go through the same procedure with this new build as well, and see how the keys will now be distributed. you can add more data to the load.sh script to see more effects.
+<1> Scale the pods
+<2> run the load.sh script once the pods are running
+<3> Check the log files and you should see a similar output as below
+
+image::replicatedsyncmode.png[Caching, 900]
+
+=== Design Considerations
+Firstly, p2p deployments are simpler than client-server ones because in p2p, all peers are equals to each other and this simplifies deployment. If this is the first time you are using Infinispan, p2p is likely to be easier for you to get going compared to client-server.
+
+Client-server Infinispan requests are likely to take longer compared to p2p requests, due to the serialization and network cost in remote calls. So, this is an important factor to take in account when designing your application. For example, with replicated Infinispan caches, it might be more performant to have lightweight HTTP clients connecting to a server side application that accesses Infinispan in p2p mode, rather than having more heavyweight client side apps talking to Infinispan in client-server mode, particularly if data size handled is rather large. With distributed caches, the difference might not be so big because even in p2p deployments, you’re not guaranteed to have all data available locally.
+
+Environments where application tier elasticity is not important, or where server side applications access state-transfer-disabled, replicated Infinispan cache instances are amongst scenarios where Infinispan p2p deployments can be more suited than client-server ones.
+
 
 
 Congratulations we are at the end of this lab!
@@ -180,6 +252,7 @@ Congratulations we are at the end of this lab!
 <2> You learnt how to use ConfigurationBuilder and Configuration objects to define our Configurations for the Cache and CacheManager
 <3> You learnt about how to create and Embedded Cluster
 <4> You learnt how to deploy a Quarkus application with emebedded cache and scale it. 
+<5> You learnt the difference between Replicated and Distributed Cache and how clustering and listeners works.
 
 **Congratulations!!* you have completed the second lab of this workshop. Lets move to the next lab and learn how we can create a remote cache and how it can benefit our applications.
 

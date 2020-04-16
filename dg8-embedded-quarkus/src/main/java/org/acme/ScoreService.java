@@ -23,7 +23,7 @@ import org.infinispan.distribution.group.Grouper;
 import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
-
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 
 @ApplicationScoped
 public class ScoreService {

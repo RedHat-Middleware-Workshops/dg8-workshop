@@ -308,6 +308,12 @@ If you might have noticed at the class declaration we are using the following an
 <2> This means we only listen to JSON, this helps us to consume the JSON directly and serialize it into our Score POJO as an example.
 <3> and `api` is the path to our resource. e.g. localhost:8080/api
 
+
+[NOTE]
+====
+It is suggested that at this moment you close all terminal windows that you might have opened in the previous labs. to keep a clear view of our lab
+====
+
 === Run the Service
 
 A quick look at our side bar menu on the right called `MyWorkspace`
