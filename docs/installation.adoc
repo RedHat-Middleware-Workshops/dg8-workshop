@@ -15,7 +15,29 @@ Red Hat Data Grid 8.0 comes with an Operator. The administrators of the cluster 
 === Installing
 Assuming you have already logged in to openshift from the CodeReady terminal, if not you can do it now. Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. 
 
+First, open a new browser with the link:{{ CONSOLE_URL }}[OpenShift web console^]
 
+image::openshift_login.png[openshift_login, 700]
+
+Login using:
+
+* Username: `{{ USER_ID }}`
+* Password: `{{ OPENSHIFT_USER_PASSWORD }}!`
+
+Once Logged in, goto your project `{{ USER_ID }}-cache`
+Click the link Installed Operator on the left, as shown in the picture below.
+
+image::dg_operatorinstalled.png[openshift_login, 700]
+
+Notice that the DataGrid operator is already installed in your namespace. 
+
+image::dg_operatoroverview.png[openshift_login, 700]
+
+You can see there are no clusters installed in our namespace. Lets go ahead and do that. 
+
+You can press the `Create Infinispan` and create a CR (Custom Resource) from the console as well. 
+
+Or you can also follow the instructions to deploy a CR below.
 
 Lets start by installing a basic Red Hat Data Grid Cluster. 
 
@@ -35,11 +57,13 @@ Lets start by installing a basic Red Hat Data Grid Cluster.
 Create a file with name cr_minimal.yaml copy and paste the above defination and save it.
 
 Before applying this defination, lets take a look how its constructed. 
+
 <1> tells Kubernetes/Openshift that the Custom resource type is Infinispan
 <2> we specify the name of our cluster as datagrid-service
 <3> we specify the replicas we want for our service.
-<4> And finally we want this instance to be accessible from outside openshift. e.g. the console
+<4> And finally we want this instance to be accessible from outside openshift. e.g. the console;
 
+Also notice that we are calling our service `datagrid-service`, we will use this name in the following labs to access our cluster.
 
 Now from the terminal use the oc command line to apply it. 
 [source, shell, role="copypaste"]
@@ -54,4 +78,65 @@ You can watch the Red Hat Data Grid Operator creating the instances by running t
 oc get pods -w
 ----
 
-Perfect now we have a running Red Hat Data Grid cluster. 
+Above command should render a similar output as below
+
+[source, shell, role="copypaste"]
+----
+[jboss@workspacel7b3gw19zpoclvcu dg8-operator]$ oc get pods
+NAME                                   READY   STATUS      RESTARTS   AGE
+datagrid-service-0                     0/1     Running     0          43s
+infinispan-operator-5bb557597f-vl88n   1/1     Running     0          24h
+----
+
+
+[source, shell, role="copypaste"]
+----
+oc get services
+----
+
+The above command should render a similar output as shown in the example below. Showing all the services
+
+image::dg_operatorserviceview.png[openshift_login, 900]
+
+You can see that there are three datagrid-services, 
+
+- 1 for use within the cluster, 
+- 1 for ping service which ensures that the clusters are healthy and operational 
+- and lastly the external service, which we will use to goto the Admin console.
+
+Run the following command to get the loadbalancer address 
+
+[source, shell, role="copypaste"]
+----
+oc get services | grep datagrid-service-external | awk '{ print $4 }'
+----
+
+As you can see we have a service with our LoadBalancer. Lets get that url and paste it in the browser as follows
+
+The following is an example, your loadbalancer url might differ
+[source, shell, role="copypaste"]
+----
+http://ad6cd35d6e6aa46fcb96558204c35f08-872149037.us-east-1.elb.amazonaws.com:11222
+
+----
+
+If you try to access the url; you would need to provide credentials. 
+
+The datagrid operator creates the credentials during installation time and they should be stored in your namespace secrets. Lets get the secret with the following command.
+
+[source, shell, role="copypaste"]
+----
+oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode
+----
+
+And now the final test to check we have a running cluster; login with the username developer and the password from the above secret.
+
+image::dg_adminconsole.png[openshift_login, 900]
+
+
+=== Recap
+<1> You created your own CR
+<2> Deployed the CR to Openshift using the DataGrid operator
+<3> You installed your DataGrid instance
+
+**Congratulations!!* you have completed the first Datagrid installation of this workshop. Lets move to the next lab and learn how we can use this instance as a RemoteCache with a Quarkus Application.
