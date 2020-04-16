@@ -234,7 +234,9 @@ mvn clean package -Dquarkus.kubernetes.deploy=true
 <2> run the load.sh script once the pods are running
 <3> Check the log files and you should see a similar output as below
 
-image::replicatedsyncmode.png[Caching, 900]
+image::replicatedsyncnode.png[Caching, 900]
+
+Feel free to change the listner annotation in different modes and try out to see how the events are recieved. 
 
 === Design Considerations
 Firstly, p2p deployments are simpler than client-server ones because in p2p, all peers are equals to each other and this simplifies deployment. If this is the first time you are using Infinispan, p2p is likely to be easier for you to get going compared to client-server.
