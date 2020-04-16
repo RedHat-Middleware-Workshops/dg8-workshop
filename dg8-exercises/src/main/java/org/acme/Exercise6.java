@@ -14,6 +14,9 @@ import java.util.List;
 public class Exercise6 {
 
     public static void main(String[] args) {
+
+        /* UNCOMMENT When starting this exercise
+
         // Create cache manager
         DefaultCacheManager cacheManager = new DefaultCacheManager();
 
@@ -41,6 +44,8 @@ public class Exercise6 {
         matches.forEach(person -> System.out.printf("Match: %s", person));
         // Stop the cache manager and release all resources
         cacheManager.stop();
+
+        UNCOMMENT When starting this exercise */
     }
 
 }

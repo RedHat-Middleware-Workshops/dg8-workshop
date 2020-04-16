@@ -15,6 +15,8 @@ public class Exercise5 {
 
     public static void main(String[] args) throws Exception {
 
+        /* UNCOMMENT When starting this exercise
+
         // Construct a local cache manager
         DefaultCacheManager cacheManager = new DefaultCacheManager();
         // Create a transaction cache config
@@ -45,6 +47,9 @@ public class Exercise5 {
         
         // Stop the cache manager and release all resources
         cacheManager.stop();
+
+
+        UNCOMMENT When starting this exercise */
     }
 
 }

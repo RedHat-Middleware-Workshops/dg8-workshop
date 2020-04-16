@@ -21,7 +21,10 @@ import java.util.concurrent.CompletableFuture;
 public class Exercise3 {
 
     public static void main(String[] args) throws Exception {
-        DefaultCacheManager cacheManager = new DefaultCacheManager();
+      /* UNCOMMENT When starting this exercise
+
+      
+      DefaultCacheManager cacheManager = new DefaultCacheManager();
         cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
         AdvancedCache<String, String> cache = cacheManager.<String, String>getCache("local").getAdvancedCache();
         FunctionalMapImpl<String, String> functionalMap = FunctionalMapImpl.create(cache);
@@ -60,6 +63,8 @@ public class Exercise3 {
         // Finally, print out the previous entry values
         System.out.printf("Previous entry values: %n");
         previousValues.forEach(prev -> System.out.printf("%s%n", prev));
+
+        UNCOMMENT When starting this exercise */
     }
 
 }

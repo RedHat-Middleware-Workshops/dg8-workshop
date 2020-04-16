@@ -11,6 +11,9 @@ import org.infinispan.manager.DefaultCacheManager;
 public class Exercise4 {
 
     public static void main(String[] args) {
+       /* UNCOMMENT When starting this exercise
+
+
         // Construct a simple local cache manager with default configuration
         DefaultCacheManager cacheManager = new DefaultCacheManager();
         // Define local cache configuration
@@ -27,6 +30,8 @@ public class Exercise4 {
         System.out.printf("Result = %d\n", result);
         // Stop the cache manager and release all resources
         cacheManager.stop();
+
+        UNCOMMENT When starting this exercise */
     }
 
 }
