@@ -1,152 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>jcache-quarkus - 1.0.0-SNAPSHOT</title>
-    <style>
-        h1, h2, h3, h4, h5, h6 {
-            margin-bottom: 0.5rem;
-            font-weight: 400;
-            line-height: 1.5;
-        }
+    <meta charset="utf-8"/>
+    <title>Game REST service</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+        var app = angular.module("GameManagement", []);
 
-        h1 {
-            font-size: 2.5rem;
-        }
+        //Controller Part
+        app.controller("GameManagementController", function ($scope, $http) {
 
-        h2 {
-            font-size: 2rem
-        }
+            //Initialize page with default data which is blank in this example
+            $scope.games = [];
 
-        h3 {
-            font-size: 1.75rem
-        }
+            $scope.form = {
+                card: "",
+                course: "",
+                currentHole: "",
+                playerId: "",
+                playerName: "",
+                totalScore: ""
+            };
 
-        h4 {
-            font-size: 1.5rem
-        }
+            //Now load the data from server
+            _refreshPageData();
 
-        h5 {
-            font-size: 1.25rem
-        }
+            //HTTP POST methods for add games
+            $scope.add = function () {
 
-        h6 {
-            font-size: 1rem
-        }
+                var data = { "card": $scope.form.card.split(","), "course": $scope.form.course, "currentHole": $scope.form.currentHole, "playerId": $scope.form.playerId, "playerName": $scope.form.playerName };
 
-        .lead {
-            font-weight: 300;
-            font-size: 2rem;
-        }
+                $http({
+                    method: "POST",
+                    url: '/api',
+                    data: angular.toJson(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(_success, _error);
+            };
 
-        .banner {
-            font-size: 2.7rem;
-            margin: 0;
-            padding: 2rem 1rem;
-            background-color: #00A1E2;
-            color: white;
-        }
+            /* Private Methods */
+            //HTTP GET- get all games collection
+            function _refreshPageData() {
+                $http({
+                    method: 'GET',
+                    url: '/api'
+                }).then(function successCallback(response) {
+                    $scope.games = response.data;
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
 
-        body {
-            margin: 0;
-            font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-        }
+            function _success(response) {
+                _refreshPageData();
+                _clearForm();
+            }
 
-        code {
-            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 87.5%;
-            color: #e83e8c;
-            word-break: break-word;
-        }
+            function _error(response) {
+                alert(response.data.message || response.statusText);
+            }
 
-        .left-column {
-            padding: .75rem;
-            max-width: 75%;
-            min-width: 55%;
-        }
-
-        .right-column {
-            padding: .75rem;
-            max-width: 25%;
-        }
-
-        .container {
-            display: flex;
-            width: 100%;
-        }
-
-        li {
-            margin: 0.75rem;
-        }
-
-        .right-section {
-            margin-left: 1rem;
-            padding-left: 0.5rem;
-        }
-
-        .right-section h3 {
-            padding-top: 0;
-            font-weight: 200;
-        }
-
-        .right-section ul {
-            border-left: 0.3rem solid #00A1E2;
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-    </style>
+            //Clear the form
+            function _clearForm() {
+                $scope.form.name = "";
+                $scope.form.description = "";
+                $scope.form.card = "";
+                $scope.form.course = "";
+                $scope.form.currentHole = "";
+                $scope.form.playerId = "";
+                $scope.form.playerName = "";
+                $scope.form.totalScore = "";
+            }
+        });
+    </script>
 </head>
-<body>
-
-<div class="banner lead">
-    Your new Cloud-Native application is ready!
-</div>
+<body ng-app="GameManagement" ng-controller="GameManagementController">
 
 <div class="container">
-    <div class="left-column">
-        <p class="lead"> Congratulations, you have created a new Quarkus application.</p>
+    <h1>Score your golf round!</h1>
 
-        <h2>Why do you see this?</h2>
+    <h3>Score Cards</h3>
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="col-4">Player Name</th>
+                <th class="col-2">PlayerId</th>
+                <th class="col-8">Course</th>
+                <th class="col-20">Score Card</th>
+                <th class="col-2">Current Hole</th>
+                <th class="col-2">Total Score</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="game in games">
+                <td class="col-8">{{ game.playerName }}</td>
+                <td class="col-8">{{ game.playerId }}</td>
+                <td class="col-8">{{ game.course }}</td>
+                <td class="col-20">{{ game.card }}</td>
+                <td class="col-8">{{ game.currentHole }}</td>
+                <td class="col-8">{{ game.totalScore }}</td>
+            </tr>
 
-        <p>This page is served by Quarkus. The source is in
-            <code>src/main/resources/META-INF/resources/index.html</code>.</p>
+            </tbody>
+        </table>
 
-        <h2>What can I do from here?</h2>
-
-        <p>If not already done, run the application in <em>dev mode</em> using: <code>mvn compile quarkus:dev</code>.
-        </p>
-        <ul>
-            <li>Add REST resources, Servlets, functions and other services in <code>src/main/java</code>.</li>
-            <li>Your static assets are located in <code>src/main/resources/META-INF/resources</code>.</li>
-            <li>Configure your application in <code>src/main/resources/application.properties</code>.
-            </li>
-        </ul>
-
-        <h2>How do I get rid of this page?</h2>
-        <p>Just delete the <code>src/main/resources/META-INF/resources/index.html</code> file.</p>
     </div>
-    <div class="right-column">
-        <div class="right-section">
-            <h3>Application</h3>
-            <ul>
-                <li>GroupId: org.acme</li>
-                <li>ArtifactId: jcache-quarkus</li>
-                <li>Version: 1.0.0-SNAPSHOT</li>
-                <li>Quarkus Version: 1.3.1.Final</li>
-            </ul>
-        </div>
-        <div class="right-section">
-            <h3>Next steps</h3>
-            <ul>
-                <li><a href="https://quarkus.io/guides/maven-tooling.html" target="_blank">Setup your IDE</a></li>
-                <li><a href="https://quarkus.io/guides/getting-started.html" target="_blank">Getting started</a></li>
-                <li><a href="https://quarkus.io" target="_blank">Quarkus Web Site</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
 
+
+    <h3>Add a new Round</h3>
+    <form ng-submit="add()">
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="5,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ng-model="form.card" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Course" ng-model="form.course" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Current hole e.g. 2" ng-model="form.currentHole" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Player Id e.g. 1" ng-model="form.playerId" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Player Name" ng-model="form.playerName" size="60"/></div>
+        </div>
+        <input type="submit" value="Save"/>
+    </form>
 
 </body>
 </html>

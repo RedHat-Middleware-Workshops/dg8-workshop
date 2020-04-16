@@ -51,7 +51,7 @@ Once imported, choose **Add to workspace** when prompted.
 
 The project should now be imported into your workspace and as an example screenshot as below you should be able to see your project as well.`dg8-embedded-quarkus`
 
-image::workspaceview.png[crw, 600, align="center"]
+image::workspaceview.png[crw, 800, align="center"]
 
 [NOTE]
 ====
@@ -61,6 +61,13 @@ The Terminal window in CodeReady Workspaces. You can open a terminal window for 
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
 
 We will be doing the exercises in this section and for that we have a project called `dg8-exercises`, Open each exercise file e.g. Exercise1.java is for Exercise 1. There are a total of 6 exercises and we will walk through the different concepts.
+
+
+[IMPORTANT]
+====
+Also important, in case you run one of your Exercise1 Commands, and compilation fails. You would want to run it at some point with the corrections. Just click the command again from the MyWorkspace menu and you will see the following dialog box, Click `Restart Task`.
+==== 
+image::reruntask.png[codeready-workspace-rerun, align="center"]
 
 
 [IMPORTANT]
@@ -125,7 +132,7 @@ Finally CacheManager is a heavy object, it does alot, so no need to keep it goin
 
 Great so, now we have typed all our code. lets try to run this example.
 
-Open a terminal in your CodeReady Workspace, you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal` and a terminal should open in your browser.
+Open a terminal in your CodeReady Workspace, you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal` and a terminal should open in your browser. You can also choose to execute the command `Exercise1` in your MyWorkspace Menu on the right
 
 [source, shell, role="copypaste"]
 ----
@@ -184,7 +191,7 @@ And then lets close our CacheManager.
         cacheManager.close();
 ----
 
-Run the above exercise as follows in the CodeReady terminal
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
@@ -292,7 +299,7 @@ Read-write operations offer the possibility of writing values or metadata parame
 
 Now lets run our code and see how it works
 
-Run the above exercise as follows in the CodeReady terminal
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
@@ -343,7 +350,7 @@ And now we read that data summing up the values.
 
 Now lets run our code and see how it works
 
-Run the above exercise as follows in the CodeReady terminal
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
@@ -395,7 +402,7 @@ Lets also do a rollback scenario. So we write to entries and rollback
 
 Now lets run our code and see how it works
 
-Run the above exercise as follows in the CodeReady terminal
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
@@ -463,7 +470,7 @@ In the following code we get the QueryFactory and create a query.
 
 Now lets run our code and see how it works
 
-Run the above exercise as follows in the CodeReady terminal
+Run the above exercise as follows in the CodeReady terminal or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
     mvn clean compile
