@@ -229,13 +229,6 @@ done
 
 === Query the data
 
-Get Pokemon by key (name)
-
-[source, url, role="copypaste"]
-----
-    $LB/rest/v2/caches/pokemon/Whismur
-----
-
 Get all Pokemons: 
 
 [source, url, role="copypaste"]
@@ -263,6 +256,13 @@ Select top 5 Pokemons that can better withstand fire:
 [source, url, role="copypaste"]
 ----
   $LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5
+----
+
+Get Pokemon by key (name)
+
+[source, url, role="copypaste"]
+----
+    $LB/rest/v2/caches/pokemon/Whismur
 ----
 
 
