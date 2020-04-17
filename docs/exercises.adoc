@@ -5,7 +5,7 @@ Lets delve down into some of the basic features of a Red Hat Data Grid. Our work
 
 You will be using Red Hat CodeReady Workspaces, an online IDE based on Eclipe Che{:target="_blank"}{:target="_blank"}. Changes to files are auto-saved every You will be using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. *Changes to files are auto-saved every few seconds*, so you don’t need to explicitly save changes.
 
-To get started, {{ ECLIPSE_CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
+To get started, {{ CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
 
 image::che-login.png[cdw, 700, align="center"]
 
