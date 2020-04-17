@@ -5,9 +5,6 @@ In this lab, we'll develop how to externalize *HTTP Sessions* from *Spring Boot*
 
 === 1. Developing EmbeddedCache Service
 
-The _embeddedCache service_ will retrieve demonstrates how to externalize Spring Session to Data Grid using SpringRemoteCacheManager or SpringEmbeddedCacheManager. 
-            It contains two components: the <code>session</code> service and <code>DataGrid</code>.
-
 The _embeddedCache service_ allows Spring Boot application to emded the HttpSession data at in-memory data storage when users invoke RESTful endpoints in the frontend web page. Lets’s go through quickly how the embeddedCache service gets REST services to address *Spring Session* with *In-Memory Cache* with *Red Hat Data Grid 8*. Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
 
 image::codeready-workspace-embeddedCache-project.png[embeddedCache, 700]
