@@ -1,107 +1,211 @@
-Red Hat Single Sign-On is an integrated sign-on solution available as a Red Hat JBoss Middleware for OpenShift containerized image. The Red Hat Single Sign-On for OpenShift image provides an authentication server for users to centrally log in, log out, register, and manage user accounts for web applications, mobile applications, and RESTful web services.
+= Lab10 - Externalizing Sessions
+:experimental:
 
-Red Hat offers multiple OpenShift application templates utilizing the Red Hat Single Sign-On for OpenShift image version number 7.3.3.GA. 
+In this lab, we'll develop how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. It allows Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_ which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scene, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
 
-=== What are OpenShift Templates?
+=== 1. Developing EmbeddedCache Service
 
-A template describes a set of objects that can be parameterized and processed to produce a list of objects for creation by OpenShift Container Platform. A template can be processed to create anything you have permission to create within a project, for example services, build configurations, and deployment configurations. A template may also define a set of labels to apply to every object defined in the template.
+The _embeddedCache service_ allows Spring Boot application to emded the HttpSession data at in-memory data storage when users invoke RESTful endpoints in the frontend web page. Lets’s go through quickly how the embeddedCache service gets REST services to address *Spring Session* with *In-Memory Cache* with *Red Hat Data Grid 8*. Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
 
-You can create a list of objects from a template using the CLI or, if a template has been uploaded to your project or the global template library, using the web console. For a curated set of templates, see the OpenShift Image Streams and Templates library OpenShift Image Streams and https://github.com/openshift/library[Templates library].
+image::codeready-workspace-embeddedCache-project.png[embeddedCache, 700]
 
-We will be deploying Red Hat SSO from one of the templates. Also in one of the later sections we will create a custom image from the default imagestream provided by Red Hat SSO and apply it with our own Custom template. 
+There’re a few interesting things what we need to take a look at this Spring Boot application before we will develop it in CodeReady Workspaces.
 
-Following are some more details about Red Hat SSO templates and their purpose. 
-The reason for having multiple templates is to service different customer use cases. 
-Red Hat SSO and Keycloak are used vastly and in different indesutries thereby it can fit into many use cases. Whether the customer uses OIDC or SAML i.e. using new and modern appliction architectures or connecting to legacy applications. Red Hat SSO has the capabilities to be the Single Sign On solution. More to come, stay tuned!
+This embeddedCache service is not using the default BOM (Bill of material) that Spring Boot projects typically use. Instead, we are using an Infinispan BOM provided by Red Hat that provides a high-level API to ensure compatibility between major versions of Data Grid. You can also enforce a specific version of Data Grid with the infinispan-bom module. Let's take a look at *infinispan-bom* to your `pom.xml` file as follows:
 
+[source,xml]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-bom</artifactId>
+            <version>${version.infinispan}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>transaction-api</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+            <version>1.1.0.redhat-1</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+----
 
-These define the resources needed to develop Red Hat Single Sign-On 7.3.3.GA server based deployment and can be split into the following two categories:
+image::embeddedCache-pom.png[embeddedCache, 700]
 
-Templates using HTTPS and JGroups keystores and a truststore for the Red Hat Single Sign-On server, all prepared beforehand. These secure the TLS communication using passthrough TLS termination:
-    - sso73-https: Red Hat Single Sign-On 7.3.3.GA backed by internal H2 database on the same pod.
+In order to use *Embedded Mode* in Spring Boot, _infinispan-spring-boot-starter-embedded_ dependency is already pulled in your pom.xml file. This starter produces a _SpringEmbeddedCacheManager_ bean by default:
 
-    - sso73-mysql: Red Hat Single Sign-On 7.3.3.GA backed by ephemeral MySQL database on a separate pod.
+[source,xml]
+----
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-spring-boot-starter-embedded</artifactId>
+    <version>2.2.3.Final-redhat-00001</version>
+</dependency>
+----
+
+image::embeddedCache-pom2.png[embeddedCache, 700]
+
+Create an *InfinispanCacheConfigurer* bean to customize the cache manager. Open a Java class called `EmbeddedCacheService.java` in _com.redhat.com.rhdg.service_ and copy below the `// TODO: Add cacheConfigurer method here` marker:
+
+[source,java,role="copypaste"]
+----
+   @Bean
+   public InfinispanCacheConfigurer cacheConfigurer() {
+      return manager -> {
+         final Configuration ispnConfig = new ConfigurationBuilder()
+               .clustering()
+               .cacheMode(CacheMode.REPL_SYNC)
+               .build();
+
+         manager.defineConfiguration("sessions", ispnConfig);
+         manager.getCache("sessions").addListener(new CacheListener());
+         
+      };
+   }
+----
+
+Copy below the `// TODO: Add globalCustomizer method here` marker to customize InfinispanGlobalConfigurer bean:
+
+[source,java,role="copypaste"]
+----
+   @Bean
+   public InfinispanGlobalConfigurer globalCustomizer() {
+      return () -> {
+         GlobalConfigurationBuilder builder = GlobalConfigurationBuilder.defaultClusteredBuilder();
+         builder.serialization().marshaller(new JavaSerializationMarshaller());
+         builder.transport().clusterName("rhdg");
+         builder.serialization().whiteList().addClass("org.springframework.session.MapSession");
+         builder.serialization().whiteList().addRegexp("java.util.*");
+         return builder.build();
+      };
+   }
+----
+
+Next, Autowire *cacheManager* to *SpringEmbeddedCacheManager* then implment REST APIs to _createSession_, _deleteSession_. Copy below the `// TODO: Add SessionController class here` marker:
+
+[source,java,role="copypaste"]
+----
+    @RestController
+	static class SessionController {
+
+      private int count = 0;
+
+		@Autowired
+		SpringEmbeddedCacheManager cacheManager;
+
+		@RequestMapping("/session")
+		public Map<String, String> createSession(HttpServletRequest request) {
+
+         Map<String, String> result = new HashMap<>();
+
+			String sessionId = request.getSession().getId();
+         result.put("created:", sessionId);
+         result.put("active:", cacheManager.getCache("sessions").getNativeCache().keySet().toString());
+         result.put("count:", String.valueOf(count));
+         count++;
+
+         return result;
+         
+        }
         
-    - sso73-mysql-persistent: Red Hat Single Sign-On 7.3.3.GA backed by persistent MySQL database on a separate pod.
-        
-    - sso73-postgresql: Red Hat Single Sign-On 7.3.3.GA backed by ephemeral PostgreSQL database on a separate pod.
-        
-    - sso73-postgresql-persistent: Red Hat Single Sign-On 7.3.3.GA backed by persistent PostgreSQL database on a separate pod. 
+      @RequestMapping("/delete")
+		public void deleteSession(HttpServletRequest request) {
 
-Templates using OpenShift’s internal service serving x509 certificate secrets to automatically create the HTTPS keystore used for serving secure content. The JGroups cluster traffic is authenticated using the AUTH protocol and encrypted using the ASYM_ENCRYPT protocol. The Red Hat Single Sign-On server truststore is also created automatically, containing the /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt CA certificate file, which is used to sign the certificate for HTTPS keystore. Moreover, the truststore for the Red Hat Single Sign-On server is pre-populated with the all known, trusted CA certificate files found in the Java system path. These templates secure the TLS communication using re-encryption TLS termination:
+         request.getSession().invalidate();
+         count = 0;
 
-    - sso73-x509-https: Red Hat Single Sign-On 7.3.3.GA with auto-generated HTTPS keystore and Red Hat Single Sign-On truststore, backed by internal H2 database. The ASYM_ENCRYPT JGroups protocol is used for encryption of cluster traffic.
-    
-    - sso73-x509-mysql-persistent: Red Hat Single Sign-On 7.3.3.GA with auto-generated HTTPS keystore and Red Hat Single Sign-On truststore, backed by persistent MySQL database. The ASYM_ENCRYPT JGroups protocol is used for encryption of cluster traffic.
-    
-    - sso73-x509-postgresql-persistent: Red Hat Single Sign-On 7.3.3.GA with auto-generated HTTPS keystore and Red Hat Single Sign-On truststore, backed by persistent PostgreSQL database. The ASYM_ENCRYPT JGroups protocol is used for encryption of cluster traffic. 
-
-Other templates that integrate with Red Hat Single Sign-On are also available:
-
-    - eap64-sso-s2i: Red Hat Single Sign-On-enabled Red Hat JBoss Enterprise Application Platform 6.4.
-
-    - eap71-sso-s2i: Red Hat Single Sign-On-enabled Red Hat JBoss Enterprise Application Platform 7.1.
-
-    - datavirt63-secure-s2i: Red Hat Single Sign-On-enabled Red Hat JBoss Data Virtualization 6.3. 
-
-These templates contain environment variables specific to Red Hat Single Sign-On that enable automatic Red Hat Single Sign-On client registration when deployed. Further on in the Advance Config section we will go over some of those environment variables and details.
-
-=== Installing RH-SSO on Openshift
-Make sure that you have completed the setting up instructions before moving forward in this section. 
-
-Lets first take a look at the installed templates:
-Run the following command:
-[source,bash]
-----
-oc get templates -n openshift -o name | grep -o 'sso73.\+'
+		}
+	}
 ----
 
-Which should result in the following output; these are the list of templates installed on this Openshift cluster. We could also change the above expression to sso72 and would get the similar output for the SSO 7.2 release templates.
+Add the *@EnableInfinispanEmbeddedHttpSession* annotation to _EmbeddedCacheService_ to enable Spring Cache support. When this starter detects the EmbeddedCacheManager bean, it instantiates a new SpringEmbeddedCacheManager, which provides an implementation of https://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html[Spring Cache^].
 
+Copy below the `// TODO: Add an Infinispan annotation here` marker:
+[source,java,role="copypaste"]
 ----
-sso73-https
-sso73-mysql
-sso73-mysql-persistent
-sso73-postgresql
-sso73-postgresql-persistent
-sso73-x509-https
-sso73-x509-mysql-persistent
-sso73-x509-postgresql-persistent
+@EnableInfinispanEmbeddedHttpSession
 ----
 
+*Perfect!* Now we have all the building blocks ready to use the cache. Let's start using our cache.
 
-Lets try to install from a template
-But first we want to know the different parameters our template will use. Today we choose a persistent Postgresql backed SSO installation. 
+=== 2. Deploying EmbeddedCache Service
 
-<1> Open the openshift console
+Now we will build and deploy the project using the following command, which will use the maven plugin to deploy via CodeReady Workspaces Terminal:
 
-<2> Click on the search field next to the button `Add to Project` and search for `SSO`
+[source,sh,role="copypaste"]
+----
+mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/cdg8-workshop/dg8-spring-session
+----
 
-<3> Press `View all results`
+Create a build configuration for your application using OpenJDK base container image in OpenShift:
 
-image::openshift-sso_search.png[Search for SSO]
+[source,sh,role="copypaste"]
+----
+oc new-build registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --binary --name=cacheapp -l app=cacheapp
+----
 
-<4> Select the following template `Red Hat Single Sign-On 7.3 + PostgreSQL (Persistent)` by clicking on it.
+Start and watch the build, which will take about minutes to complete:
 
-<5> Press Next. This will bring you to the Configuration section. 
-All the fields in this section denote the parameters that can be added to this template. Take a look at all the diferent parameters. 
-For now we will only change the SSO Administrator username and password. 
-I have chosen 'admin/pass' feel free to choose any, but make sure you remember them or note them, since we will be using them again. 
+[source,sh,role="copypaste"]
+----
+oc start-build cacheapp --from-file=target/rhdg-0.0.1-SNAPSHOT.jar --follow 
+----
 
-image::sso_install.png[SSO install Config]
+Deploy it as an OpenShift application after the build is done:
 
-Press Next and complete the installation with the default selections. 
+[source,sh,role="copypaste"]
+----
+oc new-app cacheapp && oc expose svc/cacheapp && \
+oc label dc/cacheapp app.kubernetes.io/part-of=catalog app.openshift.io/runtime=spring --overwrite
+----
 
-Once compeleted, Openshift will start the installation procedure and you can view the progress in the openshift console. Wait for the deployment to compelete. Once the deployment is finished. you should see the following on your openshift console. 
+Finally, make sure it’s actually done rolling out. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] for the cache service, and ensure you get the blue circles!
 
-image::sso_installed.png[SSO installed]
+image::embeddedCache-topology.png[embeddedCache, 500]
 
-Now that SSO is installed lets login to our newly created SSO. Click on the link as denoted in the picture and it should take you to the Red Hat SSO main page. 
+=== 3. Testing EmbeddedCache Service
 
-image::sso_adminlogin.png[Login screen]
+Let's scale up the cache service to make sure if the clustered Spring applications refer to _Spring Session_ in Data Grid. Click on `Up Arrow` once in _Overview_ page:
 
+image::embeddedCache-scaleup-start.png[embeddedCache, 700]
 
-=== Let's move on
-You now have a running SSO server. Lets move on to do some basic configuration before we head on to using it with our apps.
+Then you will see how the pod is scailing up:
 
+image::embeddedCache-scaleup-end.png[embeddedCache, 700]
 
+Let’s go externalizing Spring Session to Data Grid! Access the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^]!
+
+image::embeddedCache-ui.png[embeddedCache, 700]
+
+Click on `Invoke the service` then the *created* _Spring Session ID_ is already stored at in-memory datagrid as *active* data in the _Result_ box:
+
+image::embeddedCache-invoke1.png[embeddedCache, 700]
+
+Open a new web browser window then access the the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^]. 
+
+Click on `Invoke the service` once again then you will see the exact same _Spring Session ID_ and _active data_ but the *count* is increased to `2`. So two applications are clustered and refer to the *embedded Infinispan cache:
+
+image::embeddedCache-invoke2.png[embeddedCache, 700]
+
+Go back to the *first* web browser then click on `Clear the cache`. Move to the *second* web browser then click on `Invoke the service`.
+You will see new *Session ID*, *active data* and the count is reset to *1* again:
+
+image::embeddedCache-invoke3.png[embeddedCache, 700]
+
+Let's double-check if the Spring Session is clustered in the all running pods. Go back to the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] and click on 'View logs' in the pods:
+
+image::embeddedCache-invoke4.png[embeddedCache, 700]
+
+Now that we know how to react on changes in the cluster topology, we can also react to changes to the data within the cluster. The *CacheListener* separates the roles of our two pods such as putting data in the cache(_-- Entry for CACHE_ENTRY_MODIFIED created_) and showing the cache modifications(_-- Entry for CACHE_ENTRY_MODIFIED modified_):
+
+image::embeddedCache-logs.png[embeddedCache, 700]
+
+We now have implemented Spring Session with embedded in-memory datagrid for clustering HTTP sessions across Spring Boot microservices. *Congratulations!*

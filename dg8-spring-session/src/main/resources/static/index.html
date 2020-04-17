@@ -1,0 +1,98 @@
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <title>Cache Mission - Spring Boot Example</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div>
+        <h1>Externalizing Spring Session to Data Grid</h1>
+
+        <p class="lead">
+            The Caching example demonstrates how to externalize Spring Session to Data Grid using SpringRemoteCacheManager or SpringEmbeddedCacheManager. 
+            It contains two components: the <code>session</code> service and <code>DataGrid</code>.
+        </p>
+        <div class="lead">
+            <ul>
+                <li>The <code>session</code> service provides REST APIs to retrieve HTTP session if multiple Spring Boot applications can share the session using cache data in DataGrid.</li>
+                <li>When the <code>session</code> service is invoked in Spring Boot app(A), it shows a created session data and an active cache value.</li>
+                <li>Then clustered Spring Boot app(B) is invoked by the <code>session</code> service, it shows the same session data and active cache value in the app(A).</li>
+                <li>When you click on <code>Clean the cache</code>, existing session data will be invalidated and the cache value will be removed too.</li>
+            </ul>
+        </div>
+        <p class="lead">
+            Use the section below to invoke the <code>cache</code> service.
+            Each call to the <code>cache</code> service records the time to complete the call.
+            This shows the difference between retrieving a cached value and a value directly from <code>datagrid</code>.
+        </p>
+
+        <h2>Greeting service</h2>
+        <button id="invoke" type="submit" class="btn btn-primary">Invoke the service</button>
+        <button id="clear" type="submit" class="btn btn-danger">Clear the cache</button>
+        <h3>Result:</h3>
+        <div class="row">
+            <div class="col-md-8">
+                <pre><code id="greeting-result">Invoke the service to see the result.</code></pre>
+            </div>
+            <div class="col-md-4">
+                <div id="cache-state"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+<script>
+    function updateCached() {
+        $.getJSON("/session", function (res) {
+            $("#greeting-result").text(JSON.stringify(res));
+        });
+    }
+
+    $(document).ready(function () {
+        // updateCached();
+        $("#invoke").click(function (e) {
+            var begin = new Date();
+            $("#greeting-result").text("Invoking the service...");
+            $.getJSON("/session", function (res) {
+                var end = new Date();
+                $("#greeting-result").text(JSON.stringify(res));
+            });
+            e.preventDefault();
+        });
+        $("#clear").click(function (e) {
+            $("#greeting-result").text("Clearing the service...");
+            $
+                .ajax({
+                    // method: "DELETE",
+                    url: "/delete"
+                })
+                .done(function (msg) {
+                    $("#greeting-result").text("Invoke the service to see the result.");
+                    // $("#greeting-result").text(JSON.stringify(res));
+                });
+
+            e.preventDefault();
+        });
+
+        // setInterval(updateCached, 5000);
+    });
+</script>
+
+</body>
+
+</html>
