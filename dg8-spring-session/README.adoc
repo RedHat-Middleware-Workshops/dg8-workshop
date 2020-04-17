@@ -1,0 +1,54 @@
+= Externalize Spring Boot Seesion with Red Hat Data Grid 8 Simple Tutorials
+
+These tutorials demonstrate how to integrate Spring Boot Session with Red Hat Data Grid 8 features.
+
+== Prerequisites
+
+To build the tutorials you need the following:
+
+- JDK 8
+- Apache Maven 3.x
+- OpenShift 4 Cluster 
+
+== Running Tutorials
+
+Open a terminal window and change to the directory of the tutorial you want to run. Compile and run the tutorial as follows:
+
+[source,sh,role="copypaste"]
+----
+mvn clean package spring-boot:repackage
+----
+
+=== Build the application container to OpenShift
+
+[source,sh,role="copypaste"]
+----
+oc login -u {YOUR_USERNAME} -p {YOUR_PASSWORD} https://{OPENSHIFT_API_URL}:6443
+
+oc new-build registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --binary --name=cacheapp -l app=cacheapp
+
+oc start-build cacheapp --from-file=target/rhdg-0.0.1-SNAPSHOT.jar --follow 
+----
+
+=== Deploy the application to OpenShift
+
+[source,sh,role="copypaste"]
+----
+oc new-app cacheapp -e JAVA_OPTS_APPEND='-Dspring.profiles.active=openshift' && oc expose service cacheapp
+----
+
+=== Label the applications
+
+[source,sh,role="copypaste"]
+----
+oc label dc/cacheapp app.kubernetes.io/part-of=catalog app.openshift.io/runtime=spring --overwrite && \
+oc annotate dc/cacheapp app.openshift.io/connects-to=rhdg-service --overwrite && \
+oc annotate dc/cacheapp app.openshift.io/vcs-ref=ocp-4.3 --overwrite && \
+oc label statefulset/rhdg-service app.kubernetes.io/part-of=catalog app.openshift.io/runtime=datagrid --overwrite
+----
+
+=== Access the GUI
+
+Click on `Open URL` in _CacheApp_ of Dev Console then you will see the test page.
+
+Hit `Invoke the service` button then confirm the created HTTP session ID which is stored in DataGrid automatically.
