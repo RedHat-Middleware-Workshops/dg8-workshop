@@ -1,6 +1,5 @@
 == DatGrid 8.0 in 10 minutes
-The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud.
-
+The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud. Data Grid is built from the Infinispan open-source software project and is available to deploy as an embedded library, as a standalone server, or as a containerized application on Red Hat OpenShift Container Platform. 
 
 image::dg8.png[Red Hat Data Grid 8.0, 900]
 
@@ -87,13 +86,14 @@ Lets just say you used the clusterd cache, and embedded it in your application, 
 Congratulations! By now you understand the different patterns of caching, and the requirements. Lets go ahead and create our first application and learn how we can use Red Hat Data Grid to achieve caching. Press next! 
 
 
-
+ 
 === Additional Resources:
-- Traditional zip deployments are available on the CSP.
-- The container distribution and operator are available in the RHCC.
-- Product documentation is available on the CSP, 
+- Traditional zip deployments are available on the link:https://access.redhat.com[Customer Portal, window=_blank].
+- The container distribution and operator are available in the link:https://catalog.redhat.com/software/containers/explore[Red Hat Container Catalog, window=_blank]
+- Product documentation is available link:https://docs.redhat.com[here, window=_blank]
 - Getting Started Guide that will get you running with RHDG 8 in 5 minutes.
-- Migration Guide
-- Starter Tutorials
-
+- link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/data_grid_migration_guide/index[Migration Guide, window=_blank] 
+- link:https://github.com/redhat-developer/redhat-datagrid-tutorials[Starter Tutorials, window=_blank]
+- link:https://access.redhat.com/articles/4933371[Supported Components, window=_blank]
+- link:https://access.redhat.com/articles/4933551[Supported Configurations, window=_blank]
 
