@@ -23,10 +23,10 @@ See Getting Started with Data Grid Server and create a running Data Grid cluster
 
 === A more performant and rich REST API 
 Red Hat Data Grid 8.0 introduces REST API v2. 
-The API is with 50% faster response rates compared to v1. There are also new capabilities introduced such as
-Now you can access data and manipulate objects such as counters.
-Perform operations such as gracefully shutting down Data Grid clusters or transferring cache state to backup locations when using cross-site replication.
-And lastly, Monitor cluster and server health and retrieve statistics.
+The API has 50% faster response rates compared to v1. There are also new capabilities introduced such as
+- Now you can access data and manipulate objects such as counters.
+- Perform operations such as gracefully shutting down Data Grid clusters or transferring cache state to backup locations when using cross-site replication.
+- And lastly, Monitor cluster and server health and retrieve statistics.
 Moreover, Red Hat Data Grid REST API v2 also automatically converts between storage formats such as JSON, XML, Protobuf, and plain text for increased interoperability. The Red Hat Data Grid engineering team develop and maintain comprehensive REST API Documentation
 
 
@@ -46,10 +46,10 @@ Now you can use the /metrics endpoint for integration with Prometheus. Moreover,
 
 Modern applications use data and lets assume lots of data, whether it comes from databases, files, webservices, rpc call etc. 
 When an application has to process this data, what is the most natural way of doing it? Mostly the application will process this data in memory. 
-Lets assume I have a very slow database, this could be due to any reason, network latency, or even big queries that return alot of data. 
-So the most straight forward way of handling this, would be to store some of that data in the memory. By doing so, you would be able to process requests to your systems mush faster. However there are challenges. How much data should you store in memory? and most importantly what will happen in case of failure scenarios? 
+Let's assume I have a very slow database, this could be due to any reason, network latency, or even big queries that return alot of data. 
+So the most straightforward way of handling this, would be to store some of that data in the memory. By doing so, you would be able to process requests to your systems much faster. However there are challenges. How much data should you store in memory? and most importantly what will happen in case of failure scenarios? 
 
-- Will you loose all the state of your data in memory? 
+- Will you lose all the state of your data in memory? 
 - Will you need to re-read all your data and events inorder to get back to the same state where you failed. Or you might have to let go of that entirely. 
 
 Now the above two might seem very simple, but that tasks can be tideous and most importantly error prone. 
