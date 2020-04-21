@@ -1,11 +1,11 @@
 == DatGrid 8.0 in 10 minutes
-The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud. Data Grid is built from the Infinispan open-source software project and is available to deploy as an embedded library, as a standalone server, or as a containerized application on Red Hat OpenShift Container Platform. 
+The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud. Data Grid includes the Infinispan open-source software project. It is available to deploy as an embedded library, as a standalone server, or as a containerized application on Red Hat OpenShift Container Platform. 
 
 image::dg8.png[Red Hat Data Grid 8.0, 900]
 
 
 === A Full Lifecycle Operator to reduce deployment and management overhead in OpenShift
-An Operator enables the operations and lifecycle management for an application by using the underlying Kubernetes APIs. This means that complex applications e.g., consumed as services such as distributed caching, databases, etc. can easily get upgraded when newer versions arrive and more; also meaning no human intervention. The Operator SDK enables developers to write such Operators. Red Hat Data Grid 8.0 introduces a fully supported Data Grid Operator that provides operational intelligence.
+An Operator enables the operations and lifecycle management for an application by using the underlying Kubernetes APIs. That means complex applications, e.g., consumed as services such as distributed caching, databases, etc. can easily get upgraded when newer versions arrive and more; also meaning no human intervention. The Operator SDK enables developers to write such Operators. Red Hat Data Grid 8.0 introduces a fully supported Data Grid Operator that provides operational intelligence.
 
 With the latest release of Red Hat Data Grid, now you can also use it with an Operator. 
 
