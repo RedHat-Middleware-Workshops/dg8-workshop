@@ -64,6 +64,8 @@ public class Exercise3 {
         System.out.printf("Previous entry values: %n");
         previousValues.forEach(prev -> System.out.printf("%s%n", prev));
 
+        cacheManager.stop();
+
         UNCOMMENT When starting this exercise */
     }
 

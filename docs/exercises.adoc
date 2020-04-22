@@ -81,7 +81,7 @@ Where you see the // TODO Comment in the code snippets, you will see the same in
 
 
 === Exercise 1: Creating a local Cache
-First a bit about Maps. Why Maps are good for Cache? Maps are fast, they use methods like hashcode() and equals to determine how to add data to the map. Which also means they can be fast enough to O(1) time to read and write the data. That is excpetional performance, and thats exactly what you want from a cache. Data storage is in Key and Value pairs. So you have a key which is unique to your value. There is a lot more to Maps, but lets start with a basic Cahce how-to.
+First a bit about Maps. Why Maps are good for Cache? Maps are fast, they use methods like hashcode() and equals to determine how to add data to the map. Which also means they can be fast enough to O(1) time to read and write the data. That is exceptional performance, and thats exactly what you want from a cache. Data storage is in Key and Value pairs. So you have a key which is unique to your value. There is a lot more to Maps, but lets start with a basic cache how-to.
 
 A CacheManager is the primary mechanism for retrieving a Cache instance, and is often used as a starting point to using the Cache.
 Essentially if you were using a Map object you would just create a Map and store all your K,V in it. However when you use a tool like Red Hat Data Grid/Inifinispan you get more then just a simple map e.g. Listeners, events etc. all of which we will talk about in further sections. 
@@ -140,6 +140,7 @@ Open a terminal in your CodeReady Workspace, you can do this by using the menu o
 
 [source, shell, role="copypaste"]
 ----
+    cd dg8-workshop/dg8-exercises
     mvn clean compile
     mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 ----
@@ -156,22 +157,23 @@ key = value
 ----
 
 === Exercise 2: JSR-107 JCache
-The term Cache is generally reffered to a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple java.util packages do now have all the capabilities required and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to defind temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed usecases.
+The term Cache is generally reffered to a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple java.util packages do now have all the capabilities required and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to defined temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed usecases.
 
 Lets take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan
 
 [source, java, role="copypaste"]
 ----
         // TODO: Construct a simple local cache manager with default configuration
-        CachingProvider jcacheProvider = Caching.getCachingProvider();
-        CacheManager cacheManager = jcacheProvider.getCacheManager();
-        MutableConfiguration<String, String> configuration = new MutableConfiguration<>();
-        configuration.setTypes(String.class, String.class);
+        CachingProvider jcacheProvider = Caching.getCachingProvider(); <1>
+        CacheManager cacheManager = jcacheProvider.getCacheManager(); <2>
+        MutableConfiguration<String, String> configuration = new MutableConfiguration<>(); <3>
+        configuration.setTypes(String.class, String.class); <4>
         
         // TODO: create a cache using the supplied configuration
-        Cache<String, String> cache = cacheManager.createCache("myCache", configuration);
+        Cache<String, String> cache = cacheManager.createCache("myCache", configuration); <5>
 ----
 Lets take a more indepth look at the code above
+
 <1> We use a CachingProvider which is part of the standards API. 
 <2> The Caching provider inturn gives us a cacheManager.
 <3> We create a configuration object for our Cache. A MutlableConfiguration
