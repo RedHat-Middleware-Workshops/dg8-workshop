@@ -93,7 +93,7 @@ Next, Autowire *cacheManager* to *SpringEmbeddedCacheManager* then implment REST
 
 [source,java,role="copypaste"]
 ----
-    @RestController
+   @RestController
 	static class SessionController {
 
       private int count = 0;
@@ -142,7 +142,7 @@ Now we will build and deploy the project using the following command, which will
 
 [source,sh,role="copypaste"]
 ----
-mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/cdg8-workshop/dg8-spring-session
+mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/dg8-workshop/dg8-spring-session
 ----
 
 Create a build configuration for your application using OpenJDK base container image in OpenShift:
@@ -156,7 +156,7 @@ Start and watch the build, which will take about minutes to complete:
 
 [source,sh,role="copypaste"]
 ----
-oc start-build cacheapp --from-file=target/rhdg-0.0.1-SNAPSHOT.jar --follow 
+oc start-build cacheapp --from-file=$CHE_PROJECTS_ROOT/dg8-workshop/dg8-spring-session/target/rhdg-0.0.1-SNAPSHOT.jar --follow 
 ----
 
 Deploy it as an OpenShift application after the build is done:
