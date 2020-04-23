@@ -34,7 +34,7 @@ oc start-build cacheapp --from-file=target/rhdg-0.0.1-SNAPSHOT.jar --follow
 
 [source,sh,role="copypaste"]
 ----
-oc new-app cacheapp -e JAVA_OPTS_APPEND='-Dspring.profiles.active=openshift' && oc expose service cacheapp
+oc new-app cacheapp && oc expose service cacheapp
 ----
 
 === Label the applications
