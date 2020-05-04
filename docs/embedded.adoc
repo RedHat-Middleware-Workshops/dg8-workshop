@@ -145,7 +145,6 @@ Define the following three class level variables
 
     Logger log = LoggerFactory.getLogger(ScoreService.class); <2> 
 
-    @Inject
     EmbeddedCacheManager cacheManager; <3> 
 
 ----
@@ -254,7 +253,6 @@ Lets implement the create end point, here we are simply calling the save functio
 [source, java, role="copypaste"]
 ----
     @POST
-    @Transactional
     public Response create(@Valid Score item) {
         scoreService.save(item);
         return Response.status(Status.CREATED).entity(item).build();
@@ -285,7 +283,6 @@ And incase we wanted to update an entry. that would normally the case when we th
 ----
     @PATCH
     @Path("/{id}")
-    @Transactional
     public Response update(@Valid Score card, @PathParam("id") Long id) {
         scoreService.save(card);
         return Response.status(Status.CREATED).entity(card).build();
