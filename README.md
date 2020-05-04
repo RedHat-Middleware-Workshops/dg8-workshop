@@ -6,8 +6,6 @@ If you are looking to deploy this workshop on Openshift 4.3:
 git clone https://github.com/redhat-cop/agnosticd
 ```
 
-https://github.com/redhat-cop/agnosticd/tree/development/ansible/roles/ocp4-workload-jdg-workshop
-
 Request an Openshift 4.3 Workshop from rhpds. Once the environment is provisioned, you should receive an email with credentials and links to your environment.
 
 If you have generated a password less private key, you might want to do something like this:
