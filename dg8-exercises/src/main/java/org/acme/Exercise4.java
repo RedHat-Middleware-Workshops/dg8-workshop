@@ -31,6 +31,8 @@ public class Exercise4 {
         // Stop the cache manager and release all resources
         cacheManager.stop();
 
+        System.exit(0);
+
         UNCOMMENT When starting this exercise */
     }
 

@@ -19,6 +19,7 @@ public class Exercise2 {
         
         // TODO: Stop the cache manager and release all resources
 
+        System.exit(0);
     }
 
 }
