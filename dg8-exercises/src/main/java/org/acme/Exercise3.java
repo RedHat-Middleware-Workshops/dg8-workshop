@@ -31,7 +31,7 @@ public class Exercise3 {
         FunctionalMap.WriteOnlyMap<String, String> writeOnlyMap = WriteOnlyMapImpl.create(functionalMap);
         FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
 
-        //TODO  Execute two parallel write-only operation to store key/value pairs
+        // TODO  Execute two parallel write-only operation to store key/value pairs
 
 
         // TODO When each write-only operation completes, execute a read-only operation to retrieve the value
