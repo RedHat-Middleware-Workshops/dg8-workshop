@@ -2,7 +2,7 @@
 :experimental:
 
 The Data Grid REST API allows you to monitor, maintain, and manage Data Grid deployments and provides access to your data.
-Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate some of them. 
+Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate some of them.
 For more details on the documentation on the Red Hat Data Grid REST API. Please visit the documentation page.
 Infinispan servers provide RESTful HTTP access to data through a REST endpoint built on Netty.
 
@@ -23,7 +23,7 @@ We will do the following
 <3> We will load bulk data into the cache
 <3> we will use search queries directly into the cache.
 
-Let's get started. 
+Let's get started.
 
 
 == The Pokeman Example
@@ -36,7 +36,7 @@ All the project sources are in the project dg8-restapi. We will be using Curl an
 
 Let's open up a new terminal in the CodeReady workspace. Make sure you are logged into Openshift.
 
-Run the following command on the terminal which will get the password for user developer and store it in and environment variable. 
+Run the following command on the terminal which will get the password for user developer and store it in and environment variable.
 [source, shell, role="copypaste"]
 ----
 export PASSWORD=$(oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | awk 'NR==3' | awk '{print $2}')
@@ -92,18 +92,18 @@ message Pokemon  {
   optional int32 base_happiness = 22;
   optional int32 base_total = 23;
   optional string capture_rate = 24;
-  
-  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string classfication = 25;
   optional int32 defense = 26;
   optional int32 experience_growth = 27;
   optional float height_m = 28;
   optional int32 hp = 29;
-  
-  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string japanese_name = 30;
-  
-  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string name = 31;
   optional float percentage_male = 32;
   optional int32 pokedex_number = 33;
@@ -111,7 +111,7 @@ message Pokemon  {
   optional int32 sp_defense = 35;
   optional int32 speed = 36;
 
-  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */ 
+  /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string type1 = 37;
   optional string type2 = 38;
   optional float weight_kg = 39;
@@ -214,14 +214,14 @@ The script run can take some time, wait for it to finish.
 
 So by now we should have loaded about 801 Pokemon's from the Pokemon universe.
 
-So what does the script look like? 
+So what does the script look like?
 Below you can se that we are loading each of the json files one by one to the cache rest end point
 
 [source, shell, role="copypaste"]
 ----
 status=0
 for f in data/*.json
-do 
+do
   curl -u developer:$PASSWORD -XPOST --data-binary @${f}  -H "Content-Type: application/json; charset=UTF-8"  $LB/rest/v2/caches/pokemon/$(basename $f .json)
   let status=status+1
   echo  "Imported $f (total $status pokemons)"
@@ -230,40 +230,40 @@ done
 
 === Query the data
 
-Get all Pokemons: 
+Get all Pokemons:
 
 [source, url, role="copypaste"]
-----  
-$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon
-----   
-   
+----
+curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon'
+----
+
 Count Pokemons by generation:
 
 [source, url, role="copypaste"]
 ----
-select count(p.name) from Pokemon group by generation
-$LB/rest/v2/caches/pokemon?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation
+# select count(p.name) from Pokemon group by generation
+curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation'
 ----
 
 Do a full text search on the name
 
 [source, url, role="copypaste"]
 ----
-$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27
+curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27'
 ----
 
 Select top 5 Pokemons that can better withstand fire:
 
 [source, url, role="copypaste"]
 ----
-$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5
+curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5'
 ----
 
 Get Pokemon by key (name)
 
 [source, url, role="copypaste"]
 ----
-$LB/rest/v2/caches/pokemon/Whismur
+curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon/Whismur
 ----
 
 
