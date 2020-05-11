@@ -92,8 +92,6 @@ datagrid-service-external   LoadBalancer   172.30.90.75     abd9b45a50a174648af6
 datagrid-service-ping       ClusterIP      None             <none>                                                                         8888/TCP          5m55s
 ----
 
-image::dg_operatorserviceview.png[openshift_login, 900]
-
 You can see that there are three datagrid-services, 
 
 - 1 for use within the cluster, 
