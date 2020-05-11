@@ -1,4 +1,7 @@
-The Data Grid REST API lets you monitor, maintain, and manage Data Grid deployments and provides access to your data.
+= REST API
+:experimental:
+
+The Data Grid REST API allows you to monitor, maintain, and manage Data Grid deployments and provides access to your data.
 Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate some of them. 
 For more details on the documentation on the Red Hat Data Grid REST API. Please visit the documentation page.
 Infinispan servers provide RESTful HTTP access to data through a REST endpoint built on Netty.
@@ -20,7 +23,7 @@ We will do the following
 <3> We will load bulk data into the cache
 <3> we will use search queries directly into the cache.
 
-Lets get started. 
+Let's get started. 
 
 
 == The Pokeman Example
@@ -31,12 +34,12 @@ First; what is a Pokemon, incase some of us didn't know. Reminiscences from the 
 
 All the project sources are in the project dg8-restapi. We will be using Curl and our browser.
 
-Lets open up a new terminal in the CodeReady workspace. Make sure you are logged into Openshift.
+Let's open up a new terminal in the CodeReady workspace. Make sure you are logged into Openshift.
 
 Run the following command on the terminal which will get the password for user developer and store it in and environment variable. 
 [source, shell, role="copypaste"]
 ----
-    export PASSWORD=$(oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | awk 'NR==3' | awk '{print $2}')
+export PASSWORD=$(oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | awk 'NR==3' | awk '{print $2}')
 ----
 
 So we are using the same service we created from the operator previously.
@@ -45,7 +48,7 @@ We will also need our loadbalancer address to reach the datagrid server, you can
 
 [source, shell, role="copypaste"]
 ----
-    export LB="http://$(oc get services | grep datagrid-service-external | awk '{ print $4 }'):11222"
+export LB="http://$(oc get services | grep datagrid-service-external | awk '{ print $4 }'):11222"
 ----
 
 [IMPORTANT]
@@ -53,16 +56,14 @@ We will also need our loadbalancer address to reach the datagrid server, you can
 At anytime if you close the terminal, you will need to run these two commands again. To get the password and the loadbalancer
 ====
 
-
-=== First lets register our protobuf
+=== First let's register our protobuf
 
 By now you already know what protobuf is from previous labs as well as you might know what Pokemon's are. Perfect time to introduce our datastructure.
 
-Lets see whats our datastructure is like.
+Let's see whats our datastructure is like.
 
-[source, shell, role="copypaste"]
+[source, properties, role="copypaste"]
 ----
-
 /**
   * @Indexed
   */
@@ -120,7 +121,7 @@ message Pokemon  {
 
 ----
 
-In our project `dg8-restapi` open the file pokemon.proto and paste the above datastructure. The structure defines the capabilites of a Pokemon
+In our project `dg8-restapi` open the file `pokemon.proto` and paste the above datastructure. The structure defines the capabilites of a Pokemon
 
 When caches are indexed, or specifically configured to store application/x-protostream, you can send and receive JSON documents that are automatically converted to and from Protostream.
 
@@ -130,14 +131,14 @@ To register protobuf schemas via REST, invoke a POST or PUT in the ___protobuf_m
 
 [source, shell, role="copypaste"]
 ----
-  curl -u developer:$PASSWORD -X POST --data-binary @./pokemon.proto $LB/rest/v2/caches/___protobuf_metadata/pokemon.proto
+curl -u developer:$PASSWORD -X POST --data-binary @./pokemon.proto $LB/rest/v2/caches/___protobuf_metadata/pokemon.proto
 ----
 
 
 
 === Create a Cache
 
-Now lets create an indexed cache since we want to retrieve data at speed from our Cache and Lucene store.
+Now let's create an indexed cache since we want to retrieve data at speed from our Cache and Lucene store.
 
 [source, shell, role="copypaste"]
 ----
@@ -199,7 +200,7 @@ for Example Abra's capabilities listed as follows
 ----
 
 
-Lets run our loading script which is placed in our project `dg8-restapi`. Run the shell script in the terminal
+Let's run our loading script which is placed in our project `dg8-restapi`. Run the shell script in the terminal
 
 [source, shell, role="copypaste"]
 ----
@@ -233,36 +234,36 @@ Get all Pokemons:
 
 [source, url, role="copypaste"]
 ----  
-   $LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon
+$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon
 ----   
    
 Count Pokemons by generation:
 
 [source, url, role="copypaste"]
 ----
-   select count(p.name) from Pokemon group by generation
-   $LB/rest/v2/caches/pokemon?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation
+select count(p.name) from Pokemon group by generation
+$LB/rest/v2/caches/pokemon?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation
 ----
 
 Do a full text search on the name
 
 [source, url, role="copypaste"]
 ----
-  $LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27
+$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27
 ----
 
 Select top 5 Pokemons that can better withstand fire:
 
 [source, url, role="copypaste"]
 ----
-  $LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5
+$LB/rest/v2/caches/pokemon?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5
 ----
 
 Get Pokemon by key (name)
 
 [source, url, role="copypaste"]
 ----
-    $LB/rest/v2/caches/pokemon/Whismur
+$LB/rest/v2/caches/pokemon/Whismur
 ----
 
 
@@ -272,4 +273,4 @@ Get Pokemon by key (name)
 <3> You loaded bulk data into the cache
 <4> And finally you queried through that data.
 
-**Congratulations!!* you have completed the this lab on REST API!!
+*Congratulations!!* you have completed the this lab on REST API!!

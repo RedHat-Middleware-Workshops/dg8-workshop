@@ -1,4 +1,7 @@
-What could be cases where you want to use Cache; Lets take a moment and think about it. Where do you think you could use cache? 
+= Caching 101, Let's get started with your first app
+:experimental:
+
+What could be cases where you want to use Cache; Let's take a moment and think about it. Where do you think you could use cache? 
 Well there could be limitless answers to this question; Some common usecases are listed below
 
 - Lookup Data; if you have an app, that needs some user profile data etc, thats unecessary to pole everytime, and it doesnt change much
@@ -7,13 +10,14 @@ Well there could be limitless answers to this question; Some common usecases are
 - Session Storage; Storing your webapp sessions, this could be carts etc, that you can use to scale your application
 - Global Counters; You might want to create distributed keys accross a distributed dataset. Use this to update and fetch data. 
 
-image::embeddedcache.png[Caching, 900]
+image::embeddedcache.png[Caching, 700]
 
 The above figure depicts a common scenario when you dont want to use a networked dataset that could be slow and with high latency, but rather use an inmemory cache. In this case the in-memory cache becomes the front for the data. 
 
 This lab is about an embedded or local cache, also a common usecase for applications.  What is an Embedded Cache in Red Hat Data Grid?
 
 === Embedded Cache, Some basics
+
 The CacheManager is Red Hat Data Grid’s main entry point. You can use a CacheManager to
 
 - configure and obtain caches
@@ -27,7 +31,7 @@ CacheManagers are heavyweight objects, and recommended use would be one CacheMan
 
 The simplest way to create a CacheManager is:
 
-[source, java, role="copypaste"]
+[source, java]
 ----
 EmbeddedCacheManager manager = new DefaultCacheManager();
 ----
@@ -38,7 +42,7 @@ Once constructed, CacheManagers should be made available to any component that r
 
 When you are done with a CacheManager, you must stop it so that it can release its resources:
 
-[source, java, role="copypaste"]
+[source, java]
 ----
 manager.stop();
 ----
@@ -46,7 +50,7 @@ manager.stop();
 This will ensure all caches within its scope are properly stopped, thread pools are shutdown. If the CacheManager was clustered it will also leave the cluster gracefully. 
 
 == Your first service with Caching
-One of the common usecases for a Cache is to keep most used data in memory. Example having a Scoreboard in the cache. Lets assume theres a webpage that keeps the Score card for a round played by players on different tours. Now since this website expects people coming to check the top scores for example, or maybe based on a country etc. The best approach would be store this information in a cache rather then polling that information from different webservices or different databases as an example. 
+One of the common usecases for a Cache is to keep most used data in memory. Example having a Scoreboard in the cache. Let's assume theres a webpage that keeps the Score card for a round played by players on different tours. Now since this website expects people coming to check the top scores for example, or maybe based on a country etc. The best approach would be store this information in a cache rather then polling that information from different webservices or different databases as an example. 
 
 In our first service we will do exactly that. We will store this data in our Embedded Cache and understand not only how this works but the different ways of handling cache, getting events from it etc. 
 
@@ -55,7 +59,7 @@ You can choose multiple runtimes to impelement this service, in our case today t
 
 Navigate to the project `dg8-embedded-quarkus`
 This is a template project, and you will be writing code into this project.
-As you can see there is already some files inplace. Lets take a look into what these files are and do.
+As you can see there is already some files inplace. Let's take a look into what these files are and do.
 
 
 === The Maven dependencies
@@ -63,7 +67,7 @@ Open the pom.xml file in the project.
 
 We will be using the following dependencies to create our service
 
-[source, maven, role="copypaste"]
+[source, xml]
 ----
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -90,7 +94,7 @@ We have also created a POJO called Score, which will serve as our datastructure 
 
 If you open `Score.java` you will see the following first few lines
 
-[source, java, role="copypaste"]
+[source, java]
 ----
     // The number of holes played per round
     public static final int HOLES = 18;
@@ -117,7 +121,7 @@ If you open `Score.java` you will see the following first few lines
 
 The rest of the methods are accessors for these fields. Important to mention we do have three constructors
 
-[source, java, role="copypaste"]
+[source, java]
 ----
  
     // Used in Json serialization
@@ -132,9 +136,9 @@ The rest of the methods are accessors for these fields. Important to mention we 
 
 Take a look at some of the other methods in the Score class and make yourself familiar with it. Do not change the class at this time. 
 
-
 === Creating a service for caching
-So now that you are familiar with the project template, lets start by creating a service. Todo this open ScoreService.java
+
+So now that you are familiar with the project template, Let's start by creating a service. Todo this open `ScoreService.java`.
 
 Define the following three class level variables
 
@@ -238,10 +242,12 @@ You might have noticed, that a CacheManager can have multiple Caches; which is g
 
 
 === Creating a REST Resource for our app
-Lets create our REST resource. This should be simple. Open the ScoreResource.java file. 
+
+Let's create our REST resource. This should be simple. Open the `ScoreResource.java` file. 
 Since we already implemented most of our code in the service, we need to make sure we can respond on the correct REST calls. 
 
-First lets inject our ScoreService so we can use all the caching functions we need.
+First Let's inject our ScoreService so we can use all the caching functions we need. Copy the following codes in `// Inject ScoreService`:
+
 [source, java, role="copypaste"]
 ----
     @Inject
@@ -249,7 +255,8 @@ First lets inject our ScoreService so we can use all the caching functions we ne
 ----
 
 
-Lets implement the create end point, here we are simply calling the save function on the scoreService.
+Let's implement the create end point, here we are simply calling the save function on the scoreService. Copy the following codes in `// Implement the create end point`:
+
 [source, java, role="copypaste"]
 ----
     @POST
@@ -259,7 +266,8 @@ Lets implement the create end point, here we are simply calling the save functio
     }
 ----
 
-And we also want to be able to get one entry from our cache. following method will do that by calling the scoreService.findById
+And we also want to be able to get one entry from our cache. following method will do that by calling the scoreService.findById. Copy the following codes in `// To be able to get one entry`:
+
 [source, java, role="copypaste"]
 ----
     @GET
@@ -279,6 +287,8 @@ And we also want to be able to get one entry from our cache. following method wi
 ----
 
 And incase we wanted to update an entry. that would normally the case when we the player is playing the round. so the score will be updated. 
+Copy the following codes in `// To update an entry`:
+
 [source, java, role="copypaste"]
 ----
     @PATCH
@@ -294,7 +304,7 @@ Take a look into some of the other methods in the ScoreResource to make your sel
 
 If you might have noticed at the class declaration we are using the following annotations
 
-[source, java, role="copypaste"]
+[source, java]
 ----
 @Produces(MediaType.APPLICATION_JSON) <1>
 @Consumes(MediaType.APPLICATION_JSON) <2>
@@ -303,7 +313,7 @@ If you might have noticed at the class declaration we are using the following an
 
 <1> This means we are producing JSON from our responses
 <2> This means we only listen to JSON, this helps us to consume the JSON directly and serialize it into our Score POJO as an example.
-<3> and `api` is the path to our resource. e.g. localhost:8080/api
+<3> And `api` is the path to our resource. e.g. localhost:8080/api
 
 
 [NOTE]
@@ -317,13 +327,12 @@ A quick look at our side bar menu on the right called `MyWorkspace`
 
 image::codeready-workspace-terminal.png[cdw, 400, align="center"]
 
-
 We will use this menu through out the labs. There is a bunch of commands created specifically for this workshop.
 
-First lets login to Openshift. You will find the button in the right corner in MyWorkspace menu. 
+First Let's login to Openshift. You will find the button in the right corner in MyWorkspace menu. 
 Click `Login to Openshift` 
 
-Lets run our project click on the Command `Emebdded - Start Live Coding`
+Let's run our project click on the Command `Emebdded - Start Live Coding`
 This will enable Live coding, it will open up a small terminal to build your artifact and then open up a browser view
 
 Make sure you click on the Openlink 
@@ -334,72 +343,53 @@ You can also click on the link icon in the browser view, which will open a brows
 
 image::embeddedprojectliveview.png[cdw, 800, align="center"]
 
-
-
-Now open another terminal and change to the scripts directory
+Now run the following bash script in a *new* terminal(assuming live coding is still on):
 
 [source, shell, role="copypaste"]
 ----
-cd dg8-embedded-quarkus/scripts
+sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
-now open a terminal form the `MyWorkspace` menu move to our project directory cd `dg8-embedded-quarkus` which should be in project root/dg8-workshop/
-[source, shell, role="copypaste"]
-----
-cd dg8-embedded-quarkus
-----
+Reload *PREVIEW* again in CodeReady workspaces and you will see some scores updated. Now these scores were posted directly:
 
-
-in the scripts directory we have a load.sh file. Open this file in CodeReadyWorkspace and change the variable EP to the applicaiton route from the browser, you can copy it from the browser view in CodeReady or the tab that was openend when you ran the Live Coding. (assuming live coding is still on)
-and run load.sh , you can run this file 
-[source, shell, role="copypaste"]
-----
-./load.sh 
-----
-
-Hit the URL again on the browser veiw and you will see some scores updated. Now these scores were posted directly 
-<1> via our ScoreResource 
-<2> into our ScoreService 
-<3> and passed into the cache
+<1> Via our ScoreResource 
+<2> Into our ScoreService 
+<3> And passed into the cache
 
 We just created a bunch of POST requests, to create a bunch of scores. 
-The way the algorithm is working is that , we assume the score card is updated after every hole. or at the end. so if you place the data
+The way the algorithm is working is that, we assume the score card is updated after every hole. or at the end. so if you place the data:
 
-[source, shell, role="copypaste"]
-----
-card:5,4,4,4,3,5,0,0,0,0,0,0,0,0,0,0,0,0
-course:Bethapage
-currentHole:6
-playerId:2
-playerName:James
-----
+ * card: `5,4,4,4,3,5,0,0,0,0,0,0,0,0,0,0,0,0`
+ * course: `Bethpage`
+ * currentHole: `6`
+ * playerId: `2`
+ * playerName: `James`
 
 In this case, we are still doing a POST request like before, however the cache is checking whats coming in the put request, it will create the combination key like we have in our Score service i.e. PlayerId+Course and put the new data in it. This means that again its just one call to make this update, no lookups were needed specifically to perform before updating. 
 
-Try this data entry again, and this time change the course to Firestone, and you will notice that there will be a new entry for James. So now James will have two rounds on the scoreboard. 
+Try this data entry again, and this time change the course to `Firestone`, and you will notice that there will be a new entry for James. So now James will have two rounds on the scoreboard. 
 
 [NOTE]
 ====
 Its important to know what our key is and its important to find the right combination of what kind of key our data should posses when it comes to a Cache.
 ====
 
-Lets do that, enter this data in the form in your browser view and press save, it will updated James's round score. 
-
+Let's do that, enter this data in the form in your browser view and press save, it will updated James's round score. 
 
 If you goto your endpoint/api which should be route of your app/api in the browser you will also see the same JSON data there as well. 
 
 So what we have successfully done so far. Read, Write and update our Cache. 
 
-Lets move on to the next step and do some more interesing additions to our project. 
+Let's move on to the next step and do some more interesing additions to our project. 
 
 [NOTE]
 ====
 Since we are using the Live Coding mode here, at any time if you terminate or restart the session it will clear the cache.
 ====
 
-
 === Expiration of Entries
-Lets assume you are pulling this data off from a database. You might want that it should be removed from the cache after a certain time period. 
+
+Let's assume you are pulling this data off from a database. You might want that it should be removed from the cache after a certain time period. 
 You can do this by defining this either on the a single entry or the entire cache. By default entries created are immortal and do not have a lifespan or maximum idle time. Using the cache API, mortal entries can be created with lifespans and/or maximum idle times
 
 Expiration is a top-level construct, represented in the configuration as well as in the cache API.
@@ -407,7 +397,7 @@ Expiration is a top-level construct, represented in the configuration as well as
 - Maximum idle times for cache entries require additional network messages in clustered environments. For this reason, setting maxIdle in clustered caches can result in slower operation times.
 - Expiration lifespan and maxIdle are also persisted in CacheStores, so this information survives eviction/passivation.
 
-Lets start with doing this for one entry. 
+Let's start with doing this for one entry. 
 
 In Infinispan entry expiration can happen in two ways:
 
@@ -416,7 +406,7 @@ In Infinispan entry expiration can happen in two ways:
 
 The Cache interface offers overloaded versions of the put() method that allow specifying either or both expiration properties. The following example shows how to insert an entry which will expire after 5 seconds
 
-Open the ScoreService and change the save method to the following.
+Open the *ScoreService.java* and change the `save` method to the following.
 
 [source, java, role="copypaste"]
 ----
@@ -425,41 +415,37 @@ Open the ScoreService and change the save method to the following.
     }
 ----
 
-In the above code, we have used TimeUnit and we specify 5 as the unit which is seconds. Following are the units you can use in the TimeUnit
-[source, java, role="copypaste"]
-----
-    NANOSECONDS,
-    MICROSECONDS,
-    MILLISECONDS,
-    SECONDS,
-    MINUTES,
-    HOURS,
-    DAYS;
-----
+In the above code, we have used TimeUnit and we specify 5 as the unit which is seconds. Following are the units you can use in the TimeUnit:
 
-Okay now its time to test this change. 
-Go back into the terminal and run load.sh 
+* NANOSECONDS
+* MICROSECONDS
+* MILLISECONDS
+* SECONDS
+* MINUTES
+* HOURS
+* DAYS
+
+Okay now its time to test this change. Go back into the terminal and run `load.sh`. 
 
 [source, shell, role="copypaste"]
 ----
-./load.sh 
+sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
-Refresh your browser view right away. and you will see the entries again. Now wait for 5 seconds and refresh again. 
-You will see the entries have expired. 
-This is becuase we set the timespan to 5 seconds.
-
+Reload *PREVIW* right away. and you will see the entries again. Now wait for 5 seconds and reload again. 
+You will see the entries have expired. This is becuase we set the timespan to 5 seconds.
 
 In the previous step we used the overloaded put() method to store mortal entries. But since we want all of our entries to expire with the same lifespan, we can configure the cache to have default expiration values. To do this we will construct the DefaultCacheManager by passing in a org.infinispan.configuration.cache.Configuration object. A configuration in Infinispan is mostly immutable, aside from some runtime-tunable parameters, and is constructed by means of a ConfigurationBuilder. Using the above use-case, let's create a cache configuration where we want to set the default expiration of entries to 5 seconds. 
 
-Add the following line to your ScoreService onStart method; right under the `ConfigurationBuilder` instantiation 
+Add the following line to `onStart` method in *ScoreService.java*. It should be on right under the `ConfigurationBuilder` instantiation:
 
 [source, java, role="copypaste"]
 ----
     config.expiration().lifespan(5, TimeUnit.SECONDS);
 ----
 
-Also change the save implementation back to the following
+Also change the `save` method implementation back to the following:
+
 [source, java, role="copypaste"]
 ----
     public void save(Score entry) {  
@@ -467,15 +453,15 @@ Also change the save implementation back to the following
     }
 ----
 
-and run load.sh 
+and re-run the load script:
+
 [source, shell, role="copypaste"]
 ----
-./load.sh 
+sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
-Refresh your browser view right away. and you will see the entries again. Now wait for 5 seconds and refresh again. 
-You will see the entries have expired. 
-This is becuase we set the timespan to 5 seconds for the CacheManager.
+Reload *PREVIEW* right away. and you will see the entries again. Now wait for 5 seconds and refresh again. 
+You will see the entries have expired. This is becuase we set the timespan to 5 seconds for the CacheManager.
 
 Now this is a configuration change for the cache and this will expire all entries after 5 seconds. 
 
@@ -511,24 +497,26 @@ Both Eviction and Expiration are means of cleaning the cache of unused entries a
 
 Perfect now we know what eviction and expiration API we have at our disposal and how we can use them in our app. 
 
-Add the following line to your ScoreService onStart method; right under the `ConfigurationBuilder` instantiation; in our example below we are going to limit our Cache to only 2 entries, anything above that will not be added to the Cache.
+Add the following line to `onStart` method in *ScoreService.java*. It should be on right under the `ConfigurationBuilder` instantiation.
+In our example below we are going to limit our Cache to only 2 entries, anything above that will not be added to the Cache.
 
 [source, java, role="copypaste"]
 ----
     config.memory().size(2).build();
-
 ----
 
-and run load.sh 
+and re-run the load script:
+
 [source, shell, role="copypaste"]
 ----
-./load.sh 
+sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
-Refresh your browser view right away. and you will see the entries again. But this time note that there are only two entries. And thats what we had specified in our Cache configuration.
+Reload *PREVIEW* right away and you will see the entries again. But this time note that there are only two entries. And thats what we had specified in our Cache configuration.
 
 
 === Listeners
+
 Red Hat Data Grid offers a listener API, where clients can register for and get notified when events take place. This annotation-driven API applies to 2 different levels: cache level events and cache manager level events.
 
 Events trigger a notification which is dispatched to listeners. Listeners are simple POJO s annotated with @Listener and registered using the methods defined in the Listenable interface.
@@ -537,15 +525,13 @@ Both Cache and CacheManager implement Listenable, which means you can attach lis
 
 Implement a new class `CacheListener`
 
-*1* Create a new Java file, by right clicking on your project's package name i.e. `acme`, also shown in the screenshot below
+*1* Create a *New File* by right clicking on your project's package name i.e. `acme`, also shown in the screenshot below
 
 image::newjavafile.png[cdw, 600, align="center"]
 
 *2* Next specifiy the name of the file `CacheListener.java` , also in the screenshot below
 
 image::cachelistenerjava.png[cdw, 600, align="center"]
-
-
 
 [source, java, role="copypaste"]
 ----
@@ -572,20 +558,21 @@ public class CacheListener {
 }
 ----
 
-Also important is to add this listener to our Cache configuration. 
-Add the following line to the config
+Also, important thing is to add this listener to our Cache configuration. Add the following line to the config.
+It should be pasted after *scoreCache = cacheManager.getCache("scoreboard");* line:
 
 [source, java, role="copypaste"]
 ----
     scoreCache.addListener(new CacheListener());
 ----
 
-Now if we update the entries in our cache or create new ones; we will see a notification on the our console. Lets test this out. 
+Now if we update the entries in our cache or create new ones; we will see a notification on the our console. Let's test this out. 
 
-Run load.sh 
+and re-run the load script:
+
 [source, shell, role="copypaste"]
 ----
-./load.sh 
+sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
 Now check the terminals tab where it says  `Embedded - Live Coding` you should messages like follows
@@ -611,10 +598,11 @@ if you start to re run the load.sh a couple of times, you will start to see the 
 Congratulations we are at the end of this lab!
 
 === Recap
+
 <1> You created our own Cache and learnt how to us EmbeddedCacheManager
 <2> You learnt how to use ConfigurationBuilder and Configuration objects to define our Configurations for the Cache and CacheManager
 <3> You learnt about Expiration and Eviction
 <4> And lastly you implemented your own Listener. 
 
-**Congratulations!!* you have completed the first lab of this workshop. Lets move to the next lab and learn how we can cluster this Cache and also deploy this on a cloud environment like Openshift.
+*Congratulations!!* you have completed the first lab of this workshop. Let's move to the next lab and learn how we can cluster this Cache and also deploy this on a cloud environment like Openshift.
 
