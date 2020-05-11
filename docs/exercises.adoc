@@ -40,17 +40,18 @@ https://github.com/RedHat-Middleware-Workshops/dg8-workshop
 
 image::gitcloneembedded.png[crw, 600, align="center"]
 
-Next, select `$CHE_PROJECTS_ROOT` in the drop-down menu for destination directory:
-
-image::projectplace.png[crw, 600, align="center"]
-
-And click *Select Repository Location*.
-
-Once imported, choose **Add to workspace** when prompted.
-
 The project is now imported into your workspace. Following screenshot shows the workspace view after the project is imported.`dg8-embedded-quarkus`
 
 image::workspaceview.png[crw, 800, align="center"]
+
+==== IMPORTANT: Check out proper Git branch
+
+To make sure you're using the right version of the project files, run this command in a CodeReady Terminal:
+
+[source,sh,role="copypaste"]
+----
+cd $CHE_PROJECTS_ROOT/dg8-workshop && git checkout docs-update
+----
 
 [NOTE]
 ====
