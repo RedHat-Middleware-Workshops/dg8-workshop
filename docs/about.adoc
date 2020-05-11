@@ -1,4 +1,4 @@
-== Preface - What happens when you run your applications distributed, scaled and in the cloud ...
+= What happens when you run your applications distributed, scaled and in the cloud
 :experimental:
 
 You are a developer or an architect creating world-class applications and solutions. Well, all apps don't necessarily live in just one box, and for the recent past, Cloud is not only one more computer but a lot more. All applications use a network to communicate with each other, whether they connect to a database, a web service or storage, or other services. 
