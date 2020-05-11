@@ -51,7 +51,7 @@ image::workspaceview.png[crw, 800, align="center"]
 
 [NOTE]
 ====
-The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right:
+Following is a screenshot of your Workspace command view. These are point and click commands that can be used during the various labs that you will be doing today.
 ====
 
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 600, align="center"]
@@ -68,11 +68,15 @@ image::reruntask.png[codeready-workspace-rerun, align="center"]
 
 [IMPORTANT]
 ====
-Where you see the // TODO Comment in the code snippets, you will see the same in the Exercise java files. Your task is to write that code in the Exercise java file under the right //TODO
+Your task is to write code in the Exercise java file under the right //TODO
 
-** Make sure that you uncomment the code before you start your exercise; the uncomment marks are should be marked as follows
+*UNCOMMENT When starting*
 
-*UNCOMMENT When starting this exercise*
+** For Exercise 3,4,5 and 6; Make sure that you uncomment the code before you start your exercise; the uncomment marks should be marked as follows
+ /* UNCOMMENT When starting this exercise
+ *and*
+ UNCOMMENT When starting this exercise */
+
 ====
 
 
@@ -131,6 +135,14 @@ Finally, CacheManager is a heavy object; it does a lot, so no need to keep it go
 ----
 
 Great, now we have typed all our code. Let's try to run this example.
+
+[NOTE]
+====
+The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right also.
+
+Remember incase of running maven directly via terminal the path to the exercises project is as follows. `/projects/dg8-workshop/dg8-exercises`. Make sure you are in this directory before you run maven commands from the terminal.
+====
+
 
 Open a terminal in your CodeReady workspace; you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal`, and a terminal should open in your browser. You can also choose to execute the command `Exercise1` in your MyWorkspace Menu on the right.
 
@@ -228,9 +240,9 @@ There are a few interesting things to note about working with all entries using 
 Let us start by initializing our cache with the DefaultCacheManager as we have done so in the previous labs. However, we use the functional API, and hence after getting the cache, our Map implementation is different. 
 
 How to use the Functional API? 
-Using an asynchronous API, all methods that return a single result, return a CompletableFuture which wraps the result. To avoid blocking, it offers the possibility to receive callbacks when the CompletableFuture has completed, or it can be chained or composes with other CompletableFuture instances. 
+Using an asynchronous API, all methods that return a single result, return a CompletableFuture which wraps the result. To avoid blocking, it offers the possibility to receive callbacks when the CompletableFuture has completed, or it can be chained or composes with other CompletableFuture instances. You do not need to write the following snippet, it should already be there.
 
-[source, java, role="copypaste"]
+[source, java]
 ----
         DefaultCacheManager cacheManager = new DefaultCacheManager();
         cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
@@ -240,7 +252,7 @@ Using an asynchronous API, all methods that return a single result, return a Com
         FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
 ----
 
-Next, what you would want to do is asynchronously write to this cache.
+Next, what you would want to do is asynchronously write to this cache. Copy and paste the following snippet to Exercise3.java
 
 [source, java, role="copypaste"]
 ----
