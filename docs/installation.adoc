@@ -45,7 +45,7 @@ apiVersion: infinispan.org/v1
 kind: Infinispan <1>
 metadata:
   name: datagrid-service <2>
-  namespace: user59-cache
+  namespace: {{ USER_ID }}-cache
 spec:
   replicas: 2 <3>
   expose:
