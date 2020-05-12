@@ -74,6 +74,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <uberJar>true</uberJar>
+        </configuration>
       </plugin>
     </plugins>
   </build>
