@@ -12,5 +12,7 @@ import io.quarkus.runtime.StartupEvent;
 @ApplicationScoped
 public class Init {
 
+    // Define member variables
 
+    // Add onStart method
 }

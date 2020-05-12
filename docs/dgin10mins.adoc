@@ -1,7 +1,9 @@
-== DatGrid 8.0 in 10 minutes
+= DatGrid 8.0 in 10 minutes
+:experimental:
+
 The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud. Data Grid includes the Infinispan open-source software project. It is available to deploy as an embedded library, as a standalone server, or as a containerized application on Red Hat OpenShift Container Platform. 
 
-image::dg8.png[Red Hat Data Grid 8.0, 900]
+image::dg8.png[Red Hat Data Grid 8.0, 700]
 
 
 === A Full Lifecycle Operator to reduce deployment and management overhead in OpenShift
@@ -62,7 +64,7 @@ So the need is entirely for a component that can not just cache data in the memo
 4. Events, streams, and distribution capabilites. 
 
 
-image::caching.png[Caching, 900]
+image::caching.png[Caching, 700]
 
 
 By having such capabilites a cache is no longer just a datastructure in the memory, but also as a developer now you have the possiblity to take this component out of your local in memory processing and distribute it out on the network. Thereby incase of application failures you will still be able to access this data from the last point where you left off. 
