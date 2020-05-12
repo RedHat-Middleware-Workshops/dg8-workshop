@@ -44,15 +44,6 @@ The project is now imported into your workspace. Following screenshot shows the 
 
 image::workspaceview.png[crw, 800, align="center"]
 
-==== IMPORTANT: Check out proper Git branch
-
-To make sure you're using the right version of the project files, run this command in a CodeReady Terminal:
-
-[source,sh,role="copypaste"]
-----
-cd $CHE_PROJECTS_ROOT/dg8-workshop && git checkout docs-update
-----
-
 [NOTE]
 ====
 Following is a screenshot of your Workspace command view. These are point and click commands that can be used during the various labs that you will be doing today.
