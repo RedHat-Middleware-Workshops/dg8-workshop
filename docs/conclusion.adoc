@@ -1,4 +1,5 @@
 == Conclusion
+:experimental:
 
 You made it ! Or you jumped to this section. Anyway, congratulations. We hope you enjoy this lab and learn some
 _stuff_. There is many other things about Red Hat Data Grid and Inifinispan that you can do and that was not illustrated here.

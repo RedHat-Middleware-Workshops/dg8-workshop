@@ -1,4 +1,5 @@
 == APPENDIX: Setting up my own machine for the lab
+:experimental:
 
 The labs are designed to run entirely on openshift, there is no mandatory requirement to install the following components. The following instructions are means of guidance for anyone who wants to try them out on their own machine. 
 
@@ -41,7 +42,7 @@ If you don't have an IDE, here are the steps to get started with Eclipse.
 
 [source]
 ----
-git clone https://github.com/jbossdemocentral/sso-kubernetes-workshop.git
+git clone https://github.com/RedHat-Middleware-Workshops/dg8-workshop.git
 ----
 
 
