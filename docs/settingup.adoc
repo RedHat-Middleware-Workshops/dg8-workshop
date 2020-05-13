@@ -1,6 +1,7 @@
 == First Step: Set Your Username!
+:experimental:
 
-In the above box, enter the user ID you were assigned:
+In the above box, enter the user ID you were assigned: 
 
 image::setuser.png[Set User ID above, 900]
 

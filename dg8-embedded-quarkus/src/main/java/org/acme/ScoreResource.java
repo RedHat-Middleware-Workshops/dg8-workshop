@@ -19,6 +19,13 @@ import javax.ws.rs.core.Response.Status;
 @Path("/api")
 public class ScoreResource {
 
+    // Inject ScoreService
+
+    // Implement the create end point
+
+    // To be able to get one entry
+
+    // To update an entry
 
     @OPTIONS
     public Response opt() {

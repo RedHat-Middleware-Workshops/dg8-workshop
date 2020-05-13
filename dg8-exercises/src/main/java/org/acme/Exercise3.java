@@ -39,13 +39,6 @@ public class Exercise3 {
 
         // TODO When the read-only operation completes, print it out
 
-        System.out.printf("Created entries: %n");
-        CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) ->
-                System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
-
-        // Wait for this read/write combination to finish
-        end.get();
-
         // Create a read-write map
         FunctionalMap.ReadWriteMap<String, String> readWriteMap = ReadWriteMapImpl.create(functionalMap);
 

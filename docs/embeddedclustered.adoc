@@ -1,4 +1,6 @@
 == Embeded Cache with a cluster
+:experimental:
+
 In this lab we are going to cluster the embedded cache. Inifinispan does this very nicely. We do not need to change a lot of configuration to achieve this.
 After configuration, we will deploy our application to Openshift and see how the cluster will work in a cloud environment. 
 Following diagram illustrates the topology we want to achieve. Although clustering cache nodes can be in 100s, we will start with a couple of them and see how we can get the feature set we need for a cache.
@@ -152,7 +154,7 @@ image::openshift_login.png[openshift_login, 700]
 Login using:
 
 * Username: `{{ USER_ID }}`
-* Password: `{{ OPENSHIFT_USER_PASSWORD }}!`
+* Password: `{{ OPENSHIFT_USER_PASSWORD }}`
 
 [NOTE]
 ====

@@ -1,3 +1,6 @@
+= Getting started with Data Grid
+:experimental:
+
 Let's delve down into some of the basic features of a Red Hat Data Grid. Our workshop includes a lot more in-depth material going forward, but it's essential we set up a solid base with understanding more about Red Hat Data Grid and Infinispan. In this section, we have prepared six exercises for you. These exercises give a basic introduction to some of the features of the Red Hat Data Grid Java API.
 
 === About your workspace environment today
@@ -36,14 +39,6 @@ https://github.com/RedHat-Middleware-Workshops/dg8-workshop
 ----
 
 image::gitcloneembedded.png[crw, 600, align="center"]
-
-Next, select `$CHE_PROJECTS_ROOT` in the drop-down menu for destination directory:
-
-image::projectplace.png[crw, 600, align="center"]
-
-And click *Select Repository Location*.
-
-Once imported, choose **Add to workspace** when prompted.
 
 The project is now imported into your workspace. Following screenshot shows the workspace view after the project is imported.`dg8-embedded-quarkus`
 
@@ -148,8 +143,8 @@ Open a terminal in your CodeReady workspace; you can do this by using the menu o
 
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise1
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 ----
 
 You should be able to see an output similar to the following.
@@ -206,7 +201,7 @@ And then lets close our CacheManager.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
+    mvn clean compile && \
     mvn exec:java -Dexec.mainClass=org.acme.Exercise2
 ----
 
@@ -284,8 +279,7 @@ Finally, let's print the operation as it completes.
 ----    
         //TODO When the read-only operation completes, print it out
         System.out.printf("Created entries: %n");
-        CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) ->
-                System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
+        CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) -> System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
 
         // Wait for this read/write combination to finish
         end.get();
@@ -296,9 +290,6 @@ Read-write operations offer the possibility of writing values or metadata parame
 
 [source, java, role="copypaste"]
 ----
-        //TODO Create a read-write map
-        FunctionalMap.ReadWriteMap<String, String> readWriteMap = ReadWriteMapImpl.create(functionalMap);
-
         // Use read-write multi-key based operation to write new values
         // together with lifespan and return previous values
         Map<String, String> data = new HashMap<>();
@@ -316,7 +307,7 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
+    mvn clean compile && \
     mvn exec:java -Dexec.mainClass=org.acme.Exercise3
 ----
 
@@ -367,7 +358,7 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
+    mvn clean compile && \
     mvn exec:java -Dexec.mainClass=org.acme.Exercise4
 ----
 
@@ -419,8 +410,8 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise5
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise5
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
@@ -449,7 +440,7 @@ The implementation extends Lucene’s org.apache.lucene.store.Directory so it ca
 
 Since Lucene is part of Infinispan, We need to make sure that we have the right configuration for it. 
 
-[source, java, role="copypaste"]
+[source, java]
 ----
         // Create cache config
         ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -487,7 +478,7 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile
+    mvn clean compile && \
     mvn exec:java -Dexec.mainClass=org.acme.Exercise6
 ----
 
@@ -504,5 +495,5 @@ Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, sur
 
 It's quite simple to add Lucene based search to your cache. Try to change the parameters a bit and experience this more. 
 
-**Congratulations!!* you have completed the first introductory exercises to Red Hat Data Grid 8.0. Let's move on to the next section and experience more in-depth examples.
+*Congratulations!!* you have completed the first introductory exercises to Red Hat Data Grid 8.0. Let's move on to the next section and experience more in-depth examples.
 
