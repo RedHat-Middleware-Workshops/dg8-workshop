@@ -74,7 +74,6 @@ Your task is to write code in the Exercise java file under the right //TODO
 
 ====
 
-
 === Exercise 1: Creating a local Cache
 First, a bit about Maps. Why are Maps good for cache? Maps are fast, they use methods like hashcode() and equals to determine how to add data to the map. This also means they can be fast enough to O(1) time to read and write the data. That is an exceptional performance, and that's what one would expect from a cache. Data storage is in Key and Value pairs. There is a lot more to Maps, but let's start with a basic cache how-to.
 
@@ -83,50 +82,50 @@ Essentially if you were using a Map object, you would just create a Map and stor
 
 CacheManagers are heavyweight objects, and it's not recommended to have more than one CacheManager being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances). 
 
-Add the following to your main method in class Exercise1
+Add following codes at the `// TODO: Construct a simple local cache manager with default configuration` marker in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-    // TODO: Construct a simple local cache manager with default configuration
-    DefaultCacheManager cacheManager = new DefaultCacheManager();
+DefaultCacheManager cacheManager = new DefaultCacheManager();
 ----
 
 Now that we have cacheManager, we can now define what a Cache should look like. We could choose many features from the system, e.g., if we were adding grouping, streams, listeners, strategies for eviction or clustering, etc. we would do that here. The following example just takes the default configuration.
 
-[source, java, role="copypaste"]
-----
-    // TODO: Define local cache configuration
-    cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
-----
-
-Perfect, so now we have defined our cache, time for us to get that cache from our CacheManager. We have also defined that our cache should have both our Key and Value as Strings.
+Add following codes at the `// TODO: Define local cache configuration` marker in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-    // TODO: Obtain the local cache
-    Cache<String, String> cache = cacheManager.getCache("local");
+cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+----
+
+Perfect, so now we have defined our cache, time for us to get that cache from our CacheManager. We have also defined that our cache should have both our Key and Value as Strings. Add following codes at the `// TODO: Obtain the local cache` marker in class Exercise1:
+
+[source, java, role="copypaste"]
+----
+Cache<String, String> cache = cacheManager.getCache("local");
 ----
 
 Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
+Add following codes at the `// TODO: Store a value` marker in class Exercise1:
+
 [source, java, role="copypaste"]
 ----
-    // TODO: Store a value
-    cache.put("key", "value");
+cache.put("key", "value");
 ----
 
-Here we get the value by specifying the key. The key is the same as we used in our previous line ` cache .put`; By specifying a key to the cache, you can get the value stored in it; the same process is also used for an update.
+Here we get the value by specifying the key. The key is the same as we used in our previous line ` cache .put`; By specifying a key to the cache, you can get the value stored in it; the same process is also used for an update. Add following codes at the `// TODO: Store a value` marker in class Exercise1:
+
 [source, java, role="copypaste"]
 ----
-    // TODO: Retrieve the value and print it out
-    System.out.printf("key = %s\n", cache.get("key"));
+System.out.printf("key = %s\n", cache.get("key"));
 ----
 
 Finally, CacheManager is a heavy object; it does a lot, so no need to keep it going on. When done, we close that instance by calling the `stop()` method.
+Add following codes at the `// TODO: Stop the cache manager and release all resources` marker in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-    // TODO: Stop the cache manager and release all resources
-    cacheManager.stop();
+cacheManager.stop();
 ----
 
 Great, now we have typed all our code. Let's try to run this example.
@@ -134,28 +133,23 @@ Great, now we have typed all our code. Let's try to run this example.
 [NOTE]
 ====
 The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right also.
-
-Remember incase of running maven directly via terminal the path to the exercises project is as follows. `/projects/dg8-workshop/dg8-exercises`. Make sure you are in this directory before you run maven commands from the terminal.
 ====
-
 
 Open a terminal in your CodeReady workspace; you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal`, and a terminal should open in your browser. You can also choose to execute the command `Exercise1` in your MyWorkspace Menu on the right.
 
 [source, shell, role="copypaste"]
 ----
-mvn clean compile && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise1
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise1 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following.
 [source, shell, role="copypaste"]
 ----
-[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
-Apr 13, 2020 5:34:46 PM org.infinispan.factories.GlobalComponentRegistry preStart
+Jun 22, 2020 6:40:02 PM org.infinispan.factories.GlobalComponentRegistry preStart
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Apr 13, 2020 5:34:46 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+Jun 22, 2020 6:40:03 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
-key = value
 ----
 
 === Exercise 2: JSR-107 JCache
@@ -181,8 +175,6 @@ Let's take a more in-depth look at the code above
 <4> and here we also set the Type of our Cache, if you remember this is different from our previous exercise since we are using the JSR-107 API now.
 <5> and finally we get our cache
 
-
-
 Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
 [source, java, role="copypaste"]
 ----
@@ -201,21 +193,19 @@ And then lets close our CacheManager.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile && \
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise2
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise2 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
-[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ dg8-exercises ---
-Apr 13, 2020 6:17:56 PM org.infinispan.factories.GlobalComponentRegistry preStart
+Jun 22, 2020 6:54:25 PM org.infinispan.factories.GlobalComponentRegistry preStart
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Apr 13, 2020 6:17:56 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+Jun 22, 2020 6:54:25 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
 key = value
 ----
-
 
 === Exercise 3: Functional API
 The approach taken by the Functional Map API when working with multiple keys is to provide a lazy, pull-style API. All multi-key operations take a collection parameter which indicates the keys to work with (and sometimes contains 'value' information too), and a function to execute for each key/value pair. Each function's ability depends on the entry view received as a function parameter, which changes depending on the underlying map: ReadEntryView for ReadOnlyMap, WriteEntryView for WriteOnlyMap, or ReadWriteView for ReadWriteMap. The return type for all multi-key operations, except the ones from WriteOnlyMap, return an instance of Traversable, which exposes methods for working with the returned data from each function execution. Let's see an example:
@@ -307,15 +297,16 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile && \
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise3
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise3 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
+Jun 22, 2020 6:59:09 PM org.infinispan.factories.GlobalComponentRegistry preStart
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Apr 13, 2020 9:24:12 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+Jun 22, 2020 6:59:09 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
 Created entries: 
 key1 = value1
@@ -332,7 +323,7 @@ value2
 
 With Red Hat Data Grid/Infinispan, you can use the Java Streams API and calculate analytics on existing data. Infinispan offers a simple way of passing lambdas that do not need explicit casting and are Serializable. The ability to execute these streams in a distributed fashion they are serialized in a binary format.
 
- Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are Serializable without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for java streams executions to be distributed. 
+Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are Serializable without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for java streams executions to be distributed. 
 
 With the following, we create a lambda to write data into our cache
 
@@ -358,16 +349,16 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile && \
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise4
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise4 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following. On the last line, you can see your key, the value printed.
 [source, shell, role="copypaste"]
 ----
-Apr 13, 2020 9:32:53 PM org.infinispan.factories.GlobalComponentRegistry preStart
+Jun 22, 2020 7:00:04 PM org.infinispan.factories.GlobalComponentRegistry preStart
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Apr 13, 2020 9:32:53 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+Jun 22, 2020 7:00:05 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
 Result = 45
 ----
@@ -379,8 +370,8 @@ Transactions are essential in any business application. Usually, the transaction
 Lets get the TransactionManager from the cache
 [source, java, role="copypaste"]
 ----
-    //TODO Obtain the transaction manager
-    TransactionManager transactionManager = cache.getAdvancedCache().getTransactionManager();
+        //TODO Obtain the transaction manager
+        TransactionManager transactionManager = cache.getAdvancedCache().getTransactionManager();
 ----
 
 We begin our transaction, write two entries, and then close it.
@@ -410,17 +401,21 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-mvn clean compile && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise5
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise5 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
+Jun 22, 2020 7:01:31 PM org.infinispan.factories.GlobalComponentRegistry preStart
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Apr 13, 2020 9:40:50 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+Jun 22, 2020 7:01:31 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
-Apr 13, 2020 9:40:50 PM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Jun 22, 2020 7:01:31 PM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
 INFO: ISPN000104: Using EmbeddedTransactionManager
 key1 = value1
 key2 = value2
@@ -430,8 +425,8 @@ key2 = value2
 
 So as you can see, even though we wrote the new values, but by rolling back, they do not exist anymore. 
 
-
 === Exercise 6: Queries to the Cache with Lucene
+
 Infinispan includes a highly scalable distributed Apache Lucene Directory implementation.
 
 This directory closely mimicks the same semantics of the traditional filesystem and RAM-based directories, being able to work as a drop-in replacement for existing applications using Lucene and providing reliable index sharing and other features of Infinispan like node auto-discovery, automatic failover, and rebalancing, optionally transactions, and can be backed by traditional storage solutions as filesystem, databases or cloud store engines.
@@ -472,25 +467,25 @@ In the following code, we get the QueryFactory and create a query.
 
 ----
 
-
 Now let's run our code and see how it works.
 
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-    mvn clean compile && \
-    mvn exec:java -Dexec.mainClass=org.acme.Exercise6
+mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise6 -f /projects/dg8-workshop/dg8-exercises
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
+Jun 22, 2020 7:03:18 PM org.hibernate.search.engine.Version <clinit>
 INFO: HSEARCH000034: Hibernate Search 5.10.7.Final-redhat-00001
-Apr 13, 2020 9:57:45 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+Jun 22, 2020 7:03:18 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
 INFO: HCANN000001: Hibernate Commons Annotations {5.0.5.Final}
-Apr 13, 2020 9:57:45 PM org.infinispan.query.impl.LifecycleManager createQueryInterceptorIfNeeded
+Jun 22, 2020 7:03:18 PM org.infinispan.query.impl.LifecycleManager createQueryInterceptorIfNeeded
 INFO: ISPN014003: Registering Query interceptor for cache cache
-Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, surname=Shakespeare][
+Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, surname=Shakespeare]
 ----                
 
 It's quite simple to add Lucene based search to your cache. Try to change the parameters a bit and experience this more. 

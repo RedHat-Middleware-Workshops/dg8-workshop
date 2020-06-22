@@ -1,9 +1,15 @@
-== First Step: Set Your Username!
+= Setting up
 :experimental:
 
-In the above box, enter the user ID you were assigned: 
+== First Step: Confirm Your Username!
 
-image::setuser.png[Set User ID above, 900]
+Look in the box at the top of your screen. Is your username set already? If so it will look like this:
+
+image::alreadyset.png[Set User ID above, 700]
+
+If your username is properly set, then you can move on. **If not, in the above box, enter the user ID you were assigned** like this:
+
+image::setuser.png[Set User ID above, 700]
 
 This will customize the links and copy/paste code for this workshop. If you accidently type the wrong username, just click the green recycle icon to reset it.
 
@@ -36,7 +42,7 @@ echo "This is a bash shell command that you can copy/paste by clicking"
 
 Your workshop environment consists of several components which have been pre-installed and are ready to use. Depending on which parts of the workshop you’re doing, you will use one or more of:
 
-* https://www.openshift.com/[Red Hat OpenShift,window=_blank] - You’ll use one or more )**projects** (Kubernetes namespaces) that are your own and are isolated from other workshop students
+* https://www.openshift.com/[Red Hat OpenShift,window=_blank] - You’ll use one or more *projects* (Kubernetes namespaces) that are your own and are isolated from other workshop students
 * https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces,window=_blank] - based on *Eclipse Che*, it’s a cloud-based, in-browser IDE (similar to IntelliJ IDEA, VSCode, Eclipse IDE). You’ve been provisioned your own personal workspace for use with this workshop. You’ll write, test, and deploy code from here.
 * https://www.redhat.com/en/products/runtimes[Red Hat Runtimes, window=_blank] - a collection of cloud-native runtimes like Spring Boot, Node.js, and https://quarkus.io[Quarkus, window=_blank]
 
