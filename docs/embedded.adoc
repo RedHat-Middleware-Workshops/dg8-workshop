@@ -1,7 +1,7 @@
 = Caching 101, Let's get started with your first app
 :experimental:
 
-What could be cases where you want to use Cache; Let's take a moment and think about it. Where do you think you could use cache? 
+What could be cases where you want to use Cache. Let's take a moment and think about it. Where do you think you could use cache? 
 Well there could be limitless answers to this question; Some common usecases are listed below
 
 - Lookup Data; if you have an app, that needs some user profile data etc, thats unecessary to pole everytime, and it doesnt change much
@@ -332,6 +332,11 @@ We will use this menu through out the labs. There is a bunch of commands created
 First Let's login to Openshift. You will find the button in the right corner in MyWorkspace menu. 
 Click `Login to Openshift` 
 
+[NOTE]
+====
+After you log in using *Login to OpenShift*, the terminal is no longer usable as a regular terminal. You can close the terminal window. You will still be logged in when you open more terminals later!
+====
+
 Let's run our project click on the Command `Emebdded - Start Live Coding`
 This will enable Live coding, it will open up a small terminal to build your artifact and then open up a browser view
 
@@ -441,7 +446,7 @@ Add the following line to `onStart` method in *ScoreService.java*. It should be 
 
 [source, java, role="copypaste"]
 ----
-    config.expiration().lifespan(5, TimeUnit.SECONDS);
+config.expiration().lifespan(5, TimeUnit.SECONDS);
 ----
 
 Also change the `save` method implementation back to the following:
@@ -502,7 +507,7 @@ In our example below we are going to limit our Cache to only 2 entries, anything
 
 [source, java, role="copypaste"]
 ----
-    config.memory().size(2).build();
+config.memory().size(2).build();
 ----
 
 and re-run the load script:
@@ -563,7 +568,7 @@ It should be pasted after *scoreCache = cacheManager.getCache("scoreboard");* li
 
 [source, java, role="copypaste"]
 ----
-    scoreCache.addListener(new CacheListener());
+scoreCache.addListener(new CacheListener());
 ----
 
 Now if we update the entries in our cache or create new ones; we will see a notification on the our console. Let's test this out. 
