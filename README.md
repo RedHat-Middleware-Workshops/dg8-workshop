@@ -1,5 +1,16 @@
-# dg8-workshop
+# This is the Data Grid 8.0 workshop
 
+The workshop can be deployed on Openshift 4.3+ cluster. 
+It requires the DataGrid, CodeReady operators. 
+
+## Contributing
+Incase you find an issue; use the issues; 
+Incase you want to fix an issue; create a PR to the development branch
+
+## Docs/Instructions
+After you have cloned this repo. Head off to the docs directory and run the runFile.sh and head of to localhost:4000 to view the documentation.
+
+## Deployment
 If you are looking to deploy this workshop on Openshift 4.3:
 
 ```
