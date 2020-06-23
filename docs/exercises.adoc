@@ -82,50 +82,52 @@ Essentially if you were using a Map object, you would just create a Map and stor
 
 CacheManagers are heavyweight objects, and it's not recommended to have more than one CacheManager being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances). 
 
-Add following codes at the `// TODO: Construct a simple local cache manager with default configuration` marker in class Exercise1:
+Add the following to your main method in class Exercise1
 
 [source, java, role="copypaste"]
 ----
-DefaultCacheManager cacheManager = new DefaultCacheManager();
+    // TODO: Construct a simple local cache manager with default configuration
+    DefaultCacheManager cacheManager = new DefaultCacheManager();
 ----
 
 Now that we have cacheManager, we can now define what a Cache should look like. We could choose many features from the system, e.g., if we were adding grouping, streams, listeners, strategies for eviction or clustering, etc. we would do that here. The following example just takes the default configuration.
 
-Add following codes at the `// TODO: Define local cache configuration` marker in class Exercise1:
+[source, java, role="copypaste"]
+----
+    // TODO: Define local cache configuration
+    cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
+----
+
+Perfect, so now we have defined our cache, time for us to get that cache from our CacheManager. We have also defined that our cache should have both our Key and Value as Strings.
 
 [source, java, role="copypaste"]
 ----
-cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
-----
-
-Perfect, so now we have defined our cache, time for us to get that cache from our CacheManager. We have also defined that our cache should have both our Key and Value as Strings. Add following codes at the `// TODO: Obtain the local cache` marker in class Exercise1:
-
-[source, java, role="copypaste"]
-----
-Cache<String, String> cache = cacheManager.getCache("local");
+    // TODO: Obtain the local cache
+    Cache<String, String> cache = cacheManager.getCache("local");
 ----
 
 Finally lets put the value in the Cache. Change the "Key" and "Value" to e.g. name and yourname or feel free to use something else. 
-Add following codes at the `// TODO: Store a value` marker in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-cache.put("key", "value");
+    // TODO: Store a value
+    cache.put("key", "value");
 ----
 
-Here we get the value by specifying the key. The key is the same as we used in our previous line ` cache .put`; By specifying a key to the cache, you can get the value stored in it; the same process is also used for an update. Add following codes at the `// TODO: Store a value` marker in class Exercise1:
+Here we get the value by specifying the key. The key is the same as we used in our previous line ` cache .put`; By specifying a key to the cache, you can get the value stored in it; the same process is also used for an update.
 
 [source, java, role="copypaste"]
 ----
-System.out.printf("key = %s\n", cache.get("key"));
+    // TODO: Retrieve the value and print it out
+    System.out.printf("key = %s\n", cache.get("key"));
 ----
 
 Finally, CacheManager is a heavy object; it does a lot, so no need to keep it going on. When done, we close that instance by calling the `stop()` method.
-Add following codes at the `// TODO: Stop the cache manager and release all resources` marker in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-cacheManager.stop();
+    // TODO: Stop the cache manager and release all resources
+    cacheManager.stop();
 ----
 
 Great, now we have typed all our code. Let's try to run this example.
@@ -133,14 +135,16 @@ Great, now we have typed all our code. Let's try to run this example.
 [NOTE]
 ====
 The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right also.
+
+Remember incase of running maven directly via terminal the path to the exercises project is as follows. `/projects/dg8-workshop/dg8-exercises`. Make sure you are in this directory before you run maven commands from the terminal.
 ====
 
 Open a terminal in your CodeReady workspace; you can do this by using the menu on the right hand called MyWorkspace. Click on `New Terminal`, and a terminal should open in your browser. You can also choose to execute the command `Exercise1` in your MyWorkspace Menu on the right.
 
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise1 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 ----
 
 You should be able to see an output similar to the following.
@@ -193,8 +197,8 @@ And then lets close our CacheManager.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise2 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise2
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
@@ -297,8 +301,8 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise3 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise3
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
@@ -349,8 +353,8 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise4 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise4
 ----
 
 You should be able to see an output similar to the following. On the last line, you can see your key, the value printed.
@@ -401,8 +405,8 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise5 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise5
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
@@ -472,8 +476,8 @@ Now let's run our code and see how it works.
 Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
-mvn clean compile -f /projects/dg8-workshop/dg8-exercises && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise6 -f /projects/dg8-workshop/dg8-exercises
+mvn clean compile && \
+mvn exec:java -Dexec.mainClass=org.acme.Exercise6
 ----
 
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
