@@ -22,14 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// TODO: Add an Infinispan annotation here
 @Service
 public class EmbeddedCacheService {
-
-   // TODO: Add cacheConfigurer method here
-
-   // TODO: Add globalCustomizer method here
-  
-   // TODO: Add SessionController class here
 
 }
