@@ -34,7 +34,7 @@ Step through the prompts, using the following value for **Repository URL**:
 [source, shell, role="copypaste"]
 ----
 
-https://github.com/RedHat-Middleware-Workshops/dg8-workshop
+https://github.com/RedHat-Middleware-Workshops/dg8-workshop-labs
 
 ----
 

@@ -42,7 +42,7 @@ If you don't have an IDE, here are the steps to get started with Eclipse.
 
 [source]
 ----
-git clone https://github.com/RedHat-Middleware-Workshops/dg8-workshop.git
+git clone https://github.com/RedHat-Middleware-Workshops/dg8-workshop-labs.git
 ----
 
 
