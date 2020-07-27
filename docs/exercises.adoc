@@ -1,7 +1,7 @@
 = Getting started with Data Grid
 :experimental:
 
-Let's delve down into some of the basic features of a Red Hat Data Grid. Our workshop includes a lot more in-depth material going forward, but it's essential we set up a solid base with understanding more about Red Hat Data Grid and Infinispan. In this section, we have prepared six exercises for you. These exercises give a basic introduction to some of the features of the Red Hat Data Grid Java API.
+Let's delve down into some of the basic features of a Red Hat Data Grid. Our workshop includes a lot more in-depth material going forward, but it's essential we set up a solid base with understanding more about Red Hat Data Grid (product of Infinispan community project). In this section, we have prepared six exercises for you. These exercises give a basic introduction to some of the features of the Red Hat Data Grid Java API.
 
 === About your workspace environment
 For developments and deployment, we use the using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. *Changes to files are auto-saved every few seconds*, so you don't need to save changes explicitly.
