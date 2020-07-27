@@ -29,7 +29,7 @@ Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], ente
 
 image::gitclonepage.png[cdw, 600, align="center"]
 
-Step through the prompts, using the following value for **Repository URL**:
+Step through the prompts, using the following value for **Repository URL**. If you use *FireFox*, it may end up pasting extra spaces at the end, so just press backspace after pasting:
 
 [source, shell, role="copypaste"]
 ----
