@@ -20,7 +20,7 @@ We are going to add the following lines of code to our onStart method
         cacheManager = new DefaultCacheManager(global.build());
 ----
 
-Copy the and replace the onStart method in our ScoreService.java
+Replace the onStart method in our ScoreService.java
 
 [source, java, role="copypaste"]
 ----
@@ -45,9 +45,9 @@ Copy the and replace the onStart method in our ScoreService.java
 ----
 <1> We define a global configuration, since we are going to be in a clustered mode, hence everytime a new instance of our app will be created it will have the global configuration parameters to talk to the other nodes if they are present.
 
-<2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks, which define properties for either UDP or TCP protocols. Here we have defined a unique clusterName for our app's embedded cache
+<2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks, which define properties for either UDP or TCP protocols. Here we have defined a unique clusterName for our app's embedded cache manager.
 
-<3> We setup a distributed cache, which means that not all our nodes will have all the keys. 
+<3> We setup a distributed cache, which means that not all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
 
 We will take a look into replicaiton and distribution furhter in this lab.
 
