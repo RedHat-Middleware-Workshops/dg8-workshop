@@ -14,7 +14,7 @@ image::embeddedcache.png[Caching, 700]
 
 The above figure depicts a common scenario when you dont want to use a networked dataset that could be slow and with high latency, but rather use an inmemory cache. In this case the in-memory cache becomes the front for the data. 
 
-This lab is about an embedded or local cache, also a common usecase for applications.  What is an Embedded Cache in Red Hat Data Grid?
+This lab is about an embedded cache in local or clustered mode, also a common usecase for applications.  What is an Embedded Cache in Red Hat Data Grid?
 
 === Embedded Cache, Some basics
 
@@ -437,8 +437,8 @@ Okay now its time to test this change. Go back into the terminal and run `load.s
 sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh 
 ----
 
-Reload *PREVIW* right away. and you will see the entries again. Now wait for 5 seconds and reload again. 
-You will see the entries have expired. This is becuase we set the timespan to 5 seconds.
+Reload *PREVIEW* right away. and you will see the entries again. Now wait for 5 seconds and reload again. 
+You will see the entries have expired. This is because we set the lifespan to 5 seconds.
 
 In the previous step we used the overloaded put() method to store mortal entries. But since we want all of our entries to expire with the same lifespan, we can configure the cache to have default expiration values. To do this we will construct the DefaultCacheManager by passing in a org.infinispan.configuration.cache.Configuration object. A configuration in Infinispan is mostly immutable, aside from some runtime-tunable parameters, and is constructed by means of a ConfigurationBuilder. Using the above use-case, let's create a cache configuration where we want to set the default expiration of entries to 5 seconds. 
 
@@ -466,7 +466,7 @@ sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh
 ----
 
 Reload *PREVIEW* right away. and you will see the entries again. Now wait for 5 seconds and refresh again. 
-You will see the entries have expired. This is becuase we set the timespan to 5 seconds for the CacheManager.
+You will see the entries have expired. This is becuase we set the lifespan to 5 seconds for the CacheManager.
 
 Now this is a configuration change for the cache and this will expire all entries after 5 seconds. 
 
@@ -484,18 +484,30 @@ Red Hat Data Grid supports eviction of entries, such that you do not run out of 
 
 [NOTE]
 ====
-Eviction occurs on a local basis, and is not cluster-wide. Each node runs an eviction thread to analyse the contents of its in-memory container and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to starts evicting entries. You have to set size attribute of the eviction element to be greater than zero in order for eviction to be turned on. If size is too large you can run out of memory. The size attribute will probably take some tuning in each use case.
+Eviction occurs on a local basis, and is not cluster-wide. Each instance will analyze on adding a new entry whether the threshold for evction is reached and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to starts evicting entries. You have to set size attribute of the eviction element to be greater than zero in order for eviction to be turned on. If size is too large you can run out of memory. The size attribute will probably take some tuning in each use case.
+====
+
+[NOTE]
+====
+Eviction is not recommended to use without a persistence as it will cause inconsistencies between the clustered instances!
 ====
 
 === Difference between Eviction and Expiration
 
-Both Eviction and Expiration are means of cleaning the cache of unused entries and thus guarding the heap against OutOfMemory exceptions, so now a brief explanation of the difference.
+Both Eviction and Expiration are means of cleaning the cache of unused entries and thus guarding the heap against OutOfMemory exceptions, but eviction is primary to control the data in memory and expirationis to control the lifecycle of entries.
+So now a brief explanation of the difference.
 
-- With eviction you set maximal number of entries you want to keep in the cache and if this limit is exceeded, some candidates are found to be removed according to a choosen eviction strategy (LRU, LIRS, etc…​). Eviction can be setup to work with passivation, which is eviction to a cache store.
+- With eviction you set maximal number of entries you want to keep in the memory and if this limit is exceeded if entries are added, a candidate is found to be dropped from memory according to the eviction strategy.
+  - eviction stategy depends on the memory configuration, see link:hhttps://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/configuring_data_grid/memory#eviction-config[Configuring Data Grid - Eviction, window=_blank] for more details
+  - Eviction can be set up with passivation in that case the entry is only persisted if evicted from memory
 
 - With expiration you set time criteria for entries to specify how long you want to keep them in the cache.
 
 - *lifespan* Specifies how long entries can remain in the cache before they expire. The default value is -1, which is unlimited time.
+[NOTE]
+====
+A new put() will reset the lifespan.
+====
 
 - *maximum idle time* Specifies how long entries can remain idle before they expire. An entry in the cache is idle when no operation is performed with the key. The default value is -1, which is unlimited time.
 
@@ -518,6 +530,12 @@ sh $CHE_PROJECTS_ROOT/dg8-workshop/dg8-embedded-quarkus/scripts/load.sh
 ----
 
 Reload *PREVIEW* right away and you will see the entries again. But this time note that there are only two entries. And thats what we had specified in our Cache configuration.
+
+[NOTE]
+====
+This is only to demonstrate how eviction works, it is not deterministic which entry is evicted, and without a persistent cache store it effectively means removed.
+Consider eviction is local and will evict an entry based on the local access history, so different instances will evict different entries. In that case, without persistence, it depends which node is used to retrieve an entry and the result will be different for the same key.
+====
 
 
 === Listeners
