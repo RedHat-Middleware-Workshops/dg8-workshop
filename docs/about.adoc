@@ -8,12 +8,11 @@ Creating a distributed application means one has to take specials care of latenc
 What is Red Hat Data Grid? 
 Red Hat Data Grid 8.0 provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable your applications to perform better with its in-memory solution. 
 
+This lab offers attendees an intro-level, hands-on session with Red Hat Data Grid. From the first line of code to building & consuming services and finally to assembling everything and deploying it on Openshift. It illustrates what a Cache is, how to build applications with a distributed cache, as well as best practices on designing applications with caching in mind.
 
-This lab offers attendees an intro-level, hands-on session with Red Hat Data Grid. From the first line of code to making services to consuming them and finally to assembling everything and deploying it on Openshift. It illustrates what Cache is, how to program with a distributed cache, and how to build applications and best practices on designing applications with Cache.
+Deploying and maintaining microservices can become challenging. There are many elements of software design one needs to ensure in constructing and maintaining distributed services. To help us deploy our microservices we are going to use Openshift, a Kubernetes distribution from Red Hat. Kubernetes (commonly referred to as "K8s") is an open-source system for automating deployment, scaling, and management of containerized applications that was originally designed by Google and donated to the Cloud Native Computing Foundation. It aims to provide a "platform for automating deployment, scaling, and operations of application containers across clusters of hosts". In this workshop, we are using a specific distribution of K8s named OpenShift that provide a few sets of features beneficial to maintain our microservices. We use OpenShift in this lab because of the complexity involved when dealing with multiple microservices, their updates, downtimes, and so on.
 
-Deploying and maintaining microservices can become challenging. There are many elements of software design one needs to ensure in constructing and maintaining distributed services. To help us deploying our microservices, we are going to use Openshift, a Kubernetes distribution from Red Hat. Kubernetes (commonly referred to as "K8s") is an open-source system for automating deployment, scaling, and management of containerized applications that was originally designed by Google and donated to the Cloud Native Computing Foundation. It aims to provide a "platform for automating deployment, scaling, and operations of application containers across clusters of hosts". In this workshop, we are using a specific distribution of K8s named OpenShift that provide a few sets of features beneficial to maintain our microservices. We use Openshift in this lab because of the complexity involved when dealing with multiple microservices, their updates, downtimes, and so on.
-
-This is a BYOL (Bring Your Own Laptop) session. You will be provided with a CodeReady Workspace, an Openshift environment all pre-provisioned. If you prefer to run locally on your laptop, you can do development on your laptop. Still, you will need to use the provided Openshift environment as Operators installed for you are already set up there. So bring your Windows, OSX, or Linux laptop. You need JDK 8+ on your machine, and Apache Maven (3.5+).
+This is a BYOL (Bring Your Own Laptop) session. You will be provided with a CodeReady Workspace, an Openshift environment all pre-provisioned. If you prefer to run locally on your laptop, you can do development on your laptop. Still, you will need to use the provided OpenShift environment as Operators installed for you are already set up there. So bring your Windows, OSX, or Linux laptop. If you decide to run locally on your laptop you need JDK 8+ and Apache Maven (3.5+).
 
 What you are going to learn:
 
@@ -21,15 +20,9 @@ What you are going to learn:
  * What is a Cache, and how to start with the common use cases
  * What is an Embedded Cache
  * What is Clustering in a Cache scenario and how it works
- * What is a Remote Cache and how to take benefit of Red Hat Data Grid
- * How to build applications with known frameworks like Quarkus and Spring.
- * How to use the Red Hat Data Grid server REST API.
- * How to externalize sessions.
+ * What is a Remote Cache and how to take benefit of it within Red Hat Data Grid
+ * How to build applications with known frameworks like Quarkus and Spring
+ * How to use the Red Hat Data Grid server REST API
+ * How to externalize sessions
 
-And many more.
-
-[NOTE]
-====
-Don't expect to complete this lab in 3 hours. it will take you a lot more. But that's not a big deal. Pick the topic you want, learn what you want, and come back later to learn more.
-====
-
+And much more!
