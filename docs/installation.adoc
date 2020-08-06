@@ -1,10 +1,11 @@
 === Deployment: What's an Operator and how does it help us?
 :experimental:
 
-An Operator is a method of packaging, deploying and managing a Kubernetes-native application. A Kubernetes-native application is an application that is both deployed on Kubernetes and managed using the Kubernetes APIs and kubectl tooling. An Operator is essentially a custom controller.
-A controller is a core concept in Kubernetes and is implemented as a software loop that runs continuously on the Kubernetes master nodes comparing, and if necessary, reconciling the expressed desired state and the current state of an object. Objects are well known resources like Pods, Services, ConfigMaps, or PersistentVolumes. Operators apply this model at the level of entire applications and are, in effect, application-specific controllers.
+An Operator is a method of packaging, deploying, and managing a Kubernetes-native application. A Kubernetes-native application is an application that is both deployed on Kubernetes and managed using the Kubernetes APIs and tooling. An Operator is essentially a custom controller and encapsulates operational knowledge.
 
-The Operator is a piece of software running in a Pod on the cluster, interacting with the Kubernetes API server. It introduces new object types through Custom Resource Definitions, an extension mechanism in Kubernetes. These custom objects are the primary interface for a user; consistent with the resource-based interaction model on the Kubernetes cluster.
+A controller is a core concept in Kubernetes and is implemented as a software loop that runs continuously on Kubernetes comparing, and if necessary, reconciling the expressed desired state and the current state of an object. Objects are well known resources like `Pods`, `Services`, `ConfigMaps`, or `PersistentVolumes`. Operators apply this model at the level of entire applications and are, in effect, application-specific controllers.
+
+The Operator is a piece of software running in a `Pod` on the cluster, interacting with the Kubernetes API server. It introduces new object types through Custom Resource Definitions, an extension mechanism in Kubernetes. These custom objects are the primary interface for a user; consistent with the resource-based interaction model on the Kubernetes cluster.
 
 An Operator watches for these custom resource types and is notified about their presence or modification. When the Operator receives this notification it will start running a loop to ensure that all the required connections for the application service represented by these objects are actually available and configured in the way the user expressed in the object’s specification.
 
@@ -12,12 +13,12 @@ The Operator Lifecycle Manager (OLM) is the backplane that facilitates managemen
 
 With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a team access to an Operator for their slice of the cluster.
 
-Red Hat Data Grid 8.0 comes with an Operator. The administrators of the cluster have already installed the Data Grid Operator, what we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
+Red Hat Data Grid 8.0 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
 
 === Installing
-Assuming you have already logged in to openshift from the CodeReady terminal, if not you can do it now. Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. 
+If you have not already logged into OpenShift from the CodeReady Workspaces terminal, please do that now.Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. When prompted, your *Username* is `{{ USER_ID }}` and your *Password* is `{{ OPENSHIFT_USER_PASSWORD }}`.
 
-First, open a new browser with the link:{{ CONSOLE_URL }}[OpenShift web console^]
+Open a new browser to the link:{{ CONSOLE_URL }}[OpenShift web console^]
 
 image::openshift_login.png[openshift_login, 700]
 
@@ -52,12 +53,14 @@ spec:
     type: LoadBalancer <4>
 ----
 
-<1> Tell Kubernetes/Openshift that the Custom resource type is Infinispan.
-<2> Specify the name of our cluster as datagrid-service.
-<3> Specify the replicas we want for our service.
-<4> Finally we want this instance to be accessible from outside(i.e. OpenShift Web Console).
+<1> Tell Kubernetes/Openshift that the Custom resource type is Infinispan
+<2> Specify the name of our cluster as datagrid-service
+<3> Specify the replicas we want for our service
+<4> Finally we want this instance to be accessible from outside (i.e. OpenShift Web Console)
 
 Also notice that we are calling our service `datagrid-service`, we will use this name in the following labs to access our cluster.
+
+Click *Create* at the bottom.
 
 You can watch the Red Hat Data Grid Operator creating the instances by running the following command:
 
@@ -98,16 +101,16 @@ You can see that there are three datagrid-services,
 - 1 for ping service which ensures that the clusters are healthy and operational 
 - and lastly the external service, which we will use to goto the Admin console.
 
-Run the following command to get the loadbalancer address 
+Run the following command to get the `LoadBalancer` address 
 
 [source, shell, role="copypaste"]
 ----
 oc get services | grep datagrid-service-external | awk '{ print $4 }'
 ----
 
-As you can see we have a service with our LoadBalancer. Let's get that url and paste it in the browser as follows
+As you can see we have a service with our `LoadBalancer`. Let's get that url and paste it in the browser as follows
 
-The following is an example, your loadbalancer url might differ:
+The following is an example, your `LoadBalancer` url will most likely differ:
 
 * `http://ad6cd35d6e6aa46fcb96558204c35f08-872149037.us-east-1.elb.amazonaws.com:11222`
 
