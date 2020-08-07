@@ -1,15 +1,17 @@
 = Lab10 - Externalizing Sessions
 :experimental:
 
-In this lab, we'll develop how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. It allows Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_ which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scene, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
+In this lab, we'll develop how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_, which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scenes, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
 
 === 1. Developing EmbeddedCache Service
 
-The _embeddedCache service_ allows Spring Boot application to emded the HttpSession data at in-memory data storage when users invoke RESTful endpoints in the frontend web page. Lets’s go through quickly how the embeddedCache service gets REST services to address *Spring Session* with *In-Memory Cache* with *Red Hat Data Grid 8*. Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
+An embedded cache service allows Spring Boot applications to emded HTTP session data in an in-memory data storage when users invoke RESTful endpoints in a frontend web page. Lets’s go through quickly how this works. We'll be using *Spring Session* combined with an *In-Memory Cache* privided by *Red Hat   the embeddedCache service gets REST services to address *Spring Session* with *In-Memory Cache* with *Red Hat Data Grid 8*. 
+
+Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
 
 image::codeready-workspace-embeddedCache-project.png[embeddedCache, 700]
 
-There’re a few interesting things what we need to take a look at this Spring Boot application before we will develop it in CodeReady Workspaces.
+There’re a few interesting things what we need to take a look at in this Spring Boot application before we will develop it in CodeReady Workspaces.
 
 This embeddedCache service is not using the default BOM (Bill of material) that Spring Boot projects typically use. Instead, we are using an Infinispan BOM provided by Red Hat that provides a high-level API to ensure compatibility between major versions of Data Grid. You can also enforce a specific version of Data Grid with the infinispan-bom module. Let's take a look at *infinispan-bom* to your `pom.xml` file as follows:
 
@@ -40,7 +42,7 @@ This embeddedCache service is not using the default BOM (Bill of material) that 
 
 image::embeddedCache-pom.png[embeddedCache, 700]
 
-In order to use *Embedded Mode* in Spring Boot, _infinispan-spring-boot-starter-embedded_ dependency is already pulled in your pom.xml file. This starter produces a _SpringEmbeddedCacheManager_ bean by default:
+In order to use *Embedded Mode* in Spring Boot, `infinispan-spring-boot-starter-embedded` dependency is already pulled in your `pom.xml` file. This starter produces a `SpringEmbeddedCacheManager` bean by default:
 
 [source,xml]
 ----
@@ -53,14 +55,14 @@ In order to use *Embedded Mode* in Spring Boot, _infinispan-spring-boot-starter-
 
 image::embeddedCache-pom2.png[embeddedCache, 700]
 
-Create an *InfinispanCacheConfigurer* bean to customize the cache manager. Open a Java class called `EmbeddedCacheService.java` in _com.redhat.com.rhdg.service_ and copy below the `// TODO: Add cacheConfigurer method here` marker:
+Create an *InfinispanCacheConfigurer* bean to customize the cache manager. Open the Java class called `EmbeddedCacheConfig.java` in the `com.redhat.com.rhdg.config` package and copy below the `// TODO: Add cacheConfigurer method here` marker:
 
 [source,java,role="copypaste"]
 ----
    @Bean
    public InfinispanCacheConfigurer cacheConfigurer() {
       return manager -> {
-         final Configuration ispnConfig = new ConfigurationBuilder()
+         final org.infinispan.configuration.cache.Configuration ispnConfig = new ConfigurationBuilder()
                .clustering()
                .cacheMode(CacheMode.REPL_SYNC)
                .build();
@@ -89,44 +91,7 @@ Copy below the `// TODO: Add globalCustomizer method here` marker to customize I
    }
 ----
 
-Next, Autowire *cacheManager* to *SpringEmbeddedCacheManager* then implment REST APIs to _createSession_, _deleteSession_. Copy below the `// TODO: Add SessionController class here` marker:
-
-[source,java,role="copypaste"]
-----
-   @RestController
-	static class SessionController {
-
-      private int count = 0;
-
-		@Autowired
-		SpringEmbeddedCacheManager cacheManager;
-
-		@RequestMapping("/session")
-		public Map<String, String> createSession(HttpServletRequest request) {
-
-         Map<String, String> result = new HashMap<>();
-
-			String sessionId = request.getSession().getId();
-         result.put("created:", sessionId);
-         result.put("active:", cacheManager.getCache("sessions").getNativeCache().keySet().toString());
-         result.put("count:", String.valueOf(count));
-         count++;
-
-         return result;
-         
-        }
-        
-      @RequestMapping("/delete")
-		public void deleteSession(HttpServletRequest request) {
-
-         request.getSession().invalidate();
-         count = 0;
-
-		}
-	}
-----
-
-Add the *@EnableInfinispanEmbeddedHttpSession* annotation to _EmbeddedCacheService_ to enable Spring Cache support. When this starter detects the EmbeddedCacheManager bean, it instantiates a new SpringEmbeddedCacheManager, which provides an implementation of https://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html[Spring Cache^].
+Finally, add the `@EnableInfinispanEmbeddedHttpSession`` annotation to the `EmbeddedCacheConfig` class to enable Spring Cache support. When this starter detects the EmbeddedCacheManager bean, it instantiates a new `SpringEmbeddedCacheManager`, which provides an implementation of https://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html[Spring Cache^].
 
 Copy below the `// TODO: Add an Infinispan annotation here` marker:
 [source,java,role="copypaste"]
@@ -142,7 +107,7 @@ Now we will build and deploy the project using the following command, which will
 
 [source,sh,role="copypaste"]
 ----
-mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/dg8-workshop/dg8-spring-session
+mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-spring-session
 ----
 
 Create a build configuration for your application using OpenJDK base container image in OpenShift:
@@ -156,7 +121,7 @@ Start and watch the build, which will take about minutes to complete:
 
 [source,sh,role="copypaste"]
 ----
-oc start-build cacheapp --from-file=$CHE_PROJECTS_ROOT/dg8-workshop/dg8-spring-session/target/rhdg-0.0.1-SNAPSHOT.jar --follow 
+oc start-build cacheapp --from-file=$CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-spring-session/target/rhdg-0.0.1-SNAPSHOT.jar --follow 
 ----
 
 Deploy it as an OpenShift application after the build is done:
@@ -173,7 +138,7 @@ image::embeddedCache-topology.png[embeddedCache, 500]
 
 === 3. Testing EmbeddedCache Service
 
-Let's scale up the cache service to make sure if the clustered Spring applications refer to _Spring Session_ in Data Grid. Click on `Up Arrow` once in _Overview_ page:
+Let's scale up the cache service to make sure the clustered Spring applications refer to _Spring Session_ in Data Grid. Click on `Up Arrow` once in _Overview_ page:
 
 image::embeddedCache-scaleup-start.png[embeddedCache, 700]
 
