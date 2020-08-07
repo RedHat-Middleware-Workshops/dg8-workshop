@@ -2,39 +2,40 @@
 :experimental:
 
 The Data Grid REST API allows you to monitor, maintain, and manage Data Grid deployments and provides access to your data.
-Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate some of them.
-For more details on the documentation on the Red Hat Data Grid REST API. Please visit the documentation page.
+Although the REST API has a vast amount of features that one can use, in our lab we will demonstrate only some of them.
+For more details on the documentation on the Red Hat Data Grid REST API please visit the documentation page.
 Infinispan servers provide RESTful HTTP access to data through a REST endpoint built on Netty.
 
 === Supported Formats
 You can write and read data in different formats and Data Grid can convert between those formats when required.
 
 The following "standard" formats are interchangeable:
-- application/x-java-object
-- application/octet-stream
-- application/x-www-form-urlencoded
-- text/plain
+
+- `application/x-java-object`
+- `application/octet-stream`
+- `application/x-www-form-urlencoded`
+- `text/plain`
 
 We are using this example from the very good lists of demo collection on github: https://github.com/infinispan-demos/links
 We will do the following
 
-<1> Create a Cache in infinispan with Lucene support
-<2> We will define our protostream
-<3> We will load bulk data into the cache
-<3> we will use search queries directly into the cache.
+. Create a Cache in infinispan with Lucene support
+. Define our protostream
+. Load bulk data into the cache
+. Use search queries directly into the cache
 
-Let's get started.
-
+Let's get started!
 
 == The Pokeman Example
 
-First; what is a Pokemon, incase some of us didn't know. Reminiscences from the GameBoy the creatures that inhabit the world of Pokémon are also called Pokémon. Many species of Pokémon are capable of evolving into a larger and more powerful creature. The change is accompanied by stat changes, generally a modest increase, and access to a wider variety of attacks. There are multiple ways to trigger an evolution including reaching a particular level, using a special stone, or learning a specific attack. For example, at level 16 Bulbasaur is capable of evolving into Ivysaur. Most notably, the Normal-type Eevee is capable of evolving into eight different Pokémon: Jolteon (Electric), Flareon (Fire), Vaporeon (Water), Umbreon (Dark), Espeon (Psychic), Leafeon (Grass), Glaceon (Ice), and Sylveon (Fairy). In Generation VI, a new mechanic called Mega Evolution—as well as a subset of Mega Evolution called Primal Reversion—was introduced into the game. Unlike normal evolution, Mega Evolution and Primal Reversion last only for the duration of a battle, with the Pokémon reverting to its normal form at the end. Forty-eight Pokémon are capable of undergoing Mega Evolution or Primal Reversion as of the release of Sun and Moon. In contrast, some species such as Castform, Rotom, Unown, and Lycanroc undergo form changes that may provide stat buffs or changes and type alterations but are not considered new species. Some Pokémon have differences in appearance due to gender. Pokémon can be male or female, male-only, female-only, or genderless
+=== What is a Pokemon?
+Reminiscences from the GameBoy the creatures that inhabit the world of Pokémon are also called Pokémon. Many species of Pokémon are capable of evolving into a larger and more powerful creatures. The change is accompanied by stat changes, generally a modest increase, and access to a wider variety of attacks. There are multiple ways to trigger an evolution, including reaching a particular level, using a special stone, or learning a specific attack. For example, at level 16 Bulbasaur is capable of evolving into Ivysaur. Most notably, the Normal-type Eevee is capable of evolving into eight different Pokémon: Jolteon (Electric), Flareon (Fire), Vaporeon (Water), Umbreon (Dark), Espeon (Psychic), Leafeon (Grass), Glaceon (Ice), and Sylveon (Fairy). In Generation VI, a new mechanic called Mega Evolution—as well as a subset of Mega Evolution called Primal Reversion—was introduced into the game. Unlike normal evolution, Mega Evolution and Primal Reversion last only for the duration of a battle, with the Pokémon reverting to its normal form at the end. Forty-eight Pokémon are capable of undergoing Mega Evolution or Primal Reversion as of the release of Sun and Moon. In contrast, some species such as Castform, Rotom, Unown, and Lycanroc undergo form changes that may provide stat buffs or changes and type alterations but are not considered new species. Some Pokémon have differences in appearance due to gender. Pokémon can be male or female, male-only, female-only, or genderless.
 
 === Setup
 
-All the project sources are in the project dg8-restapi. We will be using Curl and our browser.
+All the project sources are in the project `dg8-restapi`. We will be using the `curl` utility as well as our browser.
 
-Let's open up a new terminal in the CodeReady workspace. Make sure you are logged into Openshift.
+Let's open up a new terminal in the CodeReady workspace. Make sure you are logged into OpenShift.
 
 Run the following command on the terminal which will get the password for user developer and store it in and environment variable.
 [source, shell, role="copypaste"]
@@ -42,9 +43,9 @@ Run the following command on the terminal which will get the password for user d
 export PASSWORD=$(oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | awk 'NR==3' | awk '{print $2}')
 ----
 
-So we are using the same service we created from the operator previously.
+We are using the same service we created from the operator in previous labs.
 
-We will also need our loadbalancer address to reach the datagrid server, you can do that by running the following command in the terminal. which will set the LoadBalancer address to $LB in the terminal
+We will also need our `LoadBalancer` address to reach the datagrid server. You can do that by running the following command in the terminal, which will set the `LoadBalancer` address to $LB in the terminal.
 
 [source, shell, role="copypaste"]
 ----
@@ -53,14 +54,12 @@ export LB="http://$(oc get services | grep datagrid-service-external | awk '{ pr
 
 [IMPORTANT]
 ====
-At anytime if you close the terminal, you will need to run these two commands again. To get the password and the loadbalancer
+At anytime if you close the terminal, you will need to run these two commands again!
 ====
 
 === First let's register our protobuf
 
-By now you already know what protobuf is from previous labs as well as you might know what Pokemon's are. Perfect time to introduce our datastructure.
-
-Let's see whats our datastructure is like.
+Let's see whats our data structure looks like.
 
 [source, properties, role="copypaste"]
 ----
@@ -121,13 +120,18 @@ message Pokemon  {
 
 ----
 
-In our project `dg8-restapi` open the file `pokemon.proto` and paste the above datastructure. The structure defines the capabilites of a Pokemon
+In our project `dg8-restapi` open the file `pokemon.proto` and paste the above data structure. The structure defines the capabilites of a Pokemon.
 
-When caches are indexed, or specifically configured to store application/x-protostream, you can send and receive JSON documents that are automatically converted to and from Protostream.
+When caches are indexed, or specifically configured to store `application/x-protostream`, you can send and receive JSON documents that are automatically converted to and from Protostream. In order for this conversion to work you must register a protobuf schema.
 
-You must register a protobuf schema for the conversion to work.
+First let's cd into the current project
 
-To register protobuf schemas via REST, invoke a POST or PUT in the ___protobuf_metadata cache as in the following command
+[source, shell, role="copypaste"]
+----
+cd $CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-restapi
+----
+
+To register protobuf schemas via REST, invoke a POST or PUT in the `___protobuf_metadata` cache as in the following command
 
 [source, shell, role="copypaste"]
 ----
@@ -268,9 +272,10 @@ curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon/Whismur
 
 
 === Recap
-<1> You how the REST API works
-<2> You created a cache and protobuf via REST API
-<3> You loaded bulk data into the cache
-<4> And finally you queried through that data.
+
+. You how the REST API works
+. You created a cache and protobuf via REST API
+. You loaded bulk data into the cache
+. And finally you queried through that data.
 
 *Congratulations!!* you have completed the this lab on REST API!!
