@@ -19,9 +19,9 @@ Moreover, Data Grid 8.0 servers provide several enhancements and improvements to
 Red Hat Data Grid 8.0 introduces REST API v2. 
 The API has 50% faster response rates compared to v1. There are also new capabilities introduced such as
 
-* Access data and manipulate objects ()such as counters)
+* Access data and manipulate objects (such as counters)
 * Perform operations such as gracefully shutting down Data Grid clusters or transferring cache state to backup locations when using cross-site replication
-* And lastly, Monitor cluster and server health and retrieve statistics
+* And lastly, monitor cluster and server health and retrieve statistics
 
 Moreover, Red Hat Data Grid REST API v2 also automatically converts between storage formats such as JSON, XML, Protobuf, and plain text for increased interoperability. The Red Hat Data Grid engineering team develops and maintains comprehensive REST API Documentation.
 
