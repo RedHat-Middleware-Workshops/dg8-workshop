@@ -10,7 +10,7 @@ To get started, {{ CHE_URL }}[access the CodeReady Workspaces instance^] and log
 
 image::che-login.png[cdw, 700, align="center"]
 
-By logging in to CodeReady, you get access to your development workspace. We have already created a workspace for you. Your development environment opens up by clicking the workspace on the left menu. 
+By logging in to CodeReady, you get access to your development workspace. We have already created a workspace for you. Your development environment opens up by clicking the workspace on the left menu.
 
 You can see icons on the left for navigating between project explorer, search, version control (e.g., Git), debugging, and other plugins. You'll use these during this workshop. Feel free to click on them and see what they do:
 
@@ -51,7 +51,7 @@ image::workspaceview.png[crw, 800, align="center"]
 
 === Exercises
 
-This first lab comprises of 6 Exercises. The exercises will give you a glimpse into some of the features of Red Hat Data Grid, and is a good starting point to learn how to use Red Hat Data Grid with your applications. 
+This first lab comprises of 6 Exercises. The exercises will give you a glimpse into some of the features of Red Hat Data Grid, and is a good starting point to learn how to use Red Hat Data Grid with your applications.
 
 ==== Summary of the Exercises
 
@@ -73,12 +73,12 @@ Moreover you will find that preceding exercise sections will explain the `//TODO
 
 
 === Exercise 1: Creating a local Cache
-First, a bit about `Map`s. Why are `Map`s good for a cache? `Map`s are fast, they use methods like `hashCode` and `equals` to determine how to add data to the map. This also means they can be fast enough (O(1)) time to read and write the data. That is exceptional performance, and that's what one would expect from a cache. Data storage is in key and value pairs. There is a lot more to `Map`s, but let's start with a basic cache how-to.
+First, a bit about Java _Maps_. Why are Maps good for a cache? Maps are fast, they use methods like `hashCode` and `equals` to determine how to add data to the map. This also means they can be fast enough (O(1)) time to read and write the data. That is exceptional performance, and that's what one would expect from a cache. Data storage is in key and value pairs. There is a lot more to `Map`s, but let's start with a basic cache how-to.
 
 A *CacheManager* is the primary mechanism for retrieving a Cache instance and is often used as a starting point to using the cache.
-Essentially if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid/Inifinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections. 
+Essentially if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid/Inifinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections.
 
-CacheManagers are heavyweight objects, and it's not recommended to have more than one *CacheManager* being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances). 
+CacheManagers are heavyweight objects, and it's not recommended to have more than one *CacheManager* being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances).
 
 Add the following to your main method in class Exercise1
 
@@ -104,7 +104,7 @@ Perfect, so now we have defined our cache, time for us to get that cache from ou
     Cache<String, String> cache = cacheManager.getCache("local");
 ----
 
-Finally lets put an entry in the Cache. Change the "key" and "value" to anything you'd like. 
+Finally lets put an entry in the Cache. Change the "key" and "value" to anything you'd like.
 
 [source, java, role="copypaste"]
 ----
@@ -144,6 +144,11 @@ mvn clean compile && \
 mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 ----
 
+[NOTE]
+====
+The first time a build runs, it may need to download and cache dependencies. Future builds will go much faster!
+====
+
 You should be able to see an output similar to the following.
 [source, shell, role="copypaste"]
 ----
@@ -151,12 +156,15 @@ Jun 22, 2020 6:40:02 PM org.infinispan.factories.GlobalComponentRegistry preStar
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
 Jun 22, 2020 6:40:03 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+key = value
 ----
+
+We can see the `key = value` printed from our code.
 
 === Exercise 2: JSR-107 JCache
 The term cache is generally referred to as a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple `java.util` packages do now have all the capabilities required, and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to define temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed use cases.
 
-Let's take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan
+Let's take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan. In `Exercise2.java`, add the following code at the designated comment markers:
 
 [source, java, role="copypaste"]
 ----
@@ -165,7 +173,7 @@ Let's take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan
         CacheManager cacheManager = jcacheProvider.getCacheManager(); <2>
         MutableConfiguration<String, String> configuration = new MutableConfiguration<>(); <3>
         configuration.setTypes(String.class, String.class); <4>
-        
+
         // TODO: create a cache using the supplied configuration
         Cache<String, String> cache = cacheManager.createCache("myCache", configuration); <5>
 ----
@@ -226,14 +234,14 @@ There are a few interesting things to note about working with all entries using 
 --- Once a key's entry has been retrieved, there's no extra cost to provide the key as well.
 
 
-Let us start by initializing our cache with the `DefaultCacheManager` as we have done so in the previous labs. However, we use the functional API, and hence after getting the cache, our `Map` implementation is different. 
+Let us start by initializing our cache with the `DefaultCacheManager` as we have done so in the previous labs. However, we use the functional API, and hence after getting the cache, our `Map` implementation is different.
 
-==== How to use the Functional API? 
+==== How to use the Functional API?
 Using an asynchronous API, all methods that return a single result return a `CompletableFuture` which wraps the result. To avoid blocking, it offers the possibility to receive callbacks when the `CompletableFuture` has completed, or it can be chained or composed with other `CompletableFuture` instances. You do not need to write the following snippet, it should already be there. Let's get started with Exercise3.java.
 
 [NOTE]
 ====
-Please remove the following lines in the main method. 
+Please remove the following lines in the main method.
 
       /* UNCOMMENT When starting this exercise
       UNCOMMENT When starting this exercise */
@@ -265,7 +273,7 @@ Next, what you would want to do is asynchronously write to this cache. Copy and 
 
 
 
-And now lets do a read operation in similar 
+And now lets do a read operation in similar
 [source, java, role="copypaste"]
 ----
         //TODO When each write-only operation completes, execute a read-only operation to retrieve the value
@@ -279,7 +287,7 @@ And now lets do a read operation in similar
 Finally, let's print the operation as it completes.
 
 [source, java, role="copypaste"]
-----    
+----
         //TODO When the read-only operation completes, print it out
         System.out.printf("Created entries: %n");
         CompletableFuture<Void> end = readFuture1.thenAcceptBoth(readFuture2, (v1, v2) -> System.out.printf("key1 = %s%nkey2 = %s%n", v1, v2));
@@ -288,7 +296,7 @@ Finally, let's print the operation as it completes.
         end.get();
 ----
 
-So we have seen how a `WriteOnly` and `ReadOnly` `Map` works, let's also add the `ReadWriteMap`. Read-write operations offer the possibility of writing values or metadata parameters and returning previously stored information. Read-write operations are also crucial for implementing conditional, compare-and-swap (CAS) operations. Locks need to be acquired before executing the read-write lambda. 
+So we have seen how a `WriteOnly` and `ReadOnly` `Map` works, let's also add the `ReadWriteMap`. Read-write operations offer the possibility of writing values or metadata parameters and returning previously stored information. Read-write operations are also crucial for implementing conditional, compare-and-swap (CAS) operations. Locks need to be acquired before executing the read-write lambda.
 
 [source, java, role="copypaste"]
 ----
@@ -320,24 +328,24 @@ Jun 22, 2020 6:59:09 PM org.infinispan.factories.GlobalComponentRegistry preStar
 INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
 Jun 22, 2020 6:59:09 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
-Created entries: 
+Created entries:
 key1 = value1
 key2 = value2
-Updated entries: 
+Updated entries:
 ReadOnlySnapshotView{key=key1, value=newValue1, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
 ReadOnlySnapshotView{key=key2, value=newValue2, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
-Previous entry values: 
+Previous entry values:
 value1
 value2
 ----
 
 === Exercise 4: Streaming data from the cache
 
-Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are `Serializable` without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for java streams executions to be distributed. 
+Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are `Serializable` without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for java streams executions to be distributed.
 
 [NOTE]
 ====
-Please remove the following lines in the main method. 
+Please remove the following lines in the main method.
 
       /* UNCOMMENT When starting this exercise
       UNCOMMENT When starting this exercise */
@@ -388,7 +396,7 @@ Transactions are essential in any business application. Usually, the transaction
 
 [NOTE]
 ====
-Please remove the following lines in the main method. 
+Please remove the following lines in the main method.
 
       /* UNCOMMENT When starting this exercise
       UNCOMMENT When starting this exercise */
@@ -450,7 +458,7 @@ key1 = value1
 key2 = value2
 ----
 
-So as you can see, even though we wrote the new values, but by rolling back, they do not exist anymore. 
+So as you can see, even though we wrote the new values, but by rolling back, they do not exist anymore.
 
 === Exercise 6: Queries to the Cache with Lucene
 
@@ -462,21 +470,21 @@ The implementation extends Lucene’s `org.apache.lucene.store.Directory` so it 
 
 [NOTE]
 ====
-Please remove the following lines in the main method. 
+Please remove the following lines in the main method.
 
       /* UNCOMMENT When starting this exercise
       UNCOMMENT When starting this exercise */
 ====
 
-Since Lucene is part of Infinispan, We need to make sure that we have the right configuration for it. 
+Since Lucene is part of Infinispan, We need to make sure that we have the right configuration for it.
 
 [source, java]
 ----
         // Create cache config
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.indexing().index(Index.ALL) <1>
-                .addProperty("default.directory_provider", "ram") <2> 
-                .addProperty("lucene_version", "LUCENE_CURRENT"); <3> 
+                .addProperty("default.directory_provider", "ram") <2>
+                .addProperty("lucene_version", "LUCENE_CURRENT"); <3>
 
         // Obtain the cache
         Cache<String, Person> cache = cacheManager.administration()
@@ -488,8 +496,8 @@ Since Lucene is part of Infinispan, We need to make sure that we have the right 
 <2> The storage for Lucene is in the memory
 <3> and we want to give it a version
 
-Now, let's add a bit of more code to the above example. 
-In the following code, we get the QueryFactory and create a query. 
+Now, let's add a bit of more code to the above example.
+In the following code, we get the QueryFactory and create a query.
 
 [source, java, role="copypaste"]
 ----
@@ -526,13 +534,13 @@ INFO: HCANN000001: Hibernate Commons Annotations {5.0.5.Final}
 Jun 22, 2020 7:03:18 PM org.infinispan.query.impl.LifecycleManager createQueryInterceptorIfNeeded
 INFO: ISPN014003: Registering Query interceptor for cache cache
 Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, surname=Shakespeare]
-----                
+----
 
-It's quite simple to add Lucene based search to your cache. Try to change the parameters a bit and experience this more. 
+It's quite simple to add Lucene based search to your cache. Try to change the parameters a bit and experience this more.
 
 ==== Congratulations!
 
-You have completed the first introductory exercises to Red Hat Data Grid 8.0. 
+You have completed the first introductory exercises to Red Hat Data Grid 8.0.
 
 1. *Exercise 1* - Creating a Cache
 2. *Exercise 2* - JSR-107, JCache
@@ -541,6 +549,6 @@ You have completed the first introductory exercises to Red Hat Data Grid 8.0.
 5. *Exercise 5* - Using Transactions
 6. *Exercise 6* - Queries to the Cache with Lucene
 
-You should now be able to create caches, stream data and so much more. 
+You should now be able to create caches, stream data and so much more.
 Let's move on to the next section and experience more in-depth examples.
 

@@ -1,11 +1,11 @@
 = Lab10 - Externalizing Sessions
 :experimental:
 
-In this lab, we'll develop how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_, which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scenes, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
+In this lab, we'll show how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_, which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scenes, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
 
 === 1. Developing EmbeddedCache Service
 
-An embedded cache service allows Spring Boot applications to emded HTTP session data in an in-memory data storage when users invoke RESTful endpoints in a frontend web page. Lets’s go through quickly how this works. We'll be using *Spring Session* combined with an *In-Memory Cache* privided by *Red Hat the embeddedCache service gets REST services to address *Spring Session* with *In-Memory Cache* with *Red Hat Data Grid 8*. 
+An embedded cache service allows Spring Boot applications to emded HTTP session data in an in-memory data storage when users invoke RESTful endpoints in a frontend web page. Lets’s go through quickly how this works. We'll be using *Spring Session* combined with an *In-Memory Cache* provided by Data Grid.
 
 Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
 
@@ -69,7 +69,7 @@ Create an *InfinispanCacheConfigurer* bean to customize the cache manager. Open 
 
          manager.defineConfiguration("sessions", ispnConfig);
          manager.getCache("sessions").addListener(new CacheListener());
-         
+
       };
    }
 ----
@@ -121,7 +121,7 @@ Start and watch the build, which will take about minutes to complete:
 
 [source,sh,role="copypaste"]
 ----
-oc start-build cacheapp --from-file=$CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-spring-session/target/rhdg-0.0.1-SNAPSHOT.jar --follow 
+oc start-build cacheapp --from-file=$CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-spring-session/target/rhdg-0.0.1-SNAPSHOT.jar --follow
 ----
 
 Deploy it as an OpenShift application after the build is done:
@@ -154,7 +154,7 @@ Click on `Invoke the service` then the *created* _Spring Session ID_ is already 
 
 image::embeddedCache-invoke1.png[embeddedCache, 700]
 
-Open a new web browser window then access the the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^]. 
+Open a new web browser window then access the the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^].
 
 Click on `Invoke the service` once again then you will see the exact same _Spring Session ID_ and _active data_ but the *count* is increased to `2`. So two applications are clustered and refer to the *embedded Infinispan cache:
 
