@@ -48,7 +48,7 @@ Replace the onStart method in our ScoreService.java
 
 <2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks using DNS_PING on OpenShift, which define in _default-configs/jgroups-kubernetes.xml_. Here we have defined a unique clusterName for our app's embedded cache manager.
 
-<3> We setup a distributed cache, which means that all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
+<3> We setup a distributed, replicated cache, which means that all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
 
 We will take a look into replicaiton and distribution furhter in this lab.
 
@@ -59,6 +59,8 @@ Also open the CacheListener and make sure that the `@Listener` class annotation 
 @Listener(primaryOnly = false)
 ----
 
+This will ensure all nodes get notified on changes.
+
 It is possible in a non transactional cache to receive duplicate events. This is possible when the primary owner of a key goes down while trying to perform a write operation such as a put. Infinispan internally will rectify the put operation by sending it to the new primary owner for the given key automatically, however there are no guarantees in regards to if the write was first replicated to backups. Thus more than 1 of the following write events (CacheEntryCreatedEvent, CacheEntryModifiedEvent & CacheEntryRemovedEvent) may be sent on a single operation.
 
 [NOTE]
@@ -66,40 +68,29 @@ It is possible in a non transactional cache to receive duplicate events. This is
 It is recommended that at this moment you press KBD:[CTRL+C] in the `Start Live Coding` terminal to quit our app, then close all terminal windows that you might have opened in the previous labs. to keep a clear view of our lab
 ====
 
-
-A quick look at our side bar menu on the right called `MyWorkspace`
-
-image::codeready-workspace-terminal.png[cdw, 400, align="center"]
-
-
-We will use this menu through out the labs. There is a bunch of commands created specifically for this workshop.
-
 First lets login to Openshift. You will find the button in the right corner in MyWorkspace menu.
-Click `Login to Openshift`
+Click `Login to Openshift` and login with:
 
-Lets run our project click on the Command `Emebdded - Start Live Coding`
-This will enable Live coding, it will open up a small terminal to build your artifact and then open up a browser view
+* **Username**: `{{USER_ID}}`
+* **Password**: `{{ OPENSHIFT_USER_PASSWORD }}`
 
-Make sure you click on the Openlink
+[NOTE]
+====
+After you log in using **Login to OpenShift**, the terminal is no longer usable as a regular terminal. You can close the terminal window. You will still be logged in when you open more terminals later!
+====
 
-image::openlinkbox.png[cdw, 800, align="center"]
 
-You can also click on the link icon in the browser view, which will open a browser tab.
+Next, run the following command to add the Openshift extension for Quarkus (Be sure you're in the right directory: `cd /projects/dg8-workshop-labs/dg8-embedded-quarkus`).
 
-image::embeddedprojectliveview.png[cdw, 800, align="center"]
-
-If all of this is working lets make sure we can deploy this applicaiton.
-
-First run the following command to add the Openshift extension for Quarkus
 The Openshift extension makes it easy to deploy your application to openshift, rather then taking all the different steps from an oc command line, you can do that through your maven build.
 
-run the following in your terminal, you should see a build successfull message when done.
+run the following in your terminal, you should see a BUILD SUCCESSFUL message when done.
 [source, shell, role="copypaste"]
 ----
 mvn quarkus:add-extension -Dextensions="openshift"
 ----
 
-Now open the application.properties file in `src/main/resources/application.properites`
+Now open the application.properties file in `src/main/resources/application.properties`
 
 Add the following properties to it
 
@@ -115,18 +106,15 @@ quarkus.kubernetes-client.trust-certs=true <2>
 <1> The first property makes sure that once our application is deployed it will expose a route
 <2> The second property makes sure that incase you dont have valid certificates the build wont stop. in our case that can likely be the case since its not a production environment rather a demo one.
 
-Now go to your MyWorkspace menu and Login to Openshift.
-
-Perfect everything is inorder. Make sure you are logged into openshift. If you are not sure. You can run the following command in your terminal.
+Perfect everything is in order. Make sure you are logged into openshift. You can run the following command in your terminal to confirm:
 [source, shell, role="copypaste"]
 ----
 oc whoami
 ----
 
-The command should return your user name: {{ USER_ID }} , is you are logged in.
+The command should return your user name: {{ USER_ID }}, if you are logged in.
 
-
-Lets first create an image namespace for our application
+Let's first generate a container image for our application
 
 [source, shell, role="copypaste"]
 ----
@@ -155,14 +143,6 @@ Login using:
 
 * Username: `{{ USER_ID }}`
 * Password: `{{ OPENSHIFT_USER_PASSWORD }}`
-
-[NOTE]
-====
-When you access the link:{{ CONSOLE_URL }}[OpenShift web console] or other URLs via _HTTPS_ protocol, you might see browser warnings like `Your Connection is not secure` since this workshop uses self-signed certificates (which you should not do in production!). For example, if you’re using *Chrome*, to accept the warning, Click on `Advanced` then `Proceed to...` to access the page.
-====
-
-Other modern browsers most likely have similar procedures to accept the security exception.
-
 
 You should see something as follows:
 

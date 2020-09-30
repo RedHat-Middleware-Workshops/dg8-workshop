@@ -329,11 +329,14 @@ image::codeready-workspace-terminal.png[cdw, 400, align="center"]
 We will use this menu through out the labs. There is a bunch of commands created specifically for this workshop.
 
 First Let's login to Openshift. You will find the button in the right corner in MyWorkspace menu.
-Click `Login to Openshift`
+Click `Login to Openshift` and login with:
+
+* **Username**: `{{USER_ID}}`
+* **Password**: `{{ OPENSHIFT_USER_PASSWORD }}`
 
 [NOTE]
 ====
-After you log in using *Login to OpenShift*, the terminal is no longer usable as a regular terminal. You can close the terminal window. You will still be logged in when you open more terminals later!
+After you log in using **Login to OpenShift**, the terminal is no longer usable as a regular terminal. You can close the terminal window. You will still be logged in when you open more terminals later!
 ====
 
 Let's run our project click on the Command `Emebdded - Start Live Coding`
