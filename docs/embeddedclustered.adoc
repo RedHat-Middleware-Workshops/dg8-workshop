@@ -26,13 +26,14 @@ Replace the onStart method in our ScoreService.java
 ----
     void onStart(@Observes @Priority(value = 1) StartupEvent ev){
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder(); // <1>
-        global.transport().clusterName("ScoreCard"); // <2>
+        global.transport().clusterName("ScoreCard").addProperty("configurationFile", "default-configs/jgroups-kubernetes.xml")
+            .serialization().addContextInitializer(new org.acme.ScoreInitializerImpl()); // <2>
         cacheManager = new DefaultCacheManager(global.build());
 
         ConfigurationBuilder config = new ConfigurationBuilder();
 
         config.expiration().lifespan(5, TimeUnit.MINUTES)
-                .clustering().cacheMode(CacheMode.DIST_SYNC); // <3>
+                .clustering().cacheMode(CacheMode.REPL_SYNC); // <3>
 
         cacheManager.defineConfiguration("scoreboard", config.build());
         scoreCache = cacheManager.getCache("scoreboard");
@@ -45,21 +46,20 @@ Replace the onStart method in our ScoreService.java
 ----
 <1> We define a global configuration, since we are going to be in a clustered mode, hence everytime a new instance of our app will be created it will have the global configuration parameters to talk to the other nodes if they are present.
 
-<2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks, which define properties for either UDP or TCP protocols. Here we have defined a unique clusterName for our app's embedded cache manager.
+<2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks using DNS_PING on OpenShift, which define in _default-configs/jgroups-kubernetes.xml_. Here we have defined a unique clusterName for our app's embedded cache manager.
 
-<3> We setup a distributed cache, which means that not all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
+<3> We setup a distributed cache, which means that all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
 
 We will take a look into replicaiton and distribution furhter in this lab.
 
 Also open the CacheListener and make sure that the `@Listener` class annotation is changed to:
+
 [source, java, role="copypaste"]
 ----
-@Listener(clustered = true)
+@Listener(primaryOnly = false)
 ----
 
-By doing this we are making sure we have a clustered listener. And that we can listen to the cross cluster events. so we know exactly in case of key distribution.
-
-This all looks in order. lets compile our application.
+It is possible in a non transactional cache to receive duplicate events. This is possible when the primary owner of a key goes down while trying to perform a write operation such as a put. Infinispan internally will rectify the put operation by sending it to the new primary owner for the given key automatically, however there are no guarantees in regards to if the write was first replicated to backups. Thus more than 1 of the following write events (CacheEntryCreatedEvent, CacheEntryModifiedEvent & CacheEntryRemovedEvent) may be sent on a single operation.
 
 [NOTE]
 ====
@@ -164,14 +164,46 @@ When you access the link:{{ CONSOLE_URL }}[OpenShift web console] or other URLs 
 Other modern browsers most likely have similar procedures to accept the security exception.
 
 
-You should see something as follows
+You should see something as follows:
 
 image::openshiftprojectview.png[Caching, 900]
 
 
-Click on the project name and you should see something similar
+Click on the project name and you should see something similar:
 
 image::lab2ocpoverview.png[Caching, 900]
+
+Create a new _JGroup_ service to find members among Infinispan servers. Press the plus sign on the right top corner as shown in the picture:
+
+image::plussigntop_ocpconsole.png[Run yaml in console, 700]
+
+Paste the below Service YAML code into the editor and click **Create**:
+
+[source, yaml, role="copypaste"]
+----
+kind: Service
+apiVersion: v1
+metadata:
+  name: jcache-quarkus-ping
+  namespace: {{ USER_ID }}-cache
+spec:
+  ports:
+    - name: ping
+      protocol: TCP
+      port: 7800
+      targetPort: 7800
+  selector:
+    app.kubernetes.io/name: jcache-quarkus
+  clusterIP: None
+  type: ClusterIP
+----
+
+Let's patch _DeploymentConfig_ to add the above target port to the embedded cache application. Go back to CRW terminal window and execute the following commands:
+
+[source, sh, role="copypaste"]
+----
+oc patch dc/jcache-quarkus -p '{"spec": {"template": {"spec": {"containers": [{"name": "jcache-quarkus","ports":  [{"name": "http","containerPort": 8080,"protocol": "TCP"},{"name": "ping","containerPort": 7800,"protocol": "TCP"}]}]}}}}' && oc rollout latest dc/jcache-quarkus && oc rollout status -w dc/jcache-quarkus
+----
 
 Navigate to _Workloads_ tab, then click on the `jcache-quarkus` workload. Next, click on the _Resources_ tab on the right, and at the bottom you will see the route to your application. You can also click at the route and it will take you to the application page, same as we have done in the previous lab. if append /api to the url you will be on the api endpoint.
 
@@ -180,6 +212,14 @@ Now go back to the `Details` tab for the applicaiton and Click on the pod scaler
 image::lab2podscaler.png[Caching, 900]
 
 This will spin up another instance of the app, and cluster them together automatically.
+
+Let's find out if 2 Inifinspan cache servers joined the cluster. Click on `View Logs` in _Resources_ tab:
+
+image::viewLogs.png[Caching, 600]
+
+You will see the following ISPN logs. It sometimes takes a min to join the cluster:
+
+image::clusterlogs.png[Caching, 800]
 
 Now open another terminal in CodeReady workspaces and change to the scripts directory
 
@@ -199,7 +239,7 @@ and then run load.sh
 ./load.sh
 ----
 
-Go back to the resrouce view of your application and then click view logs, you should see something as follows.
+Go back to the resrouce view of your application and then click view logs, you should see same Entry logs as follows in both nodes.
 
 Node1:
 
@@ -209,51 +249,13 @@ Node2:
 
 image::distsyncnode2.png[Caching, 900]
 
-Notice in the above screenshots how the keys are distributed between the two nodes.
-
-This wont be the case if we were replicating these entries.
-So lets go ahead and setup a replicated cache instead. Open the score service and change the Cache config as shown below. Remember the onStart method has the configuration.
-
-[source, java, role="copypaste"]
-----
-        config.expiration().lifespan(5, TimeUnit.MINUTES)
-                .clustering().cacheMode(CacheMode.REPL_SYNC);
-----
-
-Before we deploy we also need to make sure that the Listener is no longer listening to events clusterwide. we want to listen to events only on the node they are happening on. For this lets make a small config change to our Listener annotation in our class CacheListener
-
-[source, java, role="copypaste"]
-----
-@Listener(primaryOnly = false)
-----
-It is possible in a non transactional cache to receive duplicate events. This is possible when the primary owner of a key goes down while trying to perform a write operation such as a put. Infinispan internally will rectify the put operation by sending it to the new primary owner for the given key automatically, however there are no guarantees in regards to if the write was first replicated to backups. Thus more than 1 of the following write events (CacheEntryCreatedEvent, CacheEntryModifiedEvent & CacheEntryRemovedEvent) may be sent on a single operation.
-
-
-Perfect, now we are all set to deploy again.
-
-Now lets deploy our application to Openshift
-
-[source, shell, role="copypaste"]
-----
-mvn clean package -Dquarkus.kubernetes.deploy=true
-----
-
-<1> Scale the pods
-<2> run the load.sh script once the pods are running
-<3> Check the log files and you should see a similar output as below
-
-image::replicatedsyncnode.png[Caching, 900]
-
-Feel free to change the listner annotation in different modes and try out to see how the events are recieved.
-
 === Design Considerations
+
 Firstly, p2p deployments are simpler than client-server ones because in p2p, all peers are equals to each other and this simplifies deployment. If this is the first time you are using Infinispan, p2p is likely to be easier for you to get going compared to client-server.
 
 Client-server Infinispan requests are likely to take longer compared to p2p requests, due to the serialization and network cost in remote calls. So, this is an important factor to take in account when designing your application. For example, with replicated Infinispan caches, it might be more performant to have lightweight HTTP clients connecting to a server side application that accesses Infinispan in p2p mode, rather than having more heavyweight client side apps talking to Infinispan in client-server mode, particularly if data size handled is rather large. With distributed caches, the difference might not be so big because even in p2p deployments, you’re not guaranteed to have all data available locally.
 
 Environments where application tier elasticity is not important, or where server side applications access state-transfer-disabled, replicated Infinispan cache instances are amongst scenarios where Infinispan p2p deployments can be more suited than client-server ones.
-
-
 
 Congratulations we are at the end of this lab!
 
