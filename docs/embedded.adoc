@@ -346,6 +346,7 @@ image::openlinkbox.png[cdw, 800, align="center"]
 [NOTE]
 ====
 It takes a few moments to establish the ingress route, so you may need to click the `Reload` button if you see `Application not responding`.
+====
 
 You can also click on the link icon in the browser view, which will open a browser tab.
 
