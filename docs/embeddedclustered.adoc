@@ -266,5 +266,5 @@ Congratulations we are at the end of this lab!
 <4> You learnt how to deploy a Quarkus application with emebedded cache and scale it.
 <5> You learnt the difference between Replicated and Distributed Cache and how clustering and listeners works.
 
-**Congratulations!!* you have completed the second lab of this workshop. Lets move to the next lab and learn how we can create a remote cache and how it can benefit our applications.
+*Congratulations!!* you have completed the second lab of this workshop. Lets move to the next lab and learn how we can create a remote cache and how it can benefit our applications.
 
