@@ -38,12 +38,12 @@ image::dg_operatoroverview.png[openshift_login, 700]
 
 You can see there are no clusters installed in our namespace. Let's go ahead and do that. 
 
-Click on `Create Infinispan` and replace the follwing YAML with the default sample: 
+Click on `Create datagrid` and replace the follwing YAML with the default sample: 
 
 [source, yaml, role="copypaste"]
 ----
-apiVersion: infinispan.org/v1
-kind: Infinispan <1>
+apiVersion: Data Grid.org/v1
+kind: datagrid <1>
 metadata:
   name: datagrid-service <2>
   namespace: {{ USER_ID }}-cache
@@ -51,7 +51,7 @@ spec:
   replicas: 2 <3>
 ----
 
-<1> Tell Kubernetes/Openshift that the Custom resource type is Infinispan
+<1> Tell Kubernetes/Openshift that the Custom resource type is datagrid
 <2> Specify the name of our cluster as datagrid-service
 <3> Specify the replicas we want for our service
 
@@ -59,16 +59,16 @@ Also notice that we are calling our service `datagrid-service`, we will use this
 
 Click *Create* at the bottom.
 
-Check that Infinispan nodes have successfully formed clusters.
+Check that datagrid nodes have successfully formed clusters.
 
 Now let's retrieve the DataGrif CR for DataGrid Operator.
 
 [source, shell, role="copypaste"]
 ----
-$ kubectl get infinispan -o yaml
+$ kubectl get Data Grid -o yaml
 ----
 
-The response indicates that Infinispan nodes have received clustered views, as in the following example:
+The response indicates that datagrid nodes have received clustered views, as in the following example:
 
 [source, shell]
 ----
@@ -83,7 +83,7 @@ You can also wait for the condition check:
 
 [source, shell, role="copypaste"]
 ----
-$ kubectl wait --for condition=wellFormed --timeout=240s infinispan/datagrid-service
+$ kubectl wait --for condition=wellFormed --timeout=240s Data Grid/datagrid-service
 ----
 
 Let's retrieve cluster view from logs as follows:
@@ -94,12 +94,12 @@ $ kubectl logs datagrid-service-0 | grep ISPN000094
 
 [source, shell]
 ----
-INFO  [org.infinispan.CLUSTER] (MSC service thread 1-2) \
-ISPN000094: Received new cluster view for channel infinispan: \
+INFO  [org.Data Grid.CLUSTER] (MSC service thread 1-2) \
+ISPN000094: Received new cluster view for channel Data Grid: \
 [datagrid-service-0|0] (1) [datagrid-service-0]
 
-INFO  [org.infinispan.CLUSTER] (jgroups-3,datagrid-service-0) \
-ISPN000094: Received new cluster view for channel infinispan: \
+INFO  [org.Data Grid.CLUSTER] (jgroups-3,datagrid-service-0) \
+ISPN000094: Received new cluster view for channel Data Grid: \
 [datagrid-service-0|1] (2) [datagrid-service-0, datagrid-service-1]
 ----
 
@@ -118,7 +118,7 @@ Above command should render a similar output as below:
 NAME                                   READY   STATUS    RESTARTS   AGE
 datagrid-service-0                     1/1     Running   0          2m59s
 datagrid-service-1                     1/1     Running   0          2m14s
-infinispan-operator-544ff55c59-4s7wl   1/1     Running   1          2d10h
+Data Grid-operator-544ff55c59-4s7wl   1/1     Running   1          2d10h
 ----
 
 All looks great! how about we also check the ClusterIP and its ports etc.
@@ -148,7 +148,7 @@ An Operator updates the installation on the fly, it ensures it can keep the corr
 
 Lets edit the datagrid-service CR. 
 
-As shown in the picture below, click on `Edit Infinispan`
+As shown in the picture below, click on `Edit datagrid`
 
 image::dg_edit_CR.png[Edit CR, 700]
 
@@ -191,10 +191,71 @@ And now the final test to check we have a running cluster; login with the userna
 image::dg_adminconsole.png[openshift_login, 900]
 
 
+==== Stopping and starting datagrid clusters
+How to stop and start Datagrid nodes in a graceful, ordered fashion to correctly preserve cluster state.
+
+Clusters of Data Grid Service nodes must restart with the same number of nodes that existed before shutdown. This allows datagrid to restore the distribution of data across the cluster. After datagrid Operator fully restarts the cluster you can safely add and remove nodes.
+
+Let's change the CR by changing spec.replicas field to 0 to stop the datagrid cluster.
+
+[source, shell, role="copypaste"]
+----
+spec:
+  replicas: 0
+----
+
+Ensure you have the correct number of nodes before you restart the cluster.
+
+[source, shell]
+----
+$ kubectl get Data Grid example-Data Grid -o=jsonpath='{.status.replicasWantedAtRestart}'
+----
+
+Change the spec.replicas field to the same number of nodes to restart the datagrid cluster.
+
+[source, shell, role="copypaste"]
+----
+spec:
+  replicas: 2
+----
+
+==== Types of Data Grid services
+
+Data Grid has two types of services 
+
+<1> Cache Service
+<2> DataGrid Service
+
+Services are stateful applications, based on the Data Grid Server image, that provide flexible and robust in-memory data storage. If you do not e.g. specify a value for the spec.service.type field, Data Grid Operator creates Cache Service nodes by default. Each service has differrent benefits and enables applications to leverage the different features exposed by the Data grid.
+
+*Cache Service*
+
+* Use Cache Service if you want a volatile, low-latency data store with minimal configuration. Cache Service nodes:
+* Automatically scale to meet capacity when data storage demands go up or down.
+* Synchronously distribute data to ensure consistency.
+* Replicates each entry in the cache across the cluster.
+* Store cache entries off-heap and use eviction for JVM efficiency.
+* Ensure data consistency with a default partition handling configuration.
+* Because Cache Service nodes are volatile you lose all data when you apply changes to the cluster with the Data Grid CR or update the Data Grid version.
+
+*Data Grid Service*
+
+* Back up data across global clusters with cross-site replication.
+* Create caches with any valid configuration.
+* Add file-based cache stores to save data in a persistent volume.
+* Query values across caches using the Data Grid Query API.
+* Use advanced Data Grid features and capabilities.
+
+You might have noticed that in our current example in this section we used the Cache service, in the upcoming labs we will configure the different services and features entailed thereof.
+
+
 === Recap
-<1> You created your own CR
+<1> You created your first CR
 <2> Deployed the CR to Openshift using the DataGrid operator
 <3> You installed your first DataGrid instance
+<4> Exposed the service to the outside world
+<5> Learnt how to stop and start the DataGrid via CR, and track the status/logs
+<6> Differences between the two types of services
 
 *Congratulations!!* you have completed the first Datagrid installation of this workshop. Let's move to the next lab and learn how we can use this instance as a RemoteCache with a Quarkus Application.
 

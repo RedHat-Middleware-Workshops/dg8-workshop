@@ -11,9 +11,9 @@ modules:
   installation:
     name: Kubernetes native Cache service
   remotecache:
-    name: Remote Cache
+    name: Quarkus Remote Cache app
   restapi:
-    name: REST API
+    name: Cache via REST API
   exercises:
     name: Getting started with Data Grid
   sessionexternalization:
