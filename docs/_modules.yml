@@ -8,12 +8,8 @@ modules:
     name: DataGrid in 10 mins
   settingup:
     name: Setting up
-  embedded:
-    name: Caching 101, Lets get started with your first app
-  embeddedclustered:
-    name: Embedded Clustered Cache
   installation:
-    name: Operators and RHDG 8
+    name: Kubernetes native Cache service
   remotecache:
     name: Remote Cache
   restapi:

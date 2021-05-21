@@ -49,20 +49,61 @@ metadata:
   namespace: {{ USER_ID }}-cache
 spec:
   replicas: 2 <3>
-  expose:
-    type: LoadBalancer <4>
 ----
 
 <1> Tell Kubernetes/Openshift that the Custom resource type is Infinispan
 <2> Specify the name of our cluster as datagrid-service
 <3> Specify the replicas we want for our service
-<4> Finally we want this instance to be accessible from outside (i.e. OpenShift Web Console)
 
 Also notice that we are calling our service `datagrid-service`, we will use this name in the following labs to access our cluster.
 
 Click *Create* at the bottom.
 
-You can watch the Red Hat Data Grid Operator creating the instances by running the following command:
+Check that Infinispan nodes have successfully formed clusters.
+
+Now let's retrieve the DataGrif CR for DataGrid Operator.
+
+[source, shell, role="copypaste"]
+----
+$ kubectl get infinispan -o yaml
+----
+
+The response indicates that Infinispan nodes have received clustered views, as in the following example:
+
+[source, shell]
+----
+conditions:
+  - message: 'View: [datagrid-service-0, datagrid-service-1]'
+    status: "True"
+    type: wellFormed
+----
+
+
+You can also wait for the condition check:
+
+[source, shell, role="copypaste"]
+----
+$ kubectl wait --for condition=wellFormed --timeout=240s infinispan/datagrid-service
+----
+
+Let's retrieve cluster view from logs as follows:
+[source, shell, role="copypaste"]
+----
+$ kubectl logs datagrid-service-0 | grep ISPN000094
+----
+
+[source, shell]
+----
+INFO  [org.infinispan.CLUSTER] (MSC service thread 1-2) \
+ISPN000094: Received new cluster view for channel infinispan: \
+[datagrid-service-0|0] (1) [datagrid-service-0]
+
+INFO  [org.infinispan.CLUSTER] (jgroups-3,datagrid-service-0) \
+ISPN000094: Received new cluster view for channel infinispan: \
+[datagrid-service-0|1] (2) [datagrid-service-0, datagrid-service-1]
+----
+
+You can also look for the pods running the Red Hat Data Grid Operator and the instances by running the following command:
 
 [source, shell, role="copypaste"]
 ----
@@ -80,6 +121,7 @@ datagrid-service-1                     1/1     Running   0          2m14s
 infinispan-operator-544ff55c59-4s7wl   1/1     Running   1          2d10h
 ----
 
+All looks great! how about we also check the ClusterIP and its ports etc.
 [source, shell, role="copypaste"]
 ----
 oc get services
@@ -101,14 +143,34 @@ You can see that there are three datagrid-services,
 - 1 for ping service which ensures that the clusters are healthy and operational 
 - and lastly the external service, which we will use to goto the Admin console.
 
-Run the following command to get the `LoadBalancer` address 
+
+An Operator updates the installation on the fly, it ensures it can keep the correct state of the cluster at all times. So one should not need to change specific cluster config but define them via the custom resource (CR) which the operator is always watching. Lets try this out. How about adding an external route to our `datagrid-service`.
+
+Lets edit the datagrid-service CR. 
+
+As shown in the picture below, click on `Edit Infinispan`
+
+image::dg_edit_CR.png[Edit CR, 700]
+
+The above should load the yaml with some additional information e.g. timestamp, labels etc that were added by the operator once the cluster instance was created. 
+
+
+We will make changes to the cluster `Spec:`, navigate your cursor to `Replicas` under spec and add the following as shown in the picture below.
 
 [source, shell, role="copypaste"]
 ----
-oc get services | grep datagrid-service-external | awk '{ print $4 }'
+  expose:
+    type: LoadBalancer
 ----
 
-As you can see we have a service with our `LoadBalancer`. Let's get that url and paste it in the browser as follows
+image::dg_edit_CR_LoadBalancer.png[Edit and Save, 700]
+
+Perfect now press `save`
+
+Now if you navigate back to `Installed Operators > Operator Details` and then click `datagrid-service` you should see the following page with the expose LoadBalancer link to your Data Grid Console.
+
+image::dg_CR_detailview.png[DG cluster detail view, 700]
+
 
 The following is an example, your `LoadBalancer` url will most likely differ:
 
@@ -117,7 +179,7 @@ The following is an example, your `LoadBalancer` url will most likely differ:
 
 If you try to access the url; you would need to provide credentials. 
 
-The datagrid operator creates the credentials during installation time and they should be stored in your namespace secrets. Let's get the secret with the following command.
+The datagrid operator creates the credentials during installation time and they should be stored in your namespace secrets. Head back your CodeReady Workspace terminal. Let's get the secret with the following command.
 
 [source, shell, role="copypaste"]
 ----
@@ -132,6 +194,7 @@ image::dg_adminconsole.png[openshift_login, 900]
 === Recap
 <1> You created your own CR
 <2> Deployed the CR to Openshift using the DataGrid operator
-<3> You installed your DataGrid instance
+<3> You installed your first DataGrid instance
 
 *Congratulations!!* you have completed the first Datagrid installation of this workshop. Let's move to the next lab and learn how we can use this instance as a RemoteCache with a Quarkus Application.
+
