@@ -8,10 +8,18 @@ modules:
     name: DataGrid in 10 mins
   settingup:
     name: Setting up
+  embedded:
+    name: Embedding cache in your code
+  embeddedclustered:  
+    name: Clustering an Embedded cache
   installation:
     name: Kubernetes native Cache service
   remotecache:
     name: Quarkus Remote Cache app
+  monitoring:
+    name: Monitoring and metrics  
+  crosssite:
+    name: Kubernetes native Cross site clusters  
   restapi:
     name: Cache via REST API
   exercises:

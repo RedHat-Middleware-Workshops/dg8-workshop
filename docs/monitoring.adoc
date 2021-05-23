@@ -1,0 +1,182 @@
+=== Monitoring the Data Grid
+:experimental:
+
+==== Understanding the Stack
+OpenShift Container Platform includes a pre-configured, pre-installed, and self-updating monitoring stack that provides monitoring for core platform components. OpenShift Container Platform delivers monitoring best practices out of the box. A set of alerts are included by default that immediately notify cluster administrators about issues with a cluster. Default dashboards in the OpenShift Container Platform web console include visual representations of cluster metrics to help you to quickly understand the state of your cluster.
+
+The OpenShift Container Platform monitoring stack is based on the Prometheus open source project and its wider ecosystem. The monitoring stack includes the following:
+
+*Default platform monitoring components.* 
+
+A set of platform monitoring components are installed in the openshift-monitoring project by default during an OpenShift Container Platform installation. This provides monitoring for core OpenShift Container Platform components including Kubernetes services. The default monitoring stack also enables remote health monitoring for clusters. These components are illustrated in the Installed by default section in the following diagram.
+
+*Components for monitoring user-defined projects.* 
+
+After optionally enabling monitoring for user-defined projects, additional monitoring components are installed in the openshift-user-workload-monitoring project. This provides monitoring for user-defined projects. These components are illustrated in the User section in the following diagram.
+
+image::ocp-prometheus-arch.png[Monitoring - Topology, 700]
+
+In our cluster today we have already enabled the User-defined monitoring, which means that all our applications if exposing /metrics will be scraped by Prometheus in all our user namespaces. It is also possible to have one's own Prometheus installation, hence a range of flexibility is available for different architecture and infrastructure practises.
+
+Let's take a look at metrics in Openshift for our workloads and then also take a look at the metrics that are being scrapped via the Openshift console.Data Grid exposes metrics that can be used by Prometheus and Grafana for monitoring and visualizing the cluster state.
+
+In the OpenShift Web Console, select the </> Developer perspective. You should be able to see the `datagrid-service` as shown in the picture below. 
+Also click the service and in the tab on the right click `Monitoring`
+
+image::monitoring-dg-dev-view.png[Monitoring - Topology, 700]
+
+If you remmember the first CR we created 
+
+[source, yaml]
+----
+apiVersion: infinispan.org/v1
+kind: Infinispan <1>
+metadata:
+  name: datagrid-service <2>
+  namespace: {{ USER_ID }}-cache
+spec:
+  replicas: 2 <3>
+  expose:
+    type: LoadBalancer <4>
+----
+
+<1> Tell Kubernetes/Openshift that the Custom resource type is datagrid
+<2> Specify the name of our cluster as datagrid-service
+<3> Specify the replicas we want for our service
+<4> Expose the grid to the outside world.
+
+Lets open up our yaml again.
+You can do that by
+
+<1> Open Administrator perspective in the Openshift console
+<2> Navigate to `Installed Operators > Data Grid > All instances`
+<3> Click on `datagrid-service`
+<4> Finally click the yaml
+
+By default the monitroing should be enabled. Look for the following construct which is set to `true`
+
+[source, yaml]
+----
+metadata:
+  annotations:
+    infinispan.org/monitoring: 'true'
+----
+
+The following picture also shows an example.
+image::monitoring-dg-yaml-view.png[Monitoring - Topology, 700]
+
+
+This means that our datagrid is exposing metrics at the /metrics end point for Prometheus to gather.
+
+With Openshift 4.6+ you can now also get the prometheus metrics. Lets take a look at the metrics from our Data grid services. 
+
+<1> Goto the Openshift Developer perspective in the Openshift Console 
+<2> Make sure you have chosen the right name space in this case `{{ USER_ID }}-cache`
+<3> Click Monitoring menu, then metrics
+<4> Open the Metrics tab and confirm that you can query Data Grid metrics, via the custom query with the following text and press enter.
+
+[source, shell, role="copypaste"]
+----
+vendor_cache_manager_default_cluster_size
+----
+
+The following picture shows an example view showing us that we have 2 replicas in our cluster.
+
+image::monitoring-dg-metrics-view.png[Monitoring - Topology, 700]
+
+You can try a bunch of other queries if you'd like. by your the custom queries. Perfect so we have prometheus metrics working in and well integrated environment. Lets now also configure a Grafana dashboard.
+
+To support various needs, Data Grid Operator integrates with the community version of the Grafana Operator to create dashboards for Data Grid services.
+Grafana is an open source solution that enables pulling up metrics. It makes the data more meaningful by organizing it via multiple datasources and metrics from a distributed deployment. E.g if we have a bunch of Data grid clusters we could use this dashboard to track and monitor all of them. Grafana dashboards make this possible. 
+ 
+Lets' Configure our Grafana dashboard, the Data grid operator will take care of this for us. But first we will need to create a Grafana instance so the operator knows where to configure the Data grid dashboard.
+
+First lets create a service account for our application, press the `+` sign on the top right corner and load the following yaml and press create. Also shown in the following picture.
+
+image::monitoring-create-sa-yaml.png[Monitoring - Topology, 700]
+
+Perfect we now have setup a service account that will help Grafana read the Data grid metrics.
+
+Lets setup a Grafana instance as well. 
+
+Head over back the the `Installed Operators` and then click `Grafana` as shown in the picture below.
+
+image::monitoring-create-grafana.png[Monitoring - Topology, 700]
+
+And then press the `Create Grafana` button. Once done you should see a form as following.
+
+image::monitoring-create-grafana-form.png[Monitoring - Topology, 700]
+
+Click create, this could take a minute or so until the Grafana instance comes up.
+
+Move the the Networking > Routes menu. You should see a similar route as in the picture below
+
+image::monitoring-create-grafana-route.png[Monitoring - Topology, 700]
+
+Perfect now we have a Grafana instance setup. In order to ensure we can get metrics from Data grid into Grafana via prometheus we will setup a datasource.
+
+In the Openshift console, ensure you are in the project: {{ USER_ID }}-cache and then press the `+` sign on the top right corner and load the following yaml. 
+
+[source, shell, role="copypaste"]
+----
+apiVersion: integreatly.org/v1alpha1
+kind: GrafanaDataSource
+metadata:
+  name: grafanadatasource
+spec:
+  name: datasource.yaml
+  datasources:
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        httpHeaderName1: Authorization
+        timeInterval: 5s
+        tlsSkipVerify: true
+      name: Prometheus
+      secureJsonData:
+        httpHeaderValue1: >-
+          Bearer
+          <YOUR  BEARER TOKEN HERE>
+      type: prometheus
+      url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
+----
+
+You need to replace the value of the bearer token.
+
+For this head off to your CodeReady workspaces Terminal and run the following command in the CodeReady workspaces terminal. Ensure that you are already logged in to openshift via the terminal and that your project is {{ USER_ID }}-cache
+
+[source, shell, role="copypaste"]
+----
+oc serviceaccounts get-token infinispan-monitoring
+----
+
+The ouput would give you a large String i.e is the actual token we will use for the Grafana datasource. Copy this token and head back to the Openshift console and replace the `<YOUR  BEARER TOKEN HERE>` with your actual token. The token is long and encrypted. It enables Grafana to integrate with Data grid. Press create.
+
+Perfect! You are moving along nicely. One final step. Lets configure our dashboard. Data grid should be able to watch this namespace e.g. incase Grafana was in another namespace. In our case it isnt. So all we need to do is create a dashboard yaml. Again click the `+` sign on the top right corner in your Openshift console to create a new yaml config.
+
+
+[source, shell, role="copypaste"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infinispan-operator-config
+data:
+  grafana.dashboard.namespace: {{ USER_ID }}-cache
+  grafana.dashboard.name: infinispan
+  grafana.dashboard.monitoring.key: middleware
+----
+
+Press `create` and this should create a new dashboard in Grafana that will be called `Infinispan`. All Data grid instances in our namespace will be sending data to promethues which is then loaded up in the Grafana dashboard. If this CR is removed, the dashboard will stop to exist.
+
+Head over to `Networking > Routes` , and click the Grafana route.
+You should see the Grafana landing page. As shown in the picture below click the Manage menu and you should be able to see `{{ USER_ID }}-cache` and then under it link to `Inifnispan` dashboard. 
+
+image::monitoring-grafana-dashboard-1.png[Monitoring - Topology, 700]
+
+Click on `Infinispan` and following dashboard should load up. the metrics details might differ.
+
+image::monitoring-grafana-dashboard-2.png[Monitoring - Topology, 700]
+
+

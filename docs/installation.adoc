@@ -42,8 +42,8 @@ Click on `Create datagrid` and replace the follwing YAML with the default sample
 
 [source, yaml, role="copypaste"]
 ----
-apiVersion: Data Grid.org/v1
-kind: datagrid <1>
+apiVersion: infinispan.org/v1
+kind: Infinispan <1>
 metadata:
   name: datagrid-service <2>
   namespace: {{ USER_ID }}-cache

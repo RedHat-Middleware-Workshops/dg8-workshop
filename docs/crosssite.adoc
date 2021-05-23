@@ -1,0 +1,137 @@
+=== Deployment: Geo Distributed Cache
+
+Data Grid Operator in one data center can discover a Data Grid cluster that Data Grid Operator manages in another data center. This discovery allows Data Grid to automatically form cross-site views and create global clusters.
+
+The following illustration provides an example in which Data Grid Operator manages a Data Grid cluster at a data center in New York City, NYC. At another data center in London, LON, Data Grid Operator also manages a Data Grid cluster.
+
+image::xsite-rhdg.png[Cross site - Topology, 700]
+
+
+Data Grid Operator uses the Kubernetes API to establish a secure connection between the OpenShift Container Platform clusters in NYC and LON. Data Grid Operator then creates a cross-site replication service so Data Grid clusters can back up data across locations.
+
+Each Data Grid cluster has one site master node that coordinates all backup requests. Data Grid Operator identifies the site master node so that all traffic through the cross-site replication service goes to the site master.
+
+If the current site master node goes offline then a new node becomes site master. Data Grid Operator automatically finds the new site master node and updates the cross-site replication service to forward backup requests to it.
+
+In our case since this is a lab, we will not make use of two different clusters, but to understand how this works, we will use two different namespaces. 
+The concepts will be very much similar. Although this might make for a a great showcase, its a very unique usecase to use Cross-site replication in two namespaces. 
+We will use two projects/namespaces
+
+<1> {{ USER_ID }}-cache - Site (NYC)
+<2> {{ USER_ID }}-cache2 - Site (LON)
+
+
+Open the `OpenShift` console with the link:{{ CONSOLE_URL }}[OpenShift web console^]
+
+Choose the project {{ USER_ID }}-cache
+
+And create new Data Grid instance by Navigating to `Installed Operators > Data Grid > Create Infinispan ` as the following pictures shows
+
+image::create-infinispan.png[Cross site - Topology, 700]
+
+Press the buttone `Create Infinispan`
+
+First we will create a new Infinispan cluster for our NYC location in the {{ USER_ID }}-cache
+
+image::xsite-nyc-yaml.png[Cross site - Topology, 700]
+
+Load the below yaml and press `Create` as shown in the picture above ^
+
+[source, yaml, role="copypaste"]
+----
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: example-nyc
+spec:
+  replicas: 2
+  logging:
+    categories:
+      org.jgroups.protocols.TCP: error
+      org.jgroups.protocols.relay.RELAY2: error
+  service:
+    container:
+      storage: 1Gi
+    sites:
+      local:
+        expose:
+          type: ClusterIP
+        name: NYC
+      locations:
+        - clusterName: example-lon
+          name: LON
+          namespace: {{ USER_ID }}-cache2
+          secretName: lon-token
+          url: 'infinispan+xsite://example-lon-site.{{ USER_ID }}-cache2.svc:7900'    
+    type: DataGrid
+----
+
+
+And lets the the same for our LON site in project `{{ USER_ID }}-cache2`
+
+image::xsite-lon-yaml.png[Cross site - Topology, 700]
+
+Load the below yaml and press `Create` as shown in the picture above ^
+
+
+[source, yaml, role="copypaste"]
+----
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: example-lon
+spec:
+  replicas: 2
+  logging:
+    categories:
+      org.jgroups.protocols.TCP: error
+      org.jgroups.protocols.relay.RELAY2: error
+  service:
+    container:
+      storage: 1Gi
+    sites:
+      local:
+        expose:
+          type: ClusterIP
+        name: LON
+      locations:
+        - clusterName: example-nyc
+          name: NYC
+          namespace: {{ USER_ID }}-cache
+          secretName: lon-token
+          url: 'infinispan+xsite://example-nyc-site.{{ USER_ID }}-cache.svc:7900'    
+    type: DataGrid    
+----
+
+Once the cluster starts to provision via the Operator you should see it listed as follows
+
+image::xsite-nyc-screenshot.png[Cross site - Topology, 700]
+
+Click on the cluster name and then click on `YAML`
+This should give you the details of the CR but also most importantly the status
+
+image::xsite-nyc-status-yaml.png[Cross site - Topology, 700]
+
+
+Scroll all the way down to the bottom of the yaml and check the status tag; should look similar to the following `YAML`
+
+[source, yaml, role="copypaste"]
+----
+status:
+  conditions:
+    - status: 'True'
+      type: PreliminaryChecksPassed
+    - message: 'View: example-nyc-0-63972,example-nyc-1-45654'
+      status: 'True'
+      type: WellFormed
+    - message: 'Cross-Site view: LON'
+      status: 'True'
+      type: CrossSiteViewFormed
+  podStatus:
+    ready:
+      - example-nyc-1
+      - example-nyc-2
+  statefulSetName: example-nyc
+----
+
+
