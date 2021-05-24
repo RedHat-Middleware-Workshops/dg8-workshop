@@ -23,8 +23,6 @@ modules:
   - settingup
   - dgin10mins
   - exercises
-  - embedded
-  - embeddedclustered
   - installation
   - remotecache
   - monitoring
