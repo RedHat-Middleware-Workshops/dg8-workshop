@@ -180,3 +180,11 @@ Click on `Infinispan` and following dashboard should load up. the metrics detail
 image::monitoring-grafana-dashboard-2.png[Monitoring - Topology, 700]
 
 
+=== Recap
+<1> Service monitor via the DataGrid Operator
+<2> Metrics via Openshift console and prometheus
+<4> Created Grafana Datasource
+<5> Created Grafana Dashboard
+
+
+*Congratulations!!* you have completed the metrics and monitrong labs. All the instances that will be created in this namespace etc will show up in the metrics and the dashboard. Lets move on to the next labs and do exactly that! 

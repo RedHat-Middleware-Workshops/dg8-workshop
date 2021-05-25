@@ -1,0 +1,177 @@
+==== Data Grid caches
+
+Cache configuration defines the characteristics and features of the data store and must be valid with the Data Grid schema. Data Grid recommends creating standalone files in XML or JSON format that define your cache configuration. You should separate Data Grid configuration from application code for easier validation and to avoid the situation where you need to maintain XML snippets in Java or some other client language.
+
+To create caches with Data Grid clusters running on OpenShift, you should:
+
+- Use Cache CR as the mechanism for creating caches through the OpenShift front end.
+- Use Batch CR to create multiple caches at a time from standalone configuration files.
+- Access Data Grid Console and create caches in XML or JSON format. 
+
+You can use Hot Rod or HTTP clients but Data Grid recommends Cache CR or Batch CR unless your specific use case requires programmatic remote cache creation.
+
+Find out details for configuring Data Grid caches with Cache CR.
+
+When using Cache CRs, the following rules apply:
+
+- Cache CRs apply to Data Grid service nodes only.
+- You can create a single cache for each Cache CR.
+- If your Cache CR contains both a template and an XML configuration, Data Grid Operator uses the template.
+- If you edit caches in the OpenShift Web Console, the changes are reflected through the user interface but do not take effect on the Data Grid cluster. You cannot edit caches. To change cache configuration, you must first delete the cache through the console or CLI and then re-create the cache.
+- Deleting Cache CRs in the OpenShift Web Console does not remove caches from Data Grid clusters. You must delete caches through the console or CLI. 
+
+==== Creating caches from XML
+
+Complete the following steps to create caches on Data Grid service clusters using valid infinispan.xml configuration.
+
+[source, yaml, role="copypaste"]
+----
+        apiVersion: infinispan.org/v2alpha1 <1>
+        kind: Cache
+        metadata:
+          name: mycachedefinition <2> 
+        spec:
+          clusterName: datagrid-service <3> 
+          name: mycache <4> 
+          template: <distributed-cache name="mycache" mode="SYNC"><persistence><file-store/></persistence></distributed-cache> 
+----
+
+<1> Create a Cache CR that contains an XML cache configuration.
+<2> Specify a name for the Cache CR with the metadata.name field.
+<3> Specify the target Data Grid cluster with the spec.clusterName field.
+<4> Name your cache with the spec.name field.
+        
+Important to note: The name attribute in the XML configuration is ignored. Only the spec.name field applies to the resulting cache. Add an XML cache configuration with the spec.template field.
+
+Apply this CR via the Openshift console.
+
+===== Creating caches from templates
+
+Complete the following steps to create caches on Data Grid service clusters using cache templates.
+The following example creates a cache named "mycache" from the org.infinispan.DIST_SYNC cache template:
+
+[source, yaml, role="copypaste"]
+----
+        apiVersion: infinispan.org/v2alpha1 <1>
+        kind: Cache
+        metadata:
+          name: mycachedefinition <2>
+        spec:
+          clusterName: datagrid-service <3>
+          name: mycache <4>
+          templateName: org.infinispan.DIST_SYNC <5>
+----
+
+<1> Create a Cache CR that specifies the name of a template to use.
+<2> Specify a name for the Cache CR with the metadata.name field.
+<3> Specify the target Data Grid cluster with the spec.clusterName field.
+<4> Name your cache with the spec.name field.
+<5> Specify a cache template with the spec.template field.
+
+
+
+Apply this CR via the Openshift Console. 
+You can also check the Service pod logs or check the cache via the Data Grid console
+
+===== Create cache configurations that name remote sites as backup locations
+
+The process would look like follows. Data Grid replicates data based on cache names. For this reason, site names in your cache configurations must match site names, spec.service.sites.local.name, in your Infinispan CRs. Its important to configure backup locations to go offline automatically with the take-offline element. Set the amount of time, in milliseconds, before backup locations go offline with the min-wait attribute. Define any other valid cache configuration. Add backup locations to the named cache on all sites in the global cluster.
+
+For example, if you add LON as a backup for NYC you should add NYC as a backup for LON. 
+
+The following configuration examples show backup locations for caches
+
+[source, yaml]
+----
+    <distributed-cache name="customers">
+      <encoding media-type="application/x-protostream"/>
+      <backups>
+        <backup site="LON" strategy="SYNC">
+          <take-offline min-wait="120000"/>
+        </backup>
+      </backups>
+    </distributed-cache>
+----
+
+For LON
+
+[source, yaml]
+----
+    <replicated-cache name="customers">
+      <encoding media-type="application/x-protostream"/>
+      <backups>
+        <backup site="NYC" strategy="ASYNC" >
+          <take-offline min-wait="120000"/>
+        </backup>
+      </backups>
+    </replicated-cache>
+----
+
+
+===== Performance considerations with taking backup locations offline
+
+Backup locations can automatically go offline when remote sites become unavailable. This prevents nodes from attempting to replicate data to offline backup locations, which can have a performance impact on your cluster because it results in error.
+
+You can configure how long to wait before backup locations go offline. A good rule of thumb is one or two minutes. However, you should test different wait periods and evaluate their performance impacts to determine the correct value for your deployment.
+
+For instance when OpenShift terminates the site master pod, that backup location becomes unavailable for a short period of time until Data Grid Operator elects a new site master. In this case, if the minimum wait time is not long enough then the backup locations go offline. You then need to bring those backup locations online and perform state transfer operations to ensure the data is in sync.
+
+Likewise, if the minimum wait time is too long, node CPU usage increases from failed backup attempts which can lead to performance degradation.
+
+===== Adding persistent cache stores
+
+You can add persistent cache stores to Data Grid service nodes to save data to the persistent volume.
+
+Data Grid creates a Single File cache store, .dat file, in the /opt/infinispan/server/data directory.
+
+Add the <file-store/> element to the persistence configuration in your Data Grid cache, as in the following example:
+
+
+[source, yaml, role="copypaste"]
+----
+<distributed-cache name="persistent-cache" mode="SYNC">
+    <encoding media-type="application/x-protostream"/>
+    <persistence>
+      <file-store/>
+    </persistence>
+</distributed-cache>
+----
+
+
+===== Batch CRs
+You can also run batch CRs via the DataGrid Operator
+
+[source, yaml, role="copypaste"]
+----
+apiVersion: infinispan.org/v2alpha1
+kind: Batch
+metadata:
+  name: mybatch <1>
+spec:
+  cluster: datagrid-service <2> 
+  config: |
+    create cache --template=org.infinispan.DIST_SYNC mycache <3>
+    put --cache=mycache hello world <4>
+    put --cache=mycache hola mundo
+----
+
+<1> Batch name for metadata
+<2> the cluster name you want to run this batch on
+<3> In this batch CR we are creating a cache first
+<4> and then loading the data via `put` into the `--cache`
+
+You can verify the batch operations with the `status.Phase` field in the Batch CR.
+
+==== Backup
+
+The data grid operator can also create backups for the state of the cluster. 
+
+[source, yaml, role="copypaste"]
+----
+apiVersion: infinispan.org/v2alpha1
+kind: Backup
+metadata:
+  name: my-backup <1>
+spec:
+  cluster: datagrid-service <2> 
+----

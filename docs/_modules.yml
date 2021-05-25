@@ -20,6 +20,8 @@ modules:
     name: Monitoring and metrics  
   crosssite:
     name: Kubernetes native Cross site clusters  
+  createcache:
+    name: Create Cache via Custom Resources      
   restapi:
     name: Cache via REST API
   exercises:

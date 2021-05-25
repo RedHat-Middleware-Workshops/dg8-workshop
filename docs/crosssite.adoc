@@ -134,4 +134,43 @@ status:
   statefulSetName: example-nyc
 ----
 
+Now that we have a cross site configured how about creating the a replicated cache with a backup and loading some data to see how this is working. 
+We will take London(LON) as the primary site and New york city (NYC) as the secondary site in this exampel
 
+
+This exercise builds up from the previous exercises. Its time to challenge yourself!
+
+- Get the LoadBalancer address for the LON site e.g. `https://`
+- Get the password for the user developer from the LON site
+- Open up a terminal in your CodeReady Workspace variables LB and PW
+
+Run the 
+[source, bash, role="copypaste"]
+----
+curl --insecure -XPOST  -u developer:$PW -H "Content-Type: application/xml" -d "@xsiteCache.xml" $LB:11222/rest/v2/caches/xsiteCache
+curl --insecure -XPOST  -u developer:$PW -H "Content-Type: application/xml" -d "@ny-backup-xsiteCache.xml" $LB:11222/rest/v2/caches/xsiteCache
+----
+
+Perfect now that the caches are created. Browse to the Console and there you should be able to see the cache name `xsite` on both the clusters. 
+
+[source, bash, role="copypaste"]
+----
+for i in {1..1000}
+do
+  URL="$LB/rest/v2/caches/xsiteCache/$i"
+  DATA="data-$i"
+  curl -XPOST  -u developer:$PW -d $DATA $URL --insecure
+done
+----
+
+Now that date is being loaded into the London(LON) site. 
+If you will visit the console on any of the clusters you should be able to view the entries. 
+
+=== Recap
+<1> Created two sites in two different namespaces
+<2> Deployed the CR to Openshift using the DataGrid operator
+<4> Exposed the service to the outside world
+<5> Created a replicated cache over the two sites
+<6> Loaded data into the Cache and saw how its replicated over
+
+*Congratulations!!* you have completed the first Cross site Datagrid installation of this workshop. Let's move to the next lab!
