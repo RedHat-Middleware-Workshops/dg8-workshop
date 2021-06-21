@@ -24,6 +24,7 @@ modules:
   - dgin10mins
   - exercises
   - installation
+  - remotecacheapp
   - remotecache
   - monitoring
   - crosssite

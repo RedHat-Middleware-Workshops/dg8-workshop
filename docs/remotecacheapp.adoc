@@ -1,0 +1,673 @@
+== Data Grid Remote Weather App Tutorial
+
+Learn how to use Data Grid from the Console and remote Hot Rod clients. This
+tutorial includes Java applications that use Data Grid capabilities to provide
+services for a searchable weather monitoring system.
+
+=== Objectives
+
+By completing this tutorial, you will learn how to:
+
+. Run Data Grid Server.
+. Access and use the Data Grid Console.
+. Create Data Grid caches.
+. Read and write data as primitive types and Java objects.
+. Add lifespans to entries so data expires.
+. Deploy client listeners to get event notifications.
+. Search the data store for specific values.
+. Use out-of-the-box testing with Junit 5 for verification.
+
+=== Weather System Architecture
+
+This tutorial builds a Weather System with the following Java applications:
+
+. `TemperatureLoaderApp`
+. `TemperatureMonitorApp`
+. `WeatherLoaderApp`
+. `WeatherFinderApp`
+
+==== Temperature Subsystem
+
+The Temperature Loader and Temperature Monitor applications comprise the temperature subsystem, as shown below:
+
+image::Temperature.png[Temperature.png]
+
+===== Temperature Loader
+
+This application loads temperatures for geographic locations and runs every five seconds. Data Grid stores that data in the `temperature` cache as follows:
+
+- Location: Key `String`
+- Temperature: Value `Float`
+
+===== Temperature Monitor
+
+This application monitors the temperature of each location. Data Grid sends notifications when temperatures change and the application displays each new temperature.
+
+==== Weather Subsystem
+
+The Weather Loader and Weather Finder applications comprise the weather  subsystem, as shown below:
+
+image::Weather.png[Weather.png]
+
+===== Weather Loader
+
+This application loads weather information for geographic locations and runs every five seconds. Data Grid stores that data in the `weather` cache as follows:
+
+- Location: Key `String`
+- Weather: Value `LocationWeather` (temperature, condition, city, country)
+
+===== Weather Finder
+
+This application uses Data Grid Search capabilities to perform text search and continuous queries.
+
+//Step 1
+=== Starting Data Grid Server
+
+Before you start coding fun stuff, you need to start Data Grid Server. If you havent created a 'datagrid-service' in the previous section, please do so.
+
+
+//Step 3
+=== Getting the Weather Application
+
+You can create the Weather Application yourself going step by step or you can skip ahead and use the complete solution.
+
+* Bootstrap the project.
++
+You'll find the code for each application and placeholder comments for each step in this tutorial on the `master` branch.
++
+`git clone -b master https://github.com/RedHat-Middleware-Workshops/infinispan-server-tutorial.git`
+
+* Use the complete solution.
++
+If you just want to see the Weather System in action, use the completed example on the `solution` branch.
++
+`git clone -b solution https://github.com/RedHat-Middleware-Workshops/infinispan-server-tutorial.git`
+
+//Step 4
+=== Establishing Remote Connections
+
+Connect to your locally running Data Grid Server from a Hot Rod Java client.
+
+==== Add Dependencies
+
+Open the `pom.xml` file for this project and confirm that the following dependencies are available:
+
+* `infinispan-client-hotrod` adds the https://infinispan.org/docs/stable/titles/hotrod_java/hotrod_java.html[Java Hot Rod Client].
+* `infinispan-query-dsl` adds the Data Grid Search API.
+* `infinispan-remote-query-client` adds a remote search client.
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-client-hotrod</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-query-dsl</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-remote-query-client</artifactId>
+</dependency>
+----
+
+==== Create a Remote Connection
+
+Update the `connect()` method in the `DataSourceConnector` class as follows:
+
+.org.infinispan.tutorial.db.DataSourceConnector
+[source,java]
+----
+ConfigurationBuilder builder = new ConfigurationBuilder(); //<1>
+
+builder.uri("hotrod://admin:pass@localhost:11222"); //<2>
+
+builder.clientIntelligence(ClientIntelligence.BASIC); //<3>
+
+remoteCacheManager = new RemoteCacheManager(builder.build()); //<4>
+----
+<1> Creates a `ConfigurationBuilder`
+<2> HotRod URI connection (server, port and credentials)
+<3> Uses `BASIC` Hot Rod client intelligence. This is required to use Docker with a Mac.
+<4> Creates a `RemoteCacheManager` with the configuration.
+
+==== Test the Connection
+
+Run `HealthChecker` to make sure your connection is successful.
+
+You should see the following messages:
+
+[source,bash]
+----
+
+---- Connect to Data Grid ----
+INFO: ISPN004021: Infinispan version: Infinispan ...
+---- Connection count: 1 ----
+---- Shutdown the client ----
+
+----
+
+//Step 5
+=== Implementing Temperature Loader
+
+In this section of the tutorial, you implement the Temperature Loader application and learn how to:
+
+- Create caches from the Console.
+- Read data from the cache.
+- Write data to the cache.
+- Expire entries in the cache.
+
+==== Create a Temperature Cache
+
+Update the `getTemperatureCache()` method in the `DataSourceConnector` class to invoke `getOrCreateCache()` as follows:
+
+.org.infinispan.tutorial.db.DataSourceConnector
+[source,java]
+----
+public RemoteCache<String, Float> getTemperatureCache() {
+   return remoteCacheManager.administration().getOrCreateCache("temperature", "example.PROTOBUF_DIST"); //<1>
+}
+----
+<1> Adds a cache named `temperature` that uses the `example.PROTOBUF_DIST` configuration template.
++
+This template uses Protobuf encoding for keys and values so that you can operate on data from different clients. You can
+
+[TIP]
+====
+View the configuration for the `example.PROTOBUF_DIST` template from the Console at https://localhost:11222/console/container/default/configurations/[localhost:11222/console/container/default/configurations/]
+====
+
+==== Put and Read Temperature Data
+
+Implement the `getForLocation()` method in the `TemperatureLoader` service as follows:
+
+.org.infinispan.tutorial.services.temperature.TemperatureLoader
+[source,java]
+----
+   @Override
+   public Float getForLocation(String location) {
+      Float temperature = cache.get(location); //<1>
+      if (temperature == null) {
+         temperature = fetchTemperature(); //<2>
+         cache.put(location, temperature); //<3>
+      }
+      return temperature;
+   }
+
+----
+<1> Get the value for the `location` key.
+<2> Fetches the value if it does not exist in the cache.
++
+The private `fetchTemperature()` method emulates an external service call that takes 200ms to retrieve the temperature for a geographic location.
++
+<3> Adds the value to the `temperature` cache.
+
+==== Verify Temperature Loader
+
+Run `TemperatureLoaderApp` to check that it adds temperature data.
+
+The first time the application runs, it takes about two seconds to load data. Subsequent calls retrieve the temperature from the cache, which increases performance.
+
+You should see messages such as the following:
+
+.org.infinispan.tutorial.client.temperature.TemperatureLoaderApp
+[source,java]
+----
+
+---- Connect to Data Grid ----
+<timestamp> org.infinispan.client.hotrod.RemoteCacheManager actualStart
+INFO: ISPN004021: Infinispan version: Infinispan 'Corona Extra' 11.0.1.Final
+---- Get or create the 'temperature' cache ----
+---- Press any key to quit ----
+---- Loading information ----
+Rome, Italy - 22.000622
+Como, Italy - 21.044369
+...
+
+---- Loaded in 1762ms ----
+---- Loading information ----
+Rome, Italy - 22.000622
+Como, Italy - 21.044369
+...
+---- Loaded in 44ms ----
+q
+---- Shutdown the client ----
+
+----
+
+==== Expiring Data
+
+At this point, data in the cache remains the same, even if temperatures at the locations change. You can use expiration to remove data after a period of time so that the Temperature Loader fetches new data for the `temperature` cache.
+
+Update the `put()` method in the `TemperatureLoader` class so data expires after 20 seconds as follows:
+
+.org.infinispan.tutorial.services.temperature.TemperatureLoader
+[source,java]
+----
+   cache.put(location, temperature, 20, TimeUnit.SECONDS);
+----
+
+Run the `TemperatureLoaderApp` class again. After 20 seconds you should notice that temperature loading performance decreases because the service needs to fetch data again.
+
+//Step 6
+=== Implementing Temperature Monitor
+
+In this section of the tutorial, you implement the Temperature Monitor application and learn how to use https://infinispan.org/docs/stable/titles/hotrod_java/hotrod_java.html#creating_event_listeners[Data Grid Client Listeners].
+
+These client listeners enable the Temperator Monitor application to display notifications about temperature changes that happen for each location.
+
+==== Create a Client Listener
+
+At present, client listeners do not include values of keys in receiving events. For this reason, you use the Async API to get the value and display the temperature that corresponds to the key.
+
+Update the `TemperatureMonitor` service as follows:
+
+.org.infinispan.tutorial.services.TemperatureMonitor
+[source,java]
+----
+    @ClientListener //<1>
+    public class TemperatureChangesListener {
+      private String location;
+
+      TemperatureChangesListener(String location) {
+         this.location = location;
+      }
+
+      @ClientCacheEntryCreated //<2>
+      public void created(ClientCacheEntryCreatedEvent event) {
+         if(event.getKey().equals(location)) {
+            cache.getAsync(location) //<3>
+                  .whenComplete((temperature, ex) ->
+                  System.out.printf(">> Location %s Temperature %s", location, temperature));
+         }
+      }
+    }
+
+   ...
+
+    public void monitorLocation(String location) {
+        System.out.println("---- Start monitoring temperature changes for " + location + " ----\n");
+        TemperatureChangesListener temperatureChangesListener = new TemperatureChangesListener(location);
+        cache.addClientListener(temperatureChangesListener); //<4>
+    }
+----
+<1> Annotates `TemperatureChangesListener` with `@ClientListener` to make it an Data Grid Client Listener.
+<2> Uses the `@ClientCacheEntryCreated` annotation to get notifications every time data is added to the `temperature` cache.
+<3> Filters locations by key and gets values using the async call and then prints the new values.
+<4> Adds the client listener to the cache.
+
+[TIP]
+====
+The preceding example filters events in the listener. However, these events can also be filtered server-side with an https://infinispan.org/docs/stable/titles/hotrod_java/hotrod_java.html#filtering_events[event filter]. However, you must create the filter and deploy it to Data Grid Server, which is beyond the scope of this tutorial.
+====
+
+[IMPORTANT]
+====
+Always remove client listeners from caches when you no longer need them.
+====
+
+==== Verify Temperature Monitor
+
+Make sure that `TemperatureLoaderApp` is running and then run `TemperatureMonitorApp`.
+
+You should see a message that displays the current temperature of a location and then get notifications for new temperatures every 20 seconds.
+
+.org.infinispan.tutorial.client.temperature.TemperatureMonitorApp
+[source,bash]
+----
+
+---- Get or create the 'temperature' cache ----
+Temperature 14.185611 for Bilbao, Spain
+---- Start monitoring temperature changes for Bilbao, Spain ----
+---- Press any key to quit ----
+>> Location Bilbao, Spain Temperature 7.374308
+>> Location Bilbao, Spain Temperature 24.784744
+----
+
+[TIP]
+====
+Change the expiration values to get more notifications. Use `@ClientCacheEntryExpired` to get notifications when data expires.
+====
+
+//Step 7
+=== Implementing Weather Loader
+
+In this section of the tutorial, you implement the Weather Loader application and learn how to:
+
+- Add complex key/value entries to a cache.
+- Serialize Java objects so they can be transmitted to Data Grid Server.
+- Use https://developers.google.com/protocol-buffers[Protobuf] encoding for searchable data so you perform remote queries from Hot Rod Java clients as well as REST clients and other Hot Rod clients such as C# and Node.js.
+
+==== Annotate the LocationWeather POJO
+
+Data Grid uses https://github.com/infinispan/protostream[Protostream] to serialize data to byte.
+
+Add the `@ProtoField` annotation to `LocationWeather` as follows:
+
+.org.infinispan.tutorial.data.LocationWeather
+[source,java]
+----
+    public class LocationWeather {
+
+       @ProtoField(number = 1, defaultValue = "0.0")
+       float temperature;
+
+       @ProtoField(number = 2)
+       String condition;
+
+       @ProtoField(number = 3)
+       String city;
+
+       @ProtoField(number = 4)
+       String country;
+...
+
+----
+
+==== Configure the Serialization Context
+
+To marshall the annotated `LocationWeather` class, Data Grid requires a Protobuf schema. You can either provide a Protobuf descriptor file or create a descriptor file from the annotations you added to the POJO.
+
+In `LocationWeatherMarshallingContext`, you add the schema to the Protobuf cache in Data Grid and then build a Protobuf using the `@AutoProtoSchemaBuilder` method.
+
+.org.infinispan.tutorial.db.LocationWeatherMarshallingContext
+[source,java]
+----
+@AutoProtoSchemaBuilder(
+includeClasses = {
+LocationWeather.class
+},
+schemaFileName = "weather.proto",
+schemaFilePath = "proto/",
+schemaPackageName = "org.infinispan.tutorial.data")
+public interface LocationWeatherSchema extends SerializationContextInitializer {
+}
+----
+
+[IMPORTANT]
+====
+Run `mvn clean package` from the command line or build the project in your IDE to generate the `LocationWeatherSchemaImpl` class.
+====
+
+.org.infinispan.tutorial.db.LocationWeatherMarshallingContext
+[source,java]
+----
+       // Retrieve metadata cache
+      RemoteCache<String, String> metadataCache =
+            cacheManager.getCache(ProtobufMetadataManagerConstants.PROTOBUF_METADATA_CACHE_NAME); // <1>
+
+      GeneratedSchema schema = new LocationWeatherSchemaImpl(); // <2>
+
+      // Define the new schema on the server too
+      metadataCache.put(schema.getProtoFileName(), schema.getProtoFile()); //<3>
+----
+<1> Retrieves the metadata cache that stores all Protobuf schemas.
+<2> Use the class generated from the `LocationWeatherSchema` interface to retrieve the schema.
+<3> Adds the schema to the cache.
+
+
+==== Create a Weather Cache
+
+In this step, you create a `weather` cache that can store `LocationWeather` objects. First you must initialize the marshalling context in the application and then create the cache, as follows:
+
+.org.infinispan.tutorial.db.DataSourceConnector
+[source,java]
+----
+    public RemoteCache<String, LocationWeather> getWeatherCache() {
+        System.out.println("--- Get or Create a queryable weather cache ---");
+        Objects.requireNonNull(remoteCacheManager);
+
+        LocationWeatherMarshallingContext.initSerializationContext(remoteCacheManager); // <1>
+
+        return remoteCacheManager.administration()
+              .getOrCreateCache("weather", "example.PROTOBUF_DIST"); // <2>
+    }
+----
+<1> Initializes the serialization context.
+<2> Creates the `weather` cache.
+
+==== Verify Weather Loader
+
+The code that loads data into the `weather` cache is located in the `org.infinispan.tutorial.services.weather.FullWeatherLoader`. Because this service is similar to the code you implemented for the `TemperatureLoader` service, you don't need to do anything else.
+
+Run `WeatherLoaderApp` to check that it loads weather data.
+
+You should see messages that indicate the `weather` cache is created and weather information is added for different locations:
+
+.org.infinispan.tutorial.client.weather.WeatherLoaderApp
+[source,bash]
+----
+
+---- Get or create the 'weather' cache ----
+---- Press any key to quit ----
+
+---- Loading information ----
+Rome, Italy - LocationWeather{temperature=17.252243, condition='SUNNY', city='Rome', country='Italy'}
+Como, Italy - LocationWeather{temperature=24.495003, condition='WINDLESS', city='Como', country='Italy'}
+Basel, Switzerland - LocationWeather{temperature=19.795946, condition='WINDLESS', city='Basel', country='Switzerland'}
+Bern, Switzerland - LocationWeather{temperature=20.455978, condition='WINDLESS', city='Bern', country='Switzerland'}
+...
+---- Loaded in 3386ms ----
+
+---- Loading information ----
+Rome, Italy - LocationWeather{temperature=17.252243, condition='CLOUDY', city='Rome', country='Italy'}
+Como, Italy - LocationWeather{temperature=24.495003, condition='PARTIALLY_COVERED', city='Como', country='Italy'}
+...
+---- Loaded in 70ms ----
+
+----
+
+//Step 8
+=== Implementing Weather Finder
+
+In this section of the tutorial, you learn how to:
+
+* Create and run FROM queries.
+* Create and run SELECT queries.
+* Perform continuous queries.
+
+==== Create a FROM Query
+
+Create a FROM query on values in the `weather` cache as follows:
+
+.org.infinispan.tutorial.services.weather.WeatherSearch
+[source,java]
+----
+   public List<LocationWeather> findByCountry(String country) {
+      QueryFactory queryFactory = Search.getQueryFactory(weather); //<1>
+
+      Query<LocationWeather> query = queryFactory.create("FROM org.infinispan.tutorial.data.LocationWeather WHERE country = :country"); //<2>
+
+      query.setParameter("country", country); //<3>
+
+      return query.execute().list(); // <4>
+   }
+----
+<1> Gets the `QueryFactory` from the cache.
+<2> Creates a FROM query using the Ickle query language. This query finds each `LocationWeather` in a country.
+<3> Sets the `country` parameter.
+<4> Executes the query and returns the list.
+
+==== Run the FROM Query
+
+Make sure `WeatherLoaderApp` is running and then run `WeatherFinderApp`.
+
+You should see output such as the following:
+
+.org.infinispan.tutorial.client.weather.WeatherFinderApp
+[source,bash]
+----
+---- Get or create the 'weather' cache ----
+Spain: [LocationWeather{temperature=6.2846804, condition='CLOUDY',city='Bilbao', country='Spain'},
+LocationWeather{temperature=18.044653, condition='SUNNY', city='Madrid', country='Spain'}]
+----
+
+==== Create a SELECT Query
+
+For some queries, you don't want every field for an object. In this example, you create and run a query that returns only the `city` that matches a given weather condition.
+
+.org.infinispan.tutorial.services.weather.WeatherSearch
+[source,java]
+----
+    public List<String> findByCondition(WeatherCondition condition) {
+      Query<Object[]> query = createFindLocationWeatherByConditionQuery(condition);
+      return query.execute().list().stream().map(data -> (String) data[0]).collect(Collectors.toList()); //<4>
+    }
+
+    private Query<Object[]> createFindLocationWeatherByConditionQuery(WeatherCondition condition) {
+      QueryFactory queryFactory = Search.getQueryFactory(weather); //<1>
+
+      Query<Object[]> query = queryFactory.create("SELECT city FROM org.infinispan.tutorial.data.LocationWeather w where w.condition = :condition"); //<2>
+
+      query.setParameter("condition", condition.name()); //<3>
+
+      return query;
+   }
+----
+
+<1> Gets the `QueryFactory` from the cache.
+<2> Creates a SELECT query using the Ickle query language. This query finds every `LocationWeather` with a weather condition and returns only the city.
+<3> Sets the `condition` parameter.
+<4> Executes the query, returns the list, and filters the `Object[]` to get the `String` results.
+
+==== Run the SELECT Query
+
+Make sure `WeatherLoaderApp` is running and then run `WeatherFinderApp`.
+
+You should see output such as the following:
+
+.org.infinispan.tutorial.client.weather.WeatherFinderApp
+[source,bash]
+----
+SUNNY: [Madrid]
+CLOUDY: [Lisbon, Bilbao, Newcastle, Como]
+RAINY: [Cluj-Napoca]
+PARTIALLY_COVERED: [Toronto, Bern]
+HUMID: []
+WINDY: []
+FOGGY: [Washington, Porto, Rome]
+WINDLESS: [London, Raleigh]
+DRY: [Ottawa]
+WET: [Basel, Bucarest]
+----
+
+==== Create a Continuous Query
+
+https://infinispan.org/docs/stable/titles/developing/developing.html#query_continuous[Continuous Queries] allow applications to register listeners that receive the entries matching a query filter. In this way, applications are continuously notified of changes to the queried data set.
+
+.org.infinispan.tutorial.services.weather.WeatherSearch
+[source,java]
+----
+public void findWeatherByConditionContinuously(WeatherCondition condition) {
+      Query<Object[]> query = createFindLocationWeatherByConditionQuery(condition); //<1>
+
+      ContinuousQuery<String, LocationWeather> continuousQuery = Search.getContinuousQuery(weather); // <2>
+
+      ContinuousQueryListener<> listener =
+            new ContinuousQueryListener<String, Object[]>() { //<3>
+               @Override
+               public void resultJoining(String key, Object[] data) {
+                   System.out.printf("%s is now %s%n", data[0], condition);
+               }
+            };
+
+      continuousQuery.addContinuousQueryListener(query, listener); //<4>
+   }
+----
+
+<1> Creates a query that finds all locations with a certain weather condition; for example, 'Sunny'.
+<2> Creates a continuous query on the `weather` cache.
+<3> Creates a continuous query listener and prints the condition.
+<4> Matches the query and the listener in the `ContinuousQuery` object
+
+[IMPORTANT]
+====
+Always remove continuous queries when you no longer need them.
+====
+
+==== Run the Continuous Query
+
+Make sure `WeatherLoaderApp` is running and then run `WeatherFinderApp`.
+
+You should see output such as the following:
+
+.org.infinispan.tutorial.client.weather.WeatherFinderApp
+[source,bash]
+----
+---- Press any key to quit ----
+Madrid is now SUNNY
+Bilbao is now SUNNY
+Toronto is now SUNNY
+Newcastle is now SUNNY
+Cluj-Napoca is now SUNNY
+Porto is now SUNNY
+...
+----
+
+//Step 9
+=== Testing Data Grid Server
+
+https://www.testcontainers.org/test_framework_integration/junit_5/[Test containers] are a great way to run an Data Grid Server and test with a https://junit.org/junit5/[Junit 5] extension.
+
+This section of the tutorial provides an example test that verifies the temperatures loaded in Data Grid Server are correct.
+
+[IMPORTAT]
+====
+You need https://www.docker.com/[Docker] for this part of the tutorial.
+====
+
+==== Add Dependencies
+
+Open the `pom.xml` file for this project and add the `infinispan-server-testdriver-junit5` dependency as follows:
+
+
+.pom.xml
+[source,xml]
+----
+    <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-server-testdriver-junit5</artifactId>
+        <version>${version.infinispan}</version>
+        <scope>test</scope>
+    </dependency>
+----
+
+[NOTE]
+====
+JUnit 4 rules are also available for out-of-the-box testing with Data Grid Server. Check the `infinispan-server-testdriver-junit4` dependency.
+====
+
+==== Using Test Containers
+
+Create a Junit 5 Test and use the `InfinispanServerExtension`.
+
+.org.infinispan.tutorial.services.temperature.TemperatureLoaderTest
+[source,java]
+----
+
+   @RegisterExtension
+   static InfinispanServerExtension infinispanServerExtension = InfinispanServerExtensionBuilder.server(); // <1>
+
+   @Test
+   public void loadLocationTemperature() {
+      DataSourceConnector dataSourceConnector = new DataSourceConnector(createRemoteCacheManager());
+      TemperatureLoader temperatureLoader = new TemperatureLoader(dataSourceConnector);
+      Float temperatureLoaderForLocation = temperatureLoader.getForLocation(WeatherLoader.LOCATIONS[0]);
+      assertNotNull(temperatureLoaderForLocation);
+   }
+
+   // <2>
+   private RemoteCacheManager createRemoteCacheManager() {
+      RemoteCacheManager remoteCacheManager = infinispanServerExtension.hotrod().createRemoteCacheManager();
+      SerializationContext serCtx = MarshallerUtil.getSerializationContext(remoteCacheManager);
+      LocationWeatherSchema schema = new LocationWeatherSchemaImpl();
+      schema.registerSchema(serCtx);
+      schema.registerMarshallers(serCtx);
+      return remoteCacheManager;
+   }
+----
+
+<1> Registers the Junit 5 Data Grid Server Extension.
+<2> Adds a serialization context for the tests.

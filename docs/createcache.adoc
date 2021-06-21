@@ -81,7 +81,7 @@ For example, if you add LON as a backup for NYC you should add NYC as a backup f
 
 The following configuration examples show backup locations for caches
 
-[source, yaml]
+[source, xml]
 ----
     <distributed-cache name="customers">
       <encoding media-type="application/x-protostream"/>
@@ -95,7 +95,7 @@ The following configuration examples show backup locations for caches
 
 For LON
 
-[source, yaml]
+[source, xml]
 ----
     <replicated-cache name="customers">
       <encoding media-type="application/x-protostream"/>
@@ -127,7 +127,7 @@ Data Grid creates a Single File cache store, .dat file, in the /opt/infinispan/s
 Add the <file-store/> element to the persistence configuration in your Data Grid cache, as in the following example:
 
 
-[source, yaml, role="copypaste"]
+[source, xml, role="copypaste"]
 ----
 <distributed-cache name="persistent-cache" mode="SYNC">
     <encoding media-type="application/x-protostream"/>
