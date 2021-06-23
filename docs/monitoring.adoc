@@ -95,6 +95,16 @@ First lets create a service account for our application, press the `+` sign on t
 
 image::monitoring-create-sa-yaml.png[Monitoring - Topology, 700]
 
+[source, yaml, role="copypaste"]
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: infinispan-monitoring
+  namespace: {{ USER_ID }}-cache
+----
+
+
 Perfect we now have setup a service account that will help Grafana read the Data grid metrics.
 
 Lets setup a Grafana instance as well. 

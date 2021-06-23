@@ -14,8 +14,6 @@ modules:
     name: Clustering an Embedded cache
   installation:
     name: Kubernetes native Cache service
-  remotecacheapp:
-    name: Weather app
   remotecache:
     name: Quarkus Remote Cache app
   monitoring:
