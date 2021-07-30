@@ -65,7 +65,7 @@ Now let's retrieve the DataGrif CR for DataGrid Operator.
 
 [source, shell, role="copypaste"]
 ----
-$ kubectl get Data Grid -o yaml
+kubectl get infinispan -o yaml
 ----
 
 The response indicates that datagrid nodes have received clustered views, as in the following example:
@@ -83,23 +83,23 @@ You can also wait for the condition check:
 
 [source, shell, role="copypaste"]
 ----
-$ kubectl wait --for condition=wellFormed --timeout=240s Data Grid/datagrid-service
+kubectl wait --for condition=wellFormed --timeout=240s infinispan/datagrid-service
 ----
 
 Let's retrieve cluster view from logs as follows:
 [source, shell, role="copypaste"]
 ----
-$ kubectl logs datagrid-service-0 | grep ISPN000094
+kubectl logs datagrid-service-0 | grep ISPN000094
 ----
 
 [source, shell]
 ----
-INFO  [org.Data Grid.CLUSTER] (MSC service thread 1-2) \
-ISPN000094: Received new cluster view for channel Data Grid: \
+INFO  [org.infinispan.CLUSTER] (MSC service thread 1-2) \
+ISPN000094: Received new cluster view for channel datagrid-service: \
 [datagrid-service-0|0] (1) [datagrid-service-0]
 
-INFO  [org.Data Grid.CLUSTER] (jgroups-3,datagrid-service-0) \
-ISPN000094: Received new cluster view for channel Data Grid: \
+INFO  [org.infinispan.CLUSTER] (jgroups-3,datagrid-service-0) \
+ISPN000094: Received new cluster view for channel datagrid-service: \
 [datagrid-service-0|1] (2) [datagrid-service-0, datagrid-service-1]
 ----
 

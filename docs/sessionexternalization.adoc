@@ -1,4 +1,4 @@
-= Lab10 - Externalizing Sessions
+= Externalizing Sessions
 :experimental:
 
 In this lab, we'll show how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_, which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scenes, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.

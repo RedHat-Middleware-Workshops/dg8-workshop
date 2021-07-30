@@ -8,10 +8,6 @@ modules:
     name: DataGrid in 10 mins
   settingup:
     name: Setting up
-  embedded:
-    name: Embedding cache in your code
-  embeddedclustered:  
-    name: Clustering an Embedded cache
   installation:
     name: Kubernetes native Cache service
   remotecache:

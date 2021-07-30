@@ -140,30 +140,110 @@ We will take London(LON) as the primary site and New york city (NYC) as the seco
 
 This exercise builds up from the previous exercises. Its time to challenge yourself!
 
-- Get the LoadBalancer address for the LON site e.g. `https://`
-- Get the password for the user developer from the LON site
-- Open up a terminal in your CodeReady Workspace variables LB and PW
+- Add LoadBalancer to both the site clusters. 
+- Get the LoadBalancer address for the both sites 
+- Get the password for the user developer for both sites
 
-Run the 
-[source, bash, role="copypaste"]
-----
-curl --insecure -XPOST  -u developer:$PW -H "Content-Type: application/xml" -d "@xsiteCache.xml" $LB:11222/rest/v2/caches/xsiteCache
-curl --insecure -XPOST  -u developer:$PW -H "Content-Type: application/xml" -d "@ny-backup-xsiteCache.xml" $LB:11222/rest/v2/caches/xsiteCache
-----
+If you havent been able to figure it out, take a look at the following commands that will print the details out to you on the terminal. 
 
-Perfect now that the caches are created. Browse to the Console and there you should be able to see the cache name `xsite` on both the clusters. 
 
-[source, bash, role="copypaste"]
+*Solution*
+[source, bash]
 ----
-for i in {1..1000}
-do
-  URL="$LB/rest/v2/caches/xsiteCache/$i"
-  DATA="data-$i"
-  curl -XPOST  -u developer:$PW -d $DATA $URL --insecure
-done
+# change to the project
+oc project {{ USER_ID }}-cache2
+
+# get the console url for site LON
+echo "https://$(oc get services | grep example-lon-external | awk '{ print $4 }'):11222"
+
+# get the password for user developer to login to the console
+echo "$(oc get secret example-lon-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | grep password | awk '{ print $2 }' )"
 ----
 
-Now that date is being loaded into the London(LON) site. 
+Perfect now that we have the details lets open up the console and setup the cross site caches. 
+
+image::dg8_createcache_console.png[Create cache, 700]
+
+After pressing Create cache you will see the following form. In the field `Provide Cache configuration` add the follownig xml and press create
+
+image::dg8_createcacheform_console.png[Create cache, 700]
+
+[source, xml]
+----
+<infinispan>
+  <cache-container>
+    <distributed-cache name="xsiteCache"> <1> 
+      <encoding media-type="application/x-protostream"/> <2> 
+      <backups>
+        <backup site="NYC" strategy="SYNC"> <3> 
+          <take-offline min-wait="120000"/> <4>
+        </backup>
+      </backups>
+    </distributed-cache>
+  </cache-container>
+</infinispan>
+----
+
+<1> Name of our cache
+<2> The media type what will be in the cache, you can choose xml, json, java serialization etc as well
+<3> Here we define NYC as our backup and saying that it should be synchronous
+<4> Incase the cluster is not working wait for the specified time and take it offline.
+
+Lets do the same for our site NYC as well.
+
+[source, bash]
+----
+# change to the project
+oc project {{ USER_ID }}-cache
+
+# get the console url for site NYC
+echo "https://$(oc get services | grep example-nyc-external | awk '{ print $4 }'):11222"
+
+# get the password for user developer to login to the console
+echo "$(oc get secret example-nyc-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | grep password | awk '{ print $2 }' )"
+----
+
+
+Repeat the step for creating the cache again but with the following xml this time, which is taking LON as the backup site.
+[source, xml]
+----
+<infinispan>
+  <cache-container>
+    <replicated-cache name="xsiteCache">
+      <encoding media-type="application/x-protostream"/>
+      <backups>
+        <backup site="LON" strategy="ASYNC" >
+          <take-offline min-wait="120000"/>
+        </backup>
+      </backups>
+    </replicated-cache>
+  </cache-container>
+</infinispan>
+
+----
+
+Lets create a couple of entries 
+To add an entry press the `xsiteCache` on the main console page and then press `Add Entry` as shown in the image below.
+Key `1` , value `Coffee`
+
+image::dg8_createentry_console.png[Create cache, 700]
+
+Now if you go to the NYC console and cache details you should be able to see the same entry as shown in the image below. 
+
+image::dg8_createentryoutput_console.png[Create cache, 700]
+
+
+
+*Challenge yourself*
+
+- Add an entry that will live for 5 seconds
+- Add an entry that will never die
+- Add an entry that will have a max idle time for 5 seconds. This means the entry will die if there is read and write operations on it.
+- Add an entry with key type as integer and value as String
+
+Perfect now that the caches are created. Browse to the Console and there you should be able to see the cache name `xsiteCache` on both the clusters. 
+
+
 If you will visit the console on any of the clusters you should be able to view the entries. 
 
 === Recap
@@ -172,5 +252,6 @@ If you will visit the console on any of the clusters you should be able to view 
 <4> Exposed the service to the outside world
 <5> Created a replicated cache over the two sites
 <6> Loaded data into the Cache and saw how its replicated over
+<7> Learnt the different parameters used from the console to setup an entry
 
 *Congratulations!!* you have completed the first Cross site Datagrid installation of this workshop. Let's move to the next lab!

@@ -1,8 +1,11 @@
+= Core concepts with a Java app
+:experimental:
+
 == Data Grid Remote Weather App Tutorial
 
 Learn how to use Data Grid from the Console and remote Hot Rod clients. This
 tutorial includes Java applications that use Data Grid capabilities to provide
-services for a searchable weather monitoring system.
+services for a searchable weather monitoring system. The application is written in pure Java, it gives the basic introduction into how to use Data Grid.
 
 === Objectives
 
@@ -15,7 +18,7 @@ By completing this tutorial, you will learn how to:
 . Add lifespans to entries so data expires.
 . Deploy client listeners to get event notifications.
 . Search the data store for specific values.
-. Use out-of-the-box testing with Junit 5 for verification.
+
 
 === Weather System Architecture
 
@@ -69,24 +72,13 @@ Before you start coding fun stuff, you need to start Data Grid Server. If you ha
 //Step 3
 === Getting the Weather Application
 
-You can create the Weather Application yourself going step by step or you can skip ahead and use the complete solution.
-
-* Bootstrap the project.
-+
-You'll find the code for each application and placeholder comments for each step in this tutorial on the `master` branch.
-+
-`git clone -b master https://github.com/RedHat-Middleware-Workshops/infinispan-server-tutorial.git`
-
-* Use the complete solution.
-+
-If you just want to see the Weather System in action, use the completed example on the `solution` branch.
-+
-`git clone -b solution https://github.com/RedHat-Middleware-Workshops/infinispan-server-tutorial.git`
+Back in {{ CHE_URL }}[CodeReady Workspaces^], navigate to the project `infinispan-server-tutorial`. This is a template project, and you will be writing code into this project.
+As you can see there is already some files inplace. Let's take a look into what these files are and do.
 
 //Step 4
 === Establishing Remote Connections
 
-Connect to your locally running Data Grid Server from a Hot Rod Java client.
+Connect to your datagrid-service from a Hot Rod Java client.
 
 ==== Add Dependencies
 
@@ -430,7 +422,7 @@ In this step, you create a `weather` cache that can store `LocationWeather` obje
 
 ==== Verify Weather Loader
 
-The code that loads data into the `weather` cache is located in the `org.infinispan.tutorial.services.weather.FullWeatherLoader`. Because this service is similar to the code you implemented for the `TemperatureLoader` service, you don't need to do anything else.
+The code that loads data into the `weather` cache is located in the `org.infinispan.tutorial.services.weather.FullWeatherLoader`. Because this service is similar to the code you implemented for the `TemperatureLoader` service, you do not need to do anything else.
 
 Run `WeatherLoaderApp` to check that it loads weather data.
 
@@ -506,7 +498,7 @@ LocationWeather{temperature=18.044653, condition='SUNNY', city='Madrid', country
 
 ==== Create a SELECT Query
 
-For some queries, you don't want every field for an object. In this example, you create and run a query that returns only the `city` that matches a given weather condition.
+For some queries, you do not want every field for an object. In this example, you create and run a query that returns only the `city` that matches a given weather condition.
 
 .org.infinispan.tutorial.services.weather.WeatherSearch
 [source,java]
@@ -606,68 +598,18 @@ Porto is now SUNNY
 ...
 ----
 
-//Step 9
-=== Testing Data Grid Server
 
-https://www.testcontainers.org/test_framework_integration/junit_5/[Test containers] are a great way to run an Data Grid Server and test with a https://junit.org/junit5/[Junit 5] extension.
+=== Recap
 
-This section of the tutorial provides an example test that verifies the temperatures loaded in Data Grid Server are correct.
+. Run Data Grid Server.
+. Access and use the Data Grid Console.
+. Create Data Grid caches.
+. Read and write data as primitive types and Java objects.
+. Add lifespans to entries so data expires.
+. Deploy client listeners to get event notifications.
+. Search the data store for specific values.
 
-[IMPORTAT]
-====
-You need https://www.docker.com/[Docker] for this part of the tutorial.
-====
-
-==== Add Dependencies
-
-Open the `pom.xml` file for this project and add the `infinispan-server-testdriver-junit5` dependency as follows:
+*Congratulations!!* you have completed the this lab on Core concepts. Let's move to the next lab and learn more!
 
 
-.pom.xml
-[source,xml]
-----
-    <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-server-testdriver-junit5</artifactId>
-        <version>${version.infinispan}</version>
-        <scope>test</scope>
-    </dependency>
-----
 
-[NOTE]
-====
-JUnit 4 rules are also available for out-of-the-box testing with Data Grid Server. Check the `infinispan-server-testdriver-junit4` dependency.
-====
-
-==== Using Test Containers
-
-Create a Junit 5 Test and use the `InfinispanServerExtension`.
-
-.org.infinispan.tutorial.services.temperature.TemperatureLoaderTest
-[source,java]
-----
-
-   @RegisterExtension
-   static InfinispanServerExtension infinispanServerExtension = InfinispanServerExtensionBuilder.server(); // <1>
-
-   @Test
-   public void loadLocationTemperature() {
-      DataSourceConnector dataSourceConnector = new DataSourceConnector(createRemoteCacheManager());
-      TemperatureLoader temperatureLoader = new TemperatureLoader(dataSourceConnector);
-      Float temperatureLoaderForLocation = temperatureLoader.getForLocation(WeatherLoader.LOCATIONS[0]);
-      assertNotNull(temperatureLoaderForLocation);
-   }
-
-   // <2>
-   private RemoteCacheManager createRemoteCacheManager() {
-      RemoteCacheManager remoteCacheManager = infinispanServerExtension.hotrod().createRemoteCacheManager();
-      SerializationContext serCtx = MarshallerUtil.getSerializationContext(remoteCacheManager);
-      LocationWeatherSchema schema = new LocationWeatherSchemaImpl();
-      schema.registerSchema(serCtx);
-      schema.registerMarshallers(serCtx);
-      return remoteCacheManager;
-   }
-----
-
-<1> Registers the Junit 5 Data Grid Server Extension.
-<2> Adds a serialization context for the tests.
