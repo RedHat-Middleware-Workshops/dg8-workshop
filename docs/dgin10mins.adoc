@@ -1,4 +1,4 @@
-= DatGrid 8.0 in 10 minutes
+= DatGrid 8.x in 10 minutes
 :experimental:
 
 The latest update to Red Hat Runtimes is with the release of Red Hat Data Grid 8.0, which provides a distributed in-memory, NoSQL datastore solution. Your applications can access, process, and analyze data at in-memory speed to deliver a superior user experience. Whether you are using legacy applications or a new breed of microservices and functions, Red Hat Data Grid 8.0 will enable the journey to Open Hybrid Cloud. Data Grid includes the Infinispan open-source software project. It is available to deploy as an embedded library, as a standalone server, or as a containerized application on Red Hat OpenShift Container Platform. 
@@ -7,16 +7,16 @@ image::dg8.png[Red Hat Data Grid 8.0, 700]
 
 
 === A Full Lifecycle Operator to reduce deployment and management overhead in OpenShift
-An Operator enables the operations and lifecycle management for an application by using the underlying Kubernetes APIs. That means complex applications (e.g. consumed as services such as distributed caching, databases, etc) can easily get upgraded when newer versions arrive and more; also meaning no human intervention. The Operator SDK enables developers to write such Operators. Red Hat Data Grid 8.0 introduces a fully supported Data Grid Operator that provides operational intelligence.
+An Operator enables the operations and lifecycle management for an application by using the underlying Kubernetes APIs. That means complex applications (e.g. consumed as services such as distributed caching, databases, etc) can easily get upgraded when newer versions arrive and more; also meaning no human intervention. The Operator SDK enables developers to write such Operators. Red Hat Data Grid 8 introduces a fully supported Data Grid Operator that provides operational intelligence.
 
 === A new server architecture 
 Cloud and Container Native Data Grid needs to have a reduced footprint, and that's what the latest version of Red Hat Data Grid brings. It reduces both the disk footprint and initial heap size upto 50%, leaving more memory for your data. You can now run the server without the Red Hat JBoss Enterprise Application Platform (EAP), ensuring a lower memory and disk footprint
 also simplifying configuration. 
 
-Moreover, Data Grid 8.0 servers provide several enhancements and improvements to security, including integration with Red Hat SSO and a smaller attack surface.
+Moreover, Data Grid 8 servers provide several enhancements and improvements to security, including integration with Red Hat SSO and a smaller attack surface.
 
 === A more performant and rich REST API 
-Red Hat Data Grid 8.0 introduces REST API v2. 
+Red Hat Data Grid 8 introduces REST API v2. 
 The API has 50% faster response rates compared to v1. There are also new capabilities introduced such as
 
 * Access data and manipulate objects (such as counters)
@@ -26,13 +26,13 @@ The API has 50% faster response rates compared to v1. There are also new capabil
 Moreover, Red Hat Data Grid REST API v2 also automatically converts between storage formats such as JSON, XML, Protobuf, and plain text for increased interoperability. The Red Hat Data Grid engineering team develops and maintains comprehensive REST API Documentation.
 
 === A powerful CLI 
-In 8.0, Data Grid gives you a new CLI with intuitive commands for remotely accessing data and managing clusters.
+In 8, Data Grid gives you a new CLI with intuitive commands for remotely accessing data and managing clusters.
 The CLI uses familiar Bash commands for navigating, such as `cd` and `ls`. It also provides command history and auto-completion for ease of use. 
 
 Additionally, the CLI provides help text and man pages for commands with clear examples.
 
 === Enhanced observability 
-Now you can use the `/metrics` endpoint for integration with Prometheus. Moreover, Red Hat Data Grid 8 is also compatible with Eclipse Microprofile Metrics API. More specific metrics and gauges are included. Data Grid 8.0 also offers improved statistics and management operations via JMX and updates to logging with coarse-grained logging categories and support for logs in JSON format.
+Now you can use the `/metrics` endpoint for integration with Prometheus. Moreover, Red Hat Data Grid 8 is also compatible with Eclipse Microprofile Metrics API. More specific metrics and gauges are included. Data Grid 8 also offers improved statistics and management operations via JMX and updates to logging with coarse-grained logging categories and support for logs in JSON format.
 
 == What is Caching and how to apply it with Red Hat Data Grid?
 Modern applications use data and lets assume lots of data, whether it comes from databases, files, webservices, rpc call etc. 
@@ -81,7 +81,7 @@ Congratulations! By now you understand the different patterns of caching, and th
 - The container distribution and operator are available in the link:https://catalog.redhat.com/software/containers/explore[Red Hat Container Catalog, window=_blank]
 - Product documentation is available link:https://docs.redhat.com[here, window=_blank]
 - Getting Started Guide that will get you running with RHDG 8 in 5 minutes.
-- link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/data_grid_migration_guide/index[Migration Guide, window=_blank] 
+- link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.2/html/migrating_to_data_grid_8/index[Migration Guide, window=_blank] 
 - link:https://github.com/redhat-developer/redhat-datagrid-tutorials[Starter Tutorials, window=_blank]
 - link:https://access.redhat.com/articles/4933371[Supported Components, window=_blank]
 - link:https://access.redhat.com/articles/4933551[Supported Configurations, window=_blank]
