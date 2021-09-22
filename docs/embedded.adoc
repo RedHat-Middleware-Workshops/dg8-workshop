@@ -487,11 +487,11 @@ When an entry expires it resides in the data container or cache store until it i
 
 === Eviction
 
-Red Hat Data Grid supports eviction of entries, such that you do not run out of memory. Eviction is typically used in conjunction with a cache store, so that entries are not permanently lost when evicted, since eviction only removes entries from memory and not from cache stores or the rest of the cluster. Red Hat Data Grid supports storing data in a few different formats. Data can be stored as the object iself, binary as a byte[], and off-heap which stores the byte[] in native memory.
+Red Hat Data Grid supports eviction of entries, such that you do not run out of memory. Eviction is typically used in conjunction with a cache store, so that entries are not permanently lost when evicted, since eviction only removes entries from memory and not from cache stores or the rest of the cluster. Red Hat Data Grid supports storing data in a few different formats. Data can be stored as the object itself, binary as a byte[], and off-heap which stores the byte[] in native memory.
 
 [NOTE]
 ====
-Eviction occurs on a local basis, and is not cluster-wide. Each instance will analyze on adding a new entry whether the threshold for evction is reached and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to starts evicting entries. You have to set size attribute of the eviction element to be greater than zero in order for eviction to be turned on. If size is too large you can run out of memory. The size attribute will probably take some tuning in each use case.
+Eviction occurs on a local basis, and is not cluster-wide. Each instance will analyze on adding a new entry whether the threshold for eviction is reached and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to starts evicting entries. You have to set size attribute of the eviction element to be greater than zero in order for eviction to be turned on. If size is too large you can run out of memory. The size attribute will probably take some tuning in each use case.
 ====
 
 [NOTE]
@@ -505,7 +505,7 @@ Both Eviction and Expiration are means of cleaning the cache of unused entries a
 So now a brief explanation of the difference.
 
 - With eviction you set maximal number of entries you want to keep in the memory and if this limit is exceeded if entries are added, a candidate is found to be dropped from memory according to the eviction strategy.
-  - eviction stategy depends on the memory configuration, see link:hhttps://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/configuring_data_grid/memory#eviction-config[Configuring Data Grid - Eviction, window=_blank] for more details
+  - eviction strategy depends on the memory configuration, see link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/configuring_data_grid/memory#eviction-config[Configuring Data Grid - Eviction, window=_blank] for more details
   - Eviction can be set up with passivation in that case the entry is only persisted if evicted from memory
 
 - With expiration you set time criteria for entries to specify how long you want to keep them in the cache.

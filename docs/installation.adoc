@@ -13,7 +13,7 @@ The Operator Lifecycle Manager (OLM) is the backplane that facilitates managemen
 
 With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a team access to an Operator for their slice of the cluster.
 
-Red Hat Data Grid 8.0 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
+Red Hat Data Grid 8.2 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
 
 === Installing
 If you have not already logged into OpenShift from the CodeReady Workspaces terminal, please do that now.Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. When prompted, your *Username* is `{{ USER_ID }}` and your *Password* is `{{ OPENSHIFT_USER_PASSWORD }}`.
@@ -38,7 +38,7 @@ image::dg_operatoroverview.png[openshift_login, 700]
 
 You can see there are no clusters installed in our namespace. Let's go ahead and do that. 
 
-Click on `Create datagrid` and replace the follwing YAML with the default sample: 
+Click on `Create datagrid` and replace the following YAML with the default sample: 
 
 [source, yaml, role="copypaste"]
 ----
@@ -226,7 +226,7 @@ Data Grid has two types of services
 <1> Cache Service
 <2> DataGrid Service
 
-Services are stateful applications, based on the Data Grid Server image, that provide flexible and robust in-memory data storage. If you do not e.g. specify a value for the spec.service.type field, Data Grid Operator creates Cache Service nodes by default. Each service has differrent benefits and enables applications to leverage the different features exposed by the Data grid.
+Services are stateful applications, based on the Data Grid Server image, that provide flexible and robust in-memory data storage. If you do not e.g. specify a value for the spec.service.type field, Data Grid Operator creates Cache Service nodes by default. Each service has different benefits and enables applications to leverage the different features exposed by the Data grid.
 
 *Cache Service*
 

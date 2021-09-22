@@ -540,7 +540,7 @@ It's quite simple to add Lucene based search to your cache. Try to change the pa
 
 ==== Congratulations!
 
-You have completed the first introductory exercises to Red Hat Data Grid 8.0.
+You have completed the first introductory exercises to Red Hat Data Grid 8.2.
 
 1. *Exercise 1* - Creating a Cache
 2. *Exercise 2* - JSR-107, JCache
