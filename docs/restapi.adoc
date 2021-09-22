@@ -135,7 +135,7 @@ To register protobuf schemas via REST, invoke a POST or PUT in the `___protobuf_
 
 [source, shell, role="copypaste"]
 ----
-curl -u developer:$PASSWORD -X POST --data-binary @./pokemon.proto $LB/rest/v2/caches/___protobuf_metadata/pokemon.proto
+curl --digest -u developer:$PASSWORD -X POST --data-binary @./pokemon.proto $LB/rest/v2/caches/___protobuf_metadata/pokemon.proto
 ----
 
 
@@ -146,7 +146,7 @@ Now let's create an indexed cache since we want to retrieve data at speed from o
 
 [source, shell, role="copypaste"]
 ----
-curl -u developer:$PASSWORD -H "Content-Type: application/json" -d '{"distributed-cache":{"mode":"SYNC","indexing":{"auto-config":true,"index":"ALL"}}}' $LB/rest/v2/caches/pokemon
+curl --digest -u developer:$PASSWORD -H "Content-Type: application/json" -d '{"distributed-cache":{"mode":"SYNC","indexing":{"auto-config":true,"index":"ALL"}}}' $LB/rest/v2/caches/pokemon
 ----
 
 === Bulk loading the REST endpoint
@@ -226,7 +226,7 @@ Below you can se that we are loading each of the json files one by one to the ca
 status=0
 for f in data/*.json
 do
-  curl -u developer:$PASSWORD -XPOST --data-binary @${f}  -H "Content-Type: application/json; charset=UTF-8"  $LB/rest/v2/caches/pokemon/$(basename $f .json)
+  curl --digest -u developer:$PASSWORD -XPOST --data-binary @${f}  -H "Content-Type: application/json; charset=UTF-8"  $LB/rest/v2/caches/pokemon/$(basename $f .json)
   let status=status+1
   echo  "Imported $f (total $status pokemons)"
 done
@@ -238,7 +238,7 @@ Get all Pokemons:
 
 [source, url, role="copypaste"]
 ----
-curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon'
+curl --digest -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon'
 ----
 
 Count Pokemons by generation:
@@ -246,28 +246,28 @@ Count Pokemons by generation:
 [source, url, role="copypaste"]
 ----
 # select count(p.name) from Pokemon group by generation
-curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation'
+curl --digest -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=select%20count(p.name)%20from%20Pokemon%20p%20group%20by%20generation'
 ----
 
 Do a full text search on the name
 
 [source, url, role="copypaste"]
 ----
-curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27'
+curl --digest -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20where%20name:%27pikachu%27'
 ----
 
 Select top 5 Pokemons that can better withstand fire:
 
 [source, url, role="copypaste"]
 ----
-curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5'
+curl --digest -u developer:$PASSWORD $LB/rest/v2/caches/pokemon'?action=search&query=from%20Pokemon%20order%20by%20against_fire%20asc&max_results=5'
 ----
 
 Get Pokemon by key (name)
 
 [source, url, role="copypaste"]
 ----
-curl -u developer:$PASSWORD $LB/rest/v2/caches/pokemon/Whismur
+curl --digest -u developer:$PASSWORD $LB/rest/v2/caches/pokemon/Whismur
 ----
 
 
