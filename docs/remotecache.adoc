@@ -142,15 +142,15 @@ For this open the `Init.java` and add the following member variables to it.
     @Inject
     RemoteCacheManager cacheManager; <2> 
 
-    private static final String CACHE_CONFIG = <3>
-            "<infinispan><cache-container>" +
-                    "<distributed-cache name=\"%s\"></distributed-cache>" +
-                    "</cache-container></infinispan>";
+    private static final String CACHE_CONFIG = "<distributed-cache name=\"%s\">" <3>
+          + " <encoding media-type=\"application/x-protostream\"/>" <4>
+          + "</distributed-cache>";
 ----
 
 <1> First we specify a class level variable which is the name of our Cache 
 <2> We inject the `cacheManager` to our file. We only want to load the `CacheManager` once, and since its a heavy object, we want to do it at startup.
 <3> In addition to defining cache configuration within code, we can also configure a cache with xml. We are doing that here just to show that it is possible. We could have also loaded this from a file in the `META-INF` directory, but for a short demo this works okay as well.
+<4> The encoding of the cache is Protostream to store encoded data in Protobuf in the cache and get the best interoperability and Query support.
 
 [source, java, role="copypaste"]
 ----
