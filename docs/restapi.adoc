@@ -86,18 +86,18 @@ message Pokemon  {
   optional float against_rock = 17;
   optional float against_steel = 18;
   optional float against_water = 19;
-  optional int32 attack = 20;
-  optional int32 base_egg_steps = 21;
-  optional int32 base_happiness = 22;
-  optional int32 base_total = 23;
+  optional float attack = 20;
+  optional float base_egg_steps = 21;
+  optional float base_happiness = 22;
+  optional float base_total = 23;
   optional string capture_rate = 24;
 
   /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string classfication = 25;
-  optional int32 defense = 26;
-  optional int32 experience_growth = 27;
+  optional float defense = 26;
+  optional float experience_growth = 27;
   optional float height_m = 28;
-  optional int32 hp = 29;
+  optional float hp = 29;
 
   /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string japanese_name = 30;
@@ -105,17 +105,17 @@ message Pokemon  {
   /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string name = 31;
   optional float percentage_male = 32;
-  optional int32 pokedex_number = 33;
-  optional int32 sp_attack = 34;
-  optional int32 sp_defense = 35;
-  optional int32 speed = 36;
+  optional float pokedex_number = 33;
+  optional float sp_attack = 34;
+  optional float sp_defense = 35;
+  optional float speed = 36;
 
   /* @Field(index=Index.YES, analyze = Analyze.YES, store = Store.NO) */
   optional string type1 = 37;
   optional string type2 = 38;
   optional float weight_kg = 39;
-  optional int32 generation = 40;
-  optional int32 is_legendary = 41;
+  optional float generation = 40;
+  optional float is_legendary = 41;
 }
 
 ----
