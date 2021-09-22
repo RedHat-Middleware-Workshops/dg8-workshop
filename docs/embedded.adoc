@@ -612,7 +612,7 @@ Now check the terminals tab where it says  `Embedded - Live Coding` you should m
 2020-04-16 09:29:38,664 INFO  [org.acm.ScoreService] (vert.x-worker-thread-3) Cache initialized
 2020-04-16 09:29:38,665 INFO  [io.quarkus] (vert.x-worker-thread-3) jcache-quarkus 1.0.0-SNAPSHOT (powered by Quarkus 1.3.2.Final) started in 0.074s. Listening on: http://0.0.0.0:8080
 2020-04-16 09:29:38,665 INFO  [io.quarkus] (vert.x-worker-thread-3) Profile dev activated. Live Coding activated.
-2020-04-16 09:29:38,665 INFO  [io.quarkus] (vert.x-worker-thread-3) Installed features: [cdi, infinispan-embedded, kubernetes, resteasy, resteasy-jsonb, smallrye-metrics]
+2020-04-16 09:29:38,665 INFO  [io.quarkus] (vert.x-worker-thread-3) Installed features: [cdi, infinispan-embedded, Kubernetes, resteasy, resteasy-jsonb, smallrye-metrics]
 2020-04-16 09:29:38,666 INFO  [io.qua.dev] (vert.x-worker-thread-3) Hot replace total time: 0.371s
 -- Entry for CACHE_ENTRY_CREATED created
 -- Entry for CACHE_ENTRY_CREATED created

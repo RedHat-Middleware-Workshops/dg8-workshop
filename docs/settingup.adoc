@@ -11,7 +11,7 @@ If your username is properly set, then you can move on. **If not, in the above b
 
 image::setuser.png[Set User ID above, 700]
 
-This will customize the links and copy/paste code for this workshop. If you accidently type the wrong username, just click the green recycle icon to reset it.
+This will customize the links and copy/paste code for this workshop. If you accidentally type the wrong username, just click the green recycle icon to reset it.
 
 Throughout this lab you'll discover how Quarkus can make your development of cloud native apps faster and more productive.
 

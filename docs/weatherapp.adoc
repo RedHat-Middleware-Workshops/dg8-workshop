@@ -66,14 +66,14 @@ This application uses Data Grid Search capabilities to perform text search and c
 //Step 1
 === Starting Data Grid Server
 
-Before you start coding fun stuff, you need to start Data Grid Server. If you havent created a 'datagrid-service' in the previous section, please do so.
+Before you start coding fun stuff, you need to start Data Grid Server. If you haven't created a 'datagrid-service' in the previous section, please do so.
 
 
 //Step 3
 === Getting the Weather Application
 
 Back in {{ CHE_URL }}[CodeReady Workspaces^], navigate to the project `infinispan-server-tutorial`. This is a template project, and you will be writing code into this project.
-As you can see there is already some files inplace. Let's take a look into what these files are and do.
+As you can see there is already some files in place. Let's take a look into what these files are and do.
 
 //Step 4
 === Establishing Remote Connections
@@ -355,6 +355,7 @@ Add the `@ProtoField` annotation to `LocationWeather` as follows:
        @ProtoField(number = 4)
        String country;
 ...
+    }
 
 ----
 

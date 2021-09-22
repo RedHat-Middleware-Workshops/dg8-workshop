@@ -2,7 +2,7 @@
 :experimental:
 
 You made it ! Or you jumped to this section. Anyway, congratulations. We hope you enjoy this lab and learn some
-_stuff_. There is many other things about Red Hat Data Grid and Inifinispan that you can do and that was not illustrated here.
+_stuff_. There is many other things about Red Hat Data Grid and Infinispan that you can do and that was not illustrated here.
 
 Don't forget Red Hat Data Grid can be used in many usecases:
 

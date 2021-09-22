@@ -1,7 +1,7 @@
 == Embeded Cache with a cluster
 :experimental:
 
-In this lab we are going to cluster the embedded cache. Inifinispan does this very nicely. We do not need to change a lot of configuration to achieve this.
+In this lab we are going to cluster the embedded cache. Infinispan does this very nicely. We do not need to change a lot of configuration to achieve this.
 After configuration, we will deploy our application to Openshift and see how the cluster will work in a cloud environment.
 Following diagram illustrates the topology we want to achieve. Although clustering cache nodes can be in 100s, we will start with a couple of them and see how we can get the feature set we need for a cache.
 
@@ -44,13 +44,13 @@ Replace the onStart method in our ScoreService.java
 
     }
 ----
-<1> We define a global configuration, since we are going to be in a clustered mode, hence everytime a new instance of our app will be created it will have the global configuration parameters to talk to the other nodes if they are present.
+<1> We define a global configuration, since we are going to be in a clustered mode, hence every time a new instance of our app will be created it will have the global configuration parameters to talk to the other nodes if they are present.
 
 <2> Infinispan nodes rely on a transport layer to join and leave clusters as well as to replicate data across the network. Infinispan uses JGroups technology to handle cluster transport. You configure cluster transport with JGroups stacks using DNS_PING on OpenShift, which define in _default-configs/jgroups-kubernetes.xml_. Here we have defined a unique clusterName for our app's embedded cache manager.
 
 <3> We setup a distributed, replicated cache, which means that all our nodes will have all the keys in its memory. But each node will return the correct values for all the keys.
 
-We will take a look into replicaiton and distribution furhter in this lab.
+We will take a look into replication and distribution further in this lab.
 
 Also open the CacheListener and make sure that the `@Listener` class annotation is changed to:
 
@@ -104,9 +104,9 @@ quarkus.kubernetes-client.trust-certs=true <2>
 ----
 
 <1> The first property makes sure that once our application is deployed it will expose a route
-<2> The second property makes sure that incase you dont have valid certificates the build wont stop. in our case that can likely be the case since its not a production environment rather a demo one.
+<2> The second property makes sure that incase you don't have valid certificates the build wont stop. in our case that can likely be the case since its not a production environment rather a demo one.
 
-Perfect everything is in order. Make sure you are logged into openshift. You can run the following command in your terminal to confirm:
+Perfect everything is in order. Make sure you are logged into Openshift. You can run the following command in your terminal to confirm:
 [source, shell, role="copypaste"]
 ----
 oc whoami
@@ -130,9 +130,9 @@ Now lets deploy our application to Openshift
 mvn clean package -Dquarkus.kubernetes.deploy=true
 ----
 
-Also remmember next time we need to deploy we just need to run the above deploy command again. thats all!
+Also remember next time we need to deploy we just need to run the above deploy command again. thats all!
 
-Lets wait for this build to be successfull!
+Lets wait for this build to be successful!
 
 === Openshift Console
 First, open a new browser with the link:{{ CONSOLE_URL }}[OpenShift web console^]
@@ -187,13 +187,13 @@ oc patch dc/jcache-quarkus -p '{"spec": {"template": {"spec": {"containers": [{"
 
 Navigate to _Workloads_ tab, then click on the `jcache-quarkus` workload. Next, click on the _Resources_ tab on the right, and at the bottom you will see the route to your application. You can also click at the route and it will take you to the application page, same as we have done in the previous lab. if append /api to the url you will be on the api endpoint.
 
-Now go back to the `Details` tab for the applicaiton and Click on the pod scaler and scale to 2 pods.
+Now go back to the `Details` tab for the application and Click on the pod scaler and scale to 2 pods.
 
 image::lab2podscaler.png[Caching, 900]
 
 This will spin up another instance of the app, and cluster them together automatically.
 
-Let's find out if 2 Inifinspan cache servers joined the cluster. Click on `View Logs` in _Resources_ tab:
+Let's find out if 2 Infinispan cache servers joined the cluster. Click on `View Logs` in _Resources_ tab:
 
 image::viewLogs.png[Caching, 600]
 
@@ -219,7 +219,7 @@ and then run load.sh
 ./load.sh
 ----
 
-Go back to the resrouce view of your application and then click view logs, you should see same Entry logs as follows in both nodes.
+Go back to the resource view of your application and then click view logs, you should see same Entry logs as follows in both nodes.
 
 Node1:
 

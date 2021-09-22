@@ -76,7 +76,7 @@ Moreover you will find that preceding exercise sections will explain the `//TODO
 First, a bit about Java _Maps_. Why are Maps good for a cache? Maps are fast, they use methods like `hashCode` and `equals` to determine how to add data to the map. This also means they can be fast enough (O(1)) time to read and write the data. That is exceptional performance, and that's what one would expect from a cache. Data storage is in key and value pairs. There is a lot more to `Map`s, but let's start with a basic cache how-to.
 
 A *CacheManager* is the primary mechanism for retrieving a Cache instance and is often used as a starting point to using the cache.
-Essentially if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid/Inifinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections.
+Essentially if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid/Infinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections.
 
 CacheManagers are heavyweight objects, and it's not recommended to have more than one *CacheManager* being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances).
 
@@ -392,7 +392,7 @@ Result = 45
 
 === Exercise 5: Using Transactions
 
-Transactions are essential in any business application. Usually, the transaction is used with the dataset, and quite often related to a database. Still, thats not exactly right, if you have a distributed dataset, one needs transactions for business logic to prevail. Infinspan provides transactions. There can be a scenario in which the cluster adds a node or entry has been written by another node. The Infinispan transaction manager is aware of such events and handles them. You can read more about the design of transactions here: https://github.com/infinispan/infinispan-designs
+Transactions are essential in any business application. Usually, the transaction is used with the dataset, and quite often related to a database. Still, thats not exactly right, if you have a distributed dataset, one needs transactions for business logic to prevail. Infinispan provides transactions. There can be a scenario in which the cluster adds a node or entry has been written by another node. The Infinispan transaction manager is aware of such events and handles them. You can read more about the design of transactions here: https://github.com/infinispan/infinispan-designs
 
 [NOTE]
 ====

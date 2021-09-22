@@ -14,9 +14,9 @@ Hot Rod is a binary TCP protocol that Infinispan offers for high-performance cli
 
 === RemoteCache
 A `RemoteCache`, as the name suggests, is a cache that can be accessed remotely. The Data Grid server will host this remote cache, and clients will connect to this remote cache.
-From a design perspectivem it gives more flexibility and also allows to have central deployments with multiple caches residing in it; there by making managemetn and operations a bit more simpler. 
+From a design perspective it gives more flexibility and also allows to have central deployments with multiple caches residing in it; there by making management and operations a bit more simpler. 
 
-There are some symantic differences how Inifinspan/Red Hat Data Grid expose `RemoteCache` vs `EmbeddedCache`. The collection methods `keySet`, `entrySet`, and `values` are backed by the remote cache. Every method called is sent back into the `RemoteCache`. This is useful as it allows for the various keys, entries or values to be retrieved lazily, and not requiring them all be stored in the client memory at once if the user does not want. These collections adhere to the `Map` specification, noting that `add` and `addAll` are not supported but all other methods are supported. One thing to note is the `Iterator.remove`, `Set.remove`, or `Collection.remove` methods require more than 1 round trip to the server to operate. You can check out the `RemoteCache` Javadoc to see more details about these and the other methods.
+There are some semantic differences how Infinispan/Red Hat Data Grid expose `RemoteCache` vs `EmbeddedCache`. The collection methods `keySet`, `entrySet`, and `values` are backed by the remote cache. Every method called is sent back into the `RemoteCache`. This is useful as it allows for the various keys, entries or values to be retrieved lazily, and not requiring them all be stored in the client memory at once if the user does not want. These collections adhere to the `Map` specification, noting that `add` and `addAll` are not supported but all other methods are supported. One thing to note is the `Iterator.remove`, `Set.remove`, or `Collection.remove` methods require more than 1 round trip to the server to operate. You can check out the `RemoteCache` Javadoc to see more details about these and the other methods.
 
 
 === Project details
@@ -26,7 +26,7 @@ However in this case we will be using the `RemoteCacheManager` and we will be us
 So let's get cracking. But first let's take a look at the project.
 
 Back in {{ CHE_URL }}[CodeReady Workspaces^], navigate to the project `dg8-quarkus-client-example`. This is a template project, and you will be writing code into this project.
-As you can see there is already some files inplace. Let's take a look into what these files are and do.
+As you can see there is already some files in place. Let's take a look into what these files are and do.
 
 
 === The Maven dependencies
@@ -85,7 +85,7 @@ Although generating resources is the easiest and most performant way to utilize 
 
 Open the `GameMarshaller` class in the `dg8-quarkus-client-example/src/main/java/org/acme/rest/json` folder.
 
-Add the following method to our `GameMarshaller` class. In the following code we specify how we are going to read from our ProtoStream. We could add any additional processing on the stream if we wanted to. For now we take a simplified read and return a `Game` object. Hence everytime a stream is read from the Cache, this method will be called.
+Add the following method to our `GameMarshaller` class. In the following code we specify how we are going to read from our ProtoStream. We could add any additional processing on the stream if we wanted to. For now we take a simplified read and return a `Game` object. Hence every time a stream is read from the Cache, this method will be called.
 
 [source, java, role="copypaste"]
 ----
@@ -162,7 +162,7 @@ For this open the `Init.java` and add the following member variables to it.
 
 You might remember the `onStart` method from our previous labs. We are doing the same thing here. 
 <1> We use the xml defined in a `String` and pass it on to the Red Hat Data Grid server to parse it and create a new cache called `games`
-<2> We then ask the `cacheManager` to get the Cache for us or create a new one if it doesnt exist
+<2> We then ask the `cacheManager` to get the Cache for us or create a new one if it doesn't exist
 
 Now we should have a `RemoteCacheManager` configured, all we need to do now is to inject it in our REST resource.
 
@@ -311,7 +311,7 @@ mvn clean package -DskipTests -f $CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-quarku
 
 You should see a Build Successful message from this run as well. 
 
-Notice that any entries that you might have added to the cache prior to this deployment are still there. That wasnt the case in the embedded cache, since we were not using any stores and everytime the application started the cache was empty. But in this case since the cache is remote, you will still see the entries from last time. Its important to note that there are different ways you can configure and setup the cache. For more details visit the Documenatation pages for Red Hat Data Grid.
+Notice that any entries that you might have added to the cache prior to this deployment are still there. That wasn't the case in the embedded cache, since we were not using any stores and every time the application started the cache was empty. But in this case since the cache is remote, you will still see the entries from last time. Its important to note that there are different ways you can configure and setup the cache. For more details visit the Documentation pages for Red Hat Data Grid.
 
 
 === Caching with Hibernate and JPA and Quarkus
@@ -342,7 +342,7 @@ public class Country {
 }
 ----
 
-In the above code, just using the `@Cacheable` annotation will make sure that inifinspan is used as the second level cache for the entities. You also don’t need to pick an implementation. A suitable implementation based on technologies Infinispan is included as a transitive dependency of the Hibernate ORM extension, and automatically integrated during the build.
+In the above code, just using the `@Cacheable` annotation will make sure that Infinispan is used as the second level cache for the entities. You also don’t need to pick an implementation. A suitable implementation based on technologies Infinispan is included as a transitive dependency of the Hibernate ORM extension, and automatically integrated during the build.
 
 === Recap
 

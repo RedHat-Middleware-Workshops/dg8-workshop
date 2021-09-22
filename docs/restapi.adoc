@@ -19,7 +19,7 @@ The following "standard" formats are interchangeable:
 We are using this example from the very good lists of demo collection on github: https://github.com/infinispan-demos/links
 We will do the following
 
-. Create a Cache in infinispan with Lucene support
+. Create a Cache in Infinispan with Lucene support
 . Define our protostream
 . Load bulk data into the cache
 . Use search queries directly into the cache
@@ -120,7 +120,7 @@ message Pokemon  {
 
 ----
 
-In our project `dg8-restapi` open the file `pokemon.proto` and paste the above data structure. The structure defines the capabilites of a Pokemon.
+In our project `dg8-restapi` open the file `pokemon.proto` and paste the above data structure. The structure defines the capabilities of a Pokemon.
 
 When caches are indexed, or specifically configured to store `application/x-protostream`, you can send and receive JSON documents that are automatically converted to and from Protostream. In order for this conversion to work you must register a protobuf schema.
 

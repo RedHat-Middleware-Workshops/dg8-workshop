@@ -135,7 +135,7 @@ status:
 ----
 
 Now that we have a cross site configured how about creating the a replicated cache with a backup and loading some data to see how this is working. 
-We will take London(LON) as the primary site and New york city (NYC) as the secondary site in this exampel
+We will take London(LON) as the primary site and New york city (NYC) as the secondary site in this example.
 
 
 This exercise builds up from the previous exercises. Its time to challenge yourself!
@@ -164,7 +164,7 @@ Perfect now that we have the details lets open up the console and setup the cros
 
 image::dg8_createcache_console.png[Create cache, 700]
 
-After pressing Create cache you will see the following form. In the field `Provide Cache configuration` add the follownig xml and press create
+After pressing Create cache you will see the following form. In the field `Provide Cache configuration` add the following xml and press create
 
 image::dg8_createcacheform_console.png[Create cache, 700]
 

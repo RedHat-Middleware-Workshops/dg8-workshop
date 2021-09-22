@@ -20,7 +20,7 @@ What you are going to learn:
  * What is a Cache, and how to start with the common use cases
  * What is Clustering in a Cache scenario and how it works
  * Working with the Data Grid 8.2 Operator
- * Montoring and metrics
+ * Monitoring and metrics
  * What is a Remote Cache and how to take benefit of it within Red Hat Data Grid
  * Operations with the Data Grid Operator, creating Cache, Backup, restores etc.
  * How to build applications with known frameworks like Quarkus and Spring
