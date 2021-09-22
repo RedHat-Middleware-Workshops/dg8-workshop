@@ -1,4 +1,4 @@
-# This is the Data Grid 8.0 workshop
+# This is the Data Grid 8.2 workshop
 
 The workshop can be deployed on Openshift 4.3+ cluster. 
 It requires the DataGrid, CodeReady operators. 
