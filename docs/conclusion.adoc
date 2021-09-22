@@ -2,7 +2,7 @@
 :experimental:
 
 You made it ! Or you jumped to this section. Anyway, congratulations. We hope you enjoy this lab and learn some
-_stuff_. There is many other things about Red Hat Data Grid and Inifinispan that you can do and that was not illustrated here.
+_stuff_. There is many other things about Red Hat Data Grid and Infinispan that you can do and that was not illustrated here.
 
 Don't forget Red Hat Data Grid can be used in many usecases:
 
@@ -18,7 +18,7 @@ If you want, and we hope so, to go further here are some references:
 - The container distribution and operator are available in the link:https://catalog.redhat.com/software/containers/explore[Red Hat Container Catalog, window=_blank]
 - Product documentation is available link:https://docs.redhat.com[here, window=_blank]
 - Getting Started Guide that will get you running with RHDG 8 in 5 minutes.
-- link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.0/html/data_grid_migration_guide/index[Migration Guide, window=_blank] 
+- link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.2/html/migrating_to_data_grid_8/index[Migration Guide, window=_blank] 
 - link:https://github.com/redhat-developer/redhat-datagrid-tutorials[Starter Tutorials, window=_blank]
 - link:https://access.redhat.com/articles/4933371[Supported Components, window=_blank]
 - link:https://access.redhat.com/articles/4933551[Supported Configurations, window=_blank]

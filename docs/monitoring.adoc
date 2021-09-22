@@ -25,7 +25,7 @@ Also click the service and in the tab on the right click `Monitoring`
 
 image::monitoring-dg-dev-view.png[Monitoring - Topology, 700]
 
-If you remmember the first CR we created 
+If you remember the first CR we created 
 
 [source, yaml]
 ----
@@ -53,7 +53,7 @@ You can do that by
 <3> Click on `datagrid-service`
 <4> Finally click the yaml
 
-By default the monitroing should be enabled. Look for the following construct which is set to `true`
+By default the monitoring should be enabled. Look for the following construct which is set to `true`
 
 [source, yaml]
 ----
@@ -161,9 +161,9 @@ For this head off to your CodeReady workspaces Terminal and run the following co
 oc serviceaccounts get-token infinispan-monitoring
 ----
 
-The ouput would give you a large String i.e is the actual token we will use for the Grafana datasource. Copy this token and head back to the Openshift console and replace the `<YOUR  BEARER TOKEN HERE>` with your actual token. The token is long and encrypted. It enables Grafana to integrate with Data grid. Press create.
+The output would give you a large String i.e is the actual token we will use for the Grafana datasource. Copy this token and head back to the Openshift console and replace the `<YOUR  BEARER TOKEN HERE>` with your actual token. The token is long and encrypted. It enables Grafana to integrate with Data grid. Press create.
 
-Perfect! You are moving along nicely. One final step. Lets configure our dashboard. Data grid should be able to watch this namespace e.g. incase Grafana was in another namespace. In our case it isnt. So all we need to do is create a dashboard yaml. Again click the `+` sign on the top right corner in your Openshift console to create a new yaml config.
+Perfect! You are moving along nicely. One final step. Lets configure our dashboard. Data grid should be able to watch this namespace e.g. incase Grafana was in another namespace. In our case it isn't. So all we need to do is create a dashboard yaml. Again click the `+` sign on the top right corner in your Openshift console to create a new yaml config.
 
 
 [source, shell, role="copypaste"]
@@ -178,10 +178,10 @@ data:
   grafana.dashboard.monitoring.key: middleware
 ----
 
-Press `create` and this should create a new dashboard in Grafana that will be called `Infinispan`. All Data grid instances in our namespace will be sending data to promethues which is then loaded up in the Grafana dashboard. If this CR is removed, the dashboard will stop to exist.
+Press `create` and this should create a new dashboard in Grafana that will be called `Infinispan`. All Data grid instances in our namespace will be sending data to Prometheus which is then loaded up in the Grafana dashboard. If this CR is removed, the dashboard will stop to exist.
 
 Head over to `Networking > Routes` , and click the Grafana route.
-You should see the Grafana landing page. As shown in the picture below click the Manage menu and you should be able to see `{{ USER_ID }}-cache` and then under it link to `Inifnispan` dashboard. 
+You should see the Grafana landing page. As shown in the picture below click the Manage menu and you should be able to see `{{ USER_ID }}-cache` and then under it link to `Infinispan` dashboard. 
 
 image::monitoring-grafana-dashboard-1.png[Monitoring - Topology, 700]
 
@@ -197,4 +197,4 @@ image::monitoring-grafana-dashboard-2.png[Monitoring - Topology, 700]
 <5> Created Grafana Dashboard
 
 
-*Congratulations!!* you have completed the metrics and monitrong labs. All the instances that will be created in this namespace etc will show up in the metrics and the dashboard. Lets move on to the next labs and do exactly that! 
+*Congratulations!!* you have completed the metrics and monitoring labs. All the instances that will be created in this namespace etc will show up in the metrics and the dashboard. Lets move on to the next labs and do exactly that! 

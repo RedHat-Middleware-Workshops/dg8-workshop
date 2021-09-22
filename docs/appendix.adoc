@@ -1,7 +1,7 @@
 == APPENDIX: Setting up my own machine for the lab
 :experimental:
 
-The labs are designed to run entirely on openshift, there is no mandatory requirement to install the following components. The following instructions are means of guidance for anyone who wants to try them out on their own machine. 
+The labs are designed to run entirely on Openshift, there is no mandatory requirement to install the following components. The following instructions are means of guidance for anyone who wants to try them out on their own machine. 
 
 *Recommended path is to use the Openshift RHMI/Integreatly environment provided in this workshop.
 
