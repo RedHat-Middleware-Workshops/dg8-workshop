@@ -211,30 +211,29 @@ For this open up the `application.properties file` located in `src/main/resource
 
 [source, properties, role="copypaste"]
 ----
+%prod.quarkus.infinispan-client.server-list=datagrid-service:11222 <1>
 
-quarkus.infinispan-client.server-list=datagrid-service:11222 <1>
+# Auth. Set use-auth to false to connect to a non authenticated Data Grid
+%prod.quarkus.infinispan-client.use-auth=true<2>
+%prod.quarkus.infinispan-client.auth-username=developer<3>
+%prod.quarkus.infinispan-client.auth-password=bvTxphbrUvmkorxu<4>
 
-# Auth
-quarkus.infinispan-client.use-auth=true <2>
-quarkus.infinispan-client.auth-username=developer <3> 
-quarkus.infinispan-client.auth-password=<4>
-
-quarkus.infinispan-client.auth-server-name=infinispan <5>
-quarkus.infinispan-client.auth-realm=default <6>
-quarkus.infinispan-client.sasl-mechanism=SCRAM-SHA-512 <7>
-
-quarkus.infinispan-client.trust-store=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt <8>
-quarkus.infinispan-client.trust-store-type=pem <9>
+# SSL configuration. Remove this properties if you disable ssl
+%prod.quarkus.infinispan-client.trust-store=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt<5>
+%prod.quarkus.infinispan-client.trust-store-type=pem<6>
 
 
+quarkus.http.cors=true
 
 # Openshift extension settings.
 quarkus.openshift.expose=true 
+
+# if you dont set this and dont have a valid cert the deployment wont happen
+
 quarkus.kubernetes-client.trust-certs=true
-quarkus.http.cors=true
 quarkus.container-image.build=true
 quarkus.kubernetes.deploy=true
-
+quarkus.infinispan-client.devservices.enabled=false
 
 ----
 
@@ -242,11 +241,8 @@ quarkus.kubernetes.deploy=true
 <2> boolean for denoting that autheticaiton is on
 <3> Sets username used by authentication, in our case its developer, thats the default from the operator.
 <4> Sets password used by authentication, we do not have this yet. we will find it out from the secrets. 
-<5> The authentication server name
-<6> the default security realm that enables authentication on the cache server
-<7> Security Mechanism used, SASL, MD-5 etc.
-<8> The trust store for our certificate
-<9> And finally the trust store type
+<5> The trust store for our certificate
+<6> And finally the trust store type
 
 Let's go fill that password field in the above properties file.
 
