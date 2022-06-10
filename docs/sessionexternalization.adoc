@@ -1,5 +1,6 @@
 = Externalizing Sessions
 :experimental:
+:imagesdir: images
 
 In this lab, we'll show how to externalize *HTTP Sessions* from *Spring Boot* to *Data Grid*. Data Grid Spring Session support is built on _SpringRemoteCacheManager_ and _SpringEmbeddedCacheManager_, which means developers don't need to store HTTP session data in Data Grid manually for clustering the session data across multiple Spring Boot applications. Behind the scenes, Data Grid will autowire Spring Boot Session to distributed caches in Data Grid.
 
@@ -34,7 +35,7 @@ This embeddedCache service is not using the default BOM (Bill of material) that 
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
-            <version>1.1.0.redhat-1</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 </dependencyManagement>
@@ -49,7 +50,7 @@ In order to use *Embedded Mode* in Spring Boot, `infinispan-spring-boot-starter-
 <dependency>
     <groupId>org.infinispan</groupId>
     <artifactId>infinispan-spring-boot-starter-embedded</artifactId>
-    <version>2.2.3.Final-redhat-00001</version>
+    <version>${version.infinispan}</version>
 </dependency>
 ----
 
@@ -84,8 +85,8 @@ Copy below the `// TODO: Add globalCustomizer method here` marker to customize I
          GlobalConfigurationBuilder builder = GlobalConfigurationBuilder.defaultClusteredBuilder();
          builder.serialization().marshaller(new JavaSerializationMarshaller());
          builder.transport().clusterName("rhdg");
-         builder.serialization().whiteList().addClass("org.springframework.session.MapSession");
-         builder.serialization().whiteList().addRegexp("java.util.*");
+         builder.serialization().allowList().addClass("org.springframework.session.MapSession");
+         builder.serialization().allowList().addRegexp("java.util.*");
          return builder.build();
       };
    }
@@ -114,7 +115,7 @@ Create a build configuration for your application using OpenJDK base container i
 
 [source,sh,role="copypaste"]
 ----
-oc new-build registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --binary --name=cacheapp -l app=cacheapp
+oc new-build registry.access.redhat.com/ubi8/openjdk-11 --binary --name=cacheapp -l app=cacheapp
 ----
 
 Start and watch the build, which will take about minutes to complete:
@@ -129,7 +130,7 @@ Deploy it as an OpenShift application after the build is done:
 [source,sh,role="copypaste"]
 ----
 oc new-app cacheapp && oc expose svc/cacheapp && \
-oc label dc/cacheapp app.kubernetes.io/part-of=catalog app.openshift.io/runtime=spring --overwrite
+oc label deployment/cacheapp app.kubernetes.io/part-of=catalog app.openshift.io/runtime=spring --overwrite
 ----
 
 Finally, make sure it’s actually done rolling out. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] for the cache service, and ensure you get the blue circles!
