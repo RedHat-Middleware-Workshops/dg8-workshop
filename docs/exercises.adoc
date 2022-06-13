@@ -51,7 +51,7 @@ image::workspaceview.png[crw, 800, align="center"]
 
 === Exercises
 
-This first lab comprises of 6 Exercises. The exercises will give you a glimpse into some of the features of Red Hat Data Grid, and is a good starting point to learn how to use Red Hat Data Grid with your applications.
+This first lab comprises of 5 Exercises. The exercises will give you a glimpse into some of the features of Red Hat Data Grid, and is a good starting point to learn how to use Red Hat Data Grid with your applications.
 
 ==== Summary of the Exercises
 
@@ -60,7 +60,6 @@ This first lab comprises of 6 Exercises. The exercises will give you a glimpse i
 3. *Exercise 3* - Functional API
 4. *Exercise 4* - Streaming data from the Cache
 5. *Exercise 5* - Using Transactions
-6. *Exercise 6* - Queries to the Cache with Lucene
 
 Each Exercise has a corresponding .java file e.g. `Exercise1.java`. The maven project required for this lab is `dg8-exercises`. Following screenshot shows where the Java files are placed. The package name we have used is `org.acme`
 
@@ -460,80 +459,6 @@ key2 = value2
 
 So as you can see, even though we wrote the new values, but by rolling back, they do not exist anymore.
 
-=== Exercise 6: Queries to the Cache with Lucene
-
-Infinispan includes a highly scalable distributed Apache Lucene Directory implementation.
-
-This directory closely mimicks the same semantics of the traditional filesystem and RAM-based directories, being able to work as a drop-in replacement for existing applications using Lucene and providing reliable index sharing and other features of Infinispan like node auto-discovery, automatic failover, and rebalancing, optionally transactions, and can be backed by traditional storage solutions as filesystem, databases or cloud store engines.
-
-The implementation extends Lucene’s `org.apache.lucene.store.Directory` so it can be used to store the index in a cluster-wide shared memory, making it easy to distribute the index. Compared to rsync-based replication, this solution is suited for use cases in which your application makes frequent changes to the index, and you need them to be quickly distributed to all nodes. Consistency levels, synchronicity, and guarantees, total elasticity, and auto-discovery are all configurable; also, changes applied to the index can optionally participate in a JTA transaction, optionally supporting XA transactions with recovery.
-
-[NOTE]
-====
-Please remove the following lines in the main method.
-
-      /* UNCOMMENT When starting this exercise
-      UNCOMMENT When starting this exercise */
-====
-
-Since Lucene is part of Infinispan, We need to make sure that we have the right configuration for it.
-
-[source, java]
-----
-        // Create cache config
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.indexing().index(Index.ALL) <1>
-                .addProperty("default.directory_provider", "ram") <2>
-                .addProperty("lucene_version", "LUCENE_CURRENT"); <3>
-
-        // Obtain the cache
-        Cache<String, Person> cache = cacheManager.administration()
-                .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
-                .getOrCreateCache("cache", builder.build());
-----
-
-<1> Here we are telling our Cache config that we want to index all entries
-<2> The storage for Lucene is in the memory
-<3> and we want to give it a version
-
-Now, let's add a bit of more code to the above example.
-In the following code, we get the QueryFactory and create a query.
-
-[source, java, role="copypaste"]
-----
-        // TODO: Obtain a query factory for the cache
-         // Obtain a query factory for the cache
-         QueryFactory queryFactory = Search.getQueryFactory(cache);
-         // Construct a query
-         Query<Person> query = queryFactory.create("from org.acme.Person where name = 'William'");
-         // Execute the query
-         List<Person> matches = query.execute().list();
-
-----
-
-Now let's run our code and see how it works.
-
-Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise6` in your MyWorkspace Menu on the right
-[source, shell, role="copypaste"]
-----
-mvn clean compile && \
-mvn exec:java -Dexec.mainClass=org.acme.Exercise6
-----
-
-You should be able to see an output similar to the following. On the last line you can see your key, value printed.
-[source, shell, role="copypaste"]
-----
-Jun 22, 2020 7:03:18 PM org.hibernate.search.engine.Version <clinit>
-INFO: HSEARCH000034: Hibernate Search 5.10.7.Final-redhat-00001
-Jun 22, 2020 7:03:18 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
-INFO: HCANN000001: Hibernate Commons Annotations {5.0.5.Final}
-Jun 22, 2020 7:03:18 PM org.infinispan.query.impl.LifecycleManager createQueryInterceptorIfNeeded
-INFO: ISPN014003: Registering Query interceptor for cache cache
-Match: Person [name=William, surname=Wordsworth]Match: Person [name=William, surname=Shakespeare]
-----
-
-It's quite simple to add Lucene based search to your cache. Try to change the parameters a bit and experience this more.
-
 ==== Congratulations!
 
 You have completed the first introductory exercises to Red Hat Data Grid 8.2.
@@ -543,7 +468,6 @@ You have completed the first introductory exercises to Red Hat Data Grid 8.2.
 3. *Exercise 3* - Functional API
 4. *Exercise 4* - Streaming data from the Cache
 5. *Exercise 5* - Using Transactions
-6. *Exercise 6* - Queries to the Cache with Lucene
 
 You should now be able to create caches, stream data and so much more.
 Let's move on to the next section and experience more in-depth examples.
