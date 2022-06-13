@@ -502,16 +502,12 @@ In the following code, we get the QueryFactory and create a query.
 [source, java, role="copypaste"]
 ----
         // TODO: Obtain a query factory for the cache
-        QueryFactory queryFactory = Search.getQueryFactory(cache);
-        // Construct a query
-        Query query = queryFactory
-            .from(Person.class)
-            .having("name")
-            .eq("William")
-            .toBuilder()
-            .build();
-        // Execute the query
-        List<Person> matches = query.list();
+         // Obtain a query factory for the cache
+         QueryFactory queryFactory = Search.getQueryFactory(cache);
+         // Construct a query
+         Query<Person> query = queryFactory.create("from org.acme.Person where name = 'William'");
+         // Execute the query
+         List<Person> matches = query.execute().list();
 
 ----
 
