@@ -109,19 +109,36 @@ Perfect we now have setup a service account that will help Grafana read the Data
 
 Lets setup a Grafana instance as well. 
 
-Head over back the the `Installed Operators` and then click `Grafana` as shown in the picture below.
+Press the `+` sign on the top right corner in the Openshift Console and load the following CR yaml to create a grafan instance. 
 
-image::monitoring-create-grafana.png[Monitoring - Topology, 700]
+[source, yaml, role="copypaste"]
+----
+apiVersion: integreatly.org/v1alpha1
+kind: Grafana
+metadata:
+  name: grafana
+spec:
+  config:
+    auth:
+      disable_signout_menu: true
+    auth.anonymous:
+      enabled: true
+    log:
+      level: warn
+      mode: console
+    security:
+      admin_password: secret
+      admin_user: root
+  ingress:
+    enabled: true
+  dashboardLabelSelector:
+    - matchExpressions:
+        - key: app
+          operator: In
+          values:
+            - grafana
+----
 
-And then press the `Create Grafana` button. Once done you should see a form as following.
-
-image::monitoring-create-grafana-form.png[Monitoring - Topology, 700]
-
-Click create, this could take a minute or so until the Grafana instance comes up.
-
-Move the the Networking > Routes menu. You should see a similar route as in the picture below
-
-image::monitoring-create-grafana-route.png[Monitoring - Topology, 700]
 
 Perfect now we have a Grafana instance setup. In order to ensure we can get metrics from Data grid into Grafana via prometheus we will setup a datasource.
 

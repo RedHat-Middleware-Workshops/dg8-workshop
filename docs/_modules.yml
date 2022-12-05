@@ -18,8 +18,6 @@ modules:
     name: Kubernetes native Cross site clusters  
   createcache:
     name: Create Cache via Custom Resources      
-  restapi:
-    name: Cache via REST API
   exercises:
     name: Getting started with Data Grid
   sessionexternalization:
