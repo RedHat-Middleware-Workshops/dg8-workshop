@@ -1,21 +1,21 @@
-=== Deployment: Geo Distributed Cache
+=== Deployment: Geo-Distributed Cache
 
-Data Grid Operator in one data center can discover a Data Grid cluster that Data Grid Operator manages in another data center. This discovery allows Data Grid to automatically form cross-site views and create global clusters.
+Data Grid Operator in one data center can discover a Data Grid cluster that another Data Grid Operator manages in another data center. This discovery allows Data Grid to automatically form cross-site views and create global clusters.
 
-The following illustration provides an example in which Data Grid Operator manages a Data Grid cluster at a data center in New York City, NYC. At another data center in London, LON, Data Grid Operator also manages a Data Grid cluster.
+The following illustration provides an example in which Data Grid Operator manages a Data Grid cluster at a data center in New York City, NYC. At another data center in London, LON, a Data Grid Operator also manages a Data Grid cluster.
 
 image::xsite-rhdg.png[Cross site - Topology, 700]
 
 
-Data Grid Operator uses the Kubernetes API to establish a secure connection between the OpenShift Container Platform clusters in NYC and LON. Data Grid Operator then creates a cross-site replication service so Data Grid clusters can back up data across locations.
+Data Grid Operator uses the Kubernetes API to establish a secure connection between the OpenShift Container Platform clusters in NYC and LON. Data Grid Operator then creates a cross-site replication service so that Data Grid clusters can back up data across locations.
 
 Each Data Grid cluster has one site master node that coordinates all backup requests. Data Grid Operator identifies the site master node so that all traffic through the cross-site replication service goes to the site master.
 
-If the current site master node goes offline then a new node becomes site master. Data Grid Operator automatically finds the new site master node and updates the cross-site replication service to forward backup requests to it.
+If the current site master node goes offline, a new node becomes site master. Data Grid Operator automatically finds the new site master node and updates the cross-site replication service to forward backup requests to it.
 
-In our case since this is a lab, we will not make use of two different clusters, but to understand how this works, we will use two different namespaces. 
-The concepts will be very much similar. Although this might make for a a great showcase, its a very unique usecase to use Cross-site replication in two namespaces. 
-We will use two projects/namespaces
+Since this is a lab, we will not use two different clusters, but to understand how this works, we will use two different namespaces. 
+The concepts will be very much similar. Although this might make for a great showcase, its a very unique use case to use Cross-site replication in two namespaces. 
+We will use two projects/namespaces:
 
 <1> {{ USER_ID }}-cache - Site (NYC)
 <2> {{ USER_ID }}-cache2 - Site (LON)
@@ -25,17 +25,17 @@ Open the `OpenShift` console with the link:{{ CONSOLE_URL }}[OpenShift web conso
 
 Choose the project {{ USER_ID }}-cache
 
-And create new Data Grid instance by Navigating to `Installed Operators > Data Grid > Create Infinispan ` as the following pictures shows
+And create a new Data Grid instance by Navigating to `Installed Operators > Data Grid > Create Infinispan ` as the following picture shows:
 
 image::create-infinispan.png[Cross site - Topology, 700]
 
-Press the buttone `Create Infinispan`
+Press the button `Create Infinispan`.
 
-First we will create a new Infinispan cluster for our NYC location in the {{ USER_ID }}-cache
+First, we will create a new Infinispan cluster for our NYC location in the {{ USER_ID }}-cache
 
 image::xsite-nyc-yaml.png[Cross site - Topology, 700]
 
-Load the below yaml and press `Create` as shown in the picture above ^
+Copy the below YAML and press `Create` as shown in the picture above:
 
 [source, yaml, role="copypaste"]
 ----
@@ -67,11 +67,11 @@ spec:
 ----
 
 
-And lets the the same for our LON site in project `{{ USER_ID }}-cache2`
+And let's do the same for our LON site in the project `{{ USER_ID }}-cache2`:
 
 image::xsite-lon-yaml.png[Cross site - Topology, 700]
 
-Load the below yaml and press `Create` as shown in the picture above ^
+Load the YAML shown below and press `Create` as shown in the picture above:
 
 
 [source, yaml, role="copypaste"]
@@ -103,17 +103,16 @@ spec:
     type: DataGrid    
 ----
 
-Once the cluster starts to provision via the Operator you should see it listed as follows
+Once the cluster starts to provision via the operator you should see it listed as follows:
 
 image::xsite-nyc-screenshot.png[Cross site - Topology, 700]
 
-Click on the cluster name and then click on `YAML`
-This should give you the details of the CR but also most importantly the status
+Click on the cluster name and then click on `YAML`. This YAML should give you the details of the CR but, most importantly, its status.
 
 image::xsite-nyc-status-yaml.png[Cross site - Topology, 700]
 
 
-Scroll all the way down to the bottom of the yaml and check the status tag; should look similar to the following `YAML`
+Scroll all the way down to the bottom of the yaml and check the status tag; should look similar to the following `YAML`.
 
 [source, yaml, role="copypaste"]
 ----
@@ -134,17 +133,17 @@ status:
   statefulSetName: example-nyc
 ----
 
-Now that we have a cross site configured how about creating the a replicated cache with a backup and loading some data to see how this is working. 
-We will take London(LON) as the primary site and New york city (NYC) as the secondary site in this example.
+Now that we have cross site configured, how about creating a replicated cache with a backup and loading some data to see how this works. 
+We will take London(LON) as the primary site and New York city (NYC) as the secondary site.
 
 
-This exercise builds up from the previous exercises. Its time to challenge yourself!
+This exercise builds up from the previous exercises. It's time to challenge yourself!
 
 - Add LoadBalancer to both the site clusters. 
-- Get the LoadBalancer address for the both sites 
-- Get the password for the user developer for both sites
+- Get the LoadBalancer address for both sites.
+- Get the password for the user developer for both sites.
 
-If you havent been able to figure it out, take a look at the following commands that will print the details out to you on the terminal. 
+If you haven't been able to figure it out, take a look at the following commands that will print the details out to you on the terminal.
 
 
 *Solution*
@@ -160,11 +159,11 @@ echo "https://$(oc get services | grep example-lon-external | awk '{ print $4 }'
 echo "$(oc get secret example-lon-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode | grep password | awk '{ print $2 }' )"
 ----
 
-Perfect now that we have the details lets open up the console and setup the cross site caches. 
+Perfect! Now that we have the details let's open up the console and set up the cross-site caches. 
 
 image::dg8_createcache_console.png[Create cache, 700]
 
-After pressing Create cache you will see the following form. In the field `Provide Cache configuration` add the following xml and press create
+After pressing `Create cache` you will see the following form. In the field `Provide Cache configuration` add the following XML and press create:
 
 image::dg8_createcacheform_console.png[Create cache, 700]
 
@@ -184,12 +183,12 @@ image::dg8_createcacheform_console.png[Create cache, 700]
 </infinispan>
 ----
 
-<1> Name of our cache
-<2> The media type what will be in the cache, you can choose xml, json, java serialization etc as well
-<3> Here we define NYC as our backup and saying that it should be synchronous
-<4> Incase the cluster is not working wait for the specified time and take it offline.
+<1> Name of our cache.
+<2> The media type of the cache. You can choose XML, JSON, Java Serialization, etc.
+<3> Here, we define NYC as our backup and say it should be synchronous.
+<4> In case the cluster is not working, wait for the specified time and take it offline.
 
-Lets do the same for our site NYC as well.
+Let's do the same for our site in NYC as well.
 
 [source, bash]
 ----
@@ -204,7 +203,8 @@ echo "$(oc get secret example-nyc-generated-secret -o jsonpath="{.data.identitie
 ----
 
 
-Repeat the step for creating the cache again but with the following xml this time, which is taking LON as the backup site.
+Repeat the step to create the cache again but with the following XML. This time, LON is the backup site.
+
 [source, xml]
 ----
 <infinispan>
@@ -222,13 +222,12 @@ Repeat the step for creating the cache again but with the following xml this tim
 
 ----
 
-Lets create a couple of entries 
-To add an entry press the `xsiteCache` on the main console page and then press `Add Entry` as shown in the image below.
-Key `1` , value `Coffee`
+Let's create a couple of entries.
+To add an entry, press the `xsiteCache` on the main console page and then press `Add Entry` as shown in the image below. Use Key `1` and value `Coffee`.
 
 image::dg8_createentry_console.png[Create cache, 700]
 
-Now if you go to the NYC console and cache details you should be able to see the same entry as shown in the image below. 
+Now, if you go to the NYC console and check the cache details site, you should see the entry shown in the image below. 
 
 image::dg8_createentryoutput_console.png[Create cache, 700]
 
@@ -236,22 +235,22 @@ image::dg8_createentryoutput_console.png[Create cache, 700]
 
 *Challenge yourself*
 
-- Add an entry that will live for 5 seconds
-- Add an entry that will never die
-- Add an entry that will have a max idle time for 5 seconds. This means the entry will die if there is read and write operations on it.
-- Add an entry with key type as integer and value as String
+- Add an entry that will live for 5 seconds.
+- Add an entry that will never die.
+- Add an entry with a max idle time of 5 seconds, which means that the entry will die if there aren't read and write operations on it.
+- Add an entry with key type Integer and value type String.
 
-Perfect now that the caches are created. Browse to the Console and there you should be able to see the cache name `xsiteCache` on both the clusters. 
+Perfect! Now that the caches are created, browse to the web console where you should see the cache name `xsiteCache` on both clusters. 
 
 
-If you will visit the console on any of the clusters you should be able to view the entries. 
+If you visit the console on any of the clusters you should be able to view the entries. 
 
 === Recap
-<1> Created two sites in two different namespaces
-<2> Deployed the CR to Openshift using the DataGrid operator
-<4> Exposed the service to the outside world
-<5> Created a replicated cache over the two sites
-<6> Loaded data into the Cache and saw how its replicated over
-<7> Learnt the different parameters used from the console to setup an entry
+<1> Created two sites in two different namespaces.
+<2> Deployed the CR to Openshift using the DataGrid operator.
+<3> Exposed the service to the outside world.
+<4> Created a replicated cache over the two sites.
+<5> Loaded data into the Cache and saw how its replicated over.
+<6> Learnt the different parameters used from the console to setup an entry.
 
-*Congratulations!!* you have completed the first Cross site Datagrid installation of this workshop. Let's move to the next lab!
+*Congratulations!!* you have completed your first Cross site Data Grid installation of this workshop. Let's move to the next lab!

@@ -7,7 +7,7 @@ The labs are designed to run entirely on Openshift, there is no mandatory requir
 
 === Java Development Kit
 
-We need a JDK 8+ installed on our machine. Latest JDK can downloaded from:
+We need a JDK 8+ installed on our machine. The latest JDK can be downloaded from:
 
 * http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8]
 * http://openjdk.java.net/install/[OpenJDK]
@@ -26,7 +26,7 @@ You need Apache Maven 3.5+. If you don't have it already:
 
 We recommend you use an IDE. You can use Eclipse, IntelliJ, VS Code or Netbeans.
 
-==== No IDE ?
+==== No IDE?
 
 If you don't have an IDE, here are the steps to get started with Eclipse.
 
