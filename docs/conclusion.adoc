@@ -1,22 +1,22 @@
 == Conclusion
 :experimental:
 
-You made it ! Or you jumped to this section. Anyway, congratulations. We hope you enjoy this lab and learn some
-_stuff_. There is many other things about Red Hat Data Grid and Infinispan that you can do and that was not illustrated here.
+You made it! Or you jumped to this section. Anyway, congratulations. We hope you enjoy this lab and learn some
+_stuff_. There are many other things about Red Hat Data Grid and Infinispan that you can do and that were not illustrated here.
 
-Don't forget Red Hat Data Grid can be used in many usecases:
+Don't forget Red Hat Data Grid can be used in many use cases:
 
-* Red Hat Data Grid is a Cloud native caching system that you can embed in your application or use it as a remote server
-* You can use it with the some of the well known frameworks and runtimes like Java, Node, C, C# etc. 
-* And it intergrates very well with Kubernetes/Openshift e.g. Operators, Observability etc.
+* Red Hat Data Grid is a Cloud-native caching system that you can embed in your application or use as a remote server
+* You can use it with some well-known frameworks and runtimes like Java, Node, C, C#, etc. 
+* And it integrates very well with Kubernetes/Openshift e.g. Operators, Observability, etc.
 
-As soon as you jump into the microservice, functions or cloud native applications, you will need a better application environment. Kubernetes/OpenShift are perfect weapon to build, deploy, bind, and manage your microservices.
+As soon as you jump into the microservice, functions, or cloud-native applications, you will need a better application environment. Kubernetes/OpenShift is the perfect weapon to build, deploy, bind, and manage your microservices.
 
 If you want, and we hope so, to go further here are some references:
 
 - Traditional zip deployments are available on the link:https://access.redhat.com[Customer Portal, window=_blank].
 - The container distribution and operator are available in the link:https://catalog.redhat.com/software/containers/explore[Red Hat Container Catalog, window=_blank]
-- Product documentation is available link:https://docs.redhat.com[here, window=_blank]
+- Product documentation is available at the following link:https://docs.redhat.com[link, window=_blank]
 - Getting Started Guide that will get you running with RHDG 8 in 5 minutes.
 - link:https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.2/html/migrating_to_data_grid_8/index[Migration Guide, window=_blank] 
 - link:https://github.com/redhat-developer/redhat-datagrid-tutorials[Starter Tutorials, window=_blank]
