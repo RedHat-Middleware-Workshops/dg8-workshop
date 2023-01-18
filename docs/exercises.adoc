@@ -1,12 +1,18 @@
 = Getting started with Data Grid
 :experimental:
 
-Let's delve down into some of the basic features of a Red Hat Data Grid. Our workshop includes a lot more in-depth material going forward, but it's essential we set up a solid base with understanding more about Red Hat Data Grid and Infinispan. In this section, we have prepared six exercises for you. These exercises give a basic introduction to some of the features of the Red Hat Data Grid Java API.
+Let's delve into some of the basic features of a Red Hat Data Grid. Our workshop includes a lot more in-depth material going forward, but it's essential to set up a solid base to understand more about Red Hat Data Grid and Infinispan. In this section, we have prepared five exercises for you. These exercises give a basic introduction to some of the features of the Red Hat Data Grid Java API.
 
-=== About your workspace environment
-For developments and deployment, we use the using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. *Changes to files are auto-saved every few seconds*, so you don't need to save changes explicitly.
+== About your workspace environment
 
-To get started, {{ CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username and password you are assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
+In this workshop, we will use Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipe Che, window=_blank]. This product has several benefits:
+
+* You won't need to install all the CLI tools on your laptop.
+* All the attendees will have the same tool versions and configuration
+* Also, *all file modifications are auto-saved every few seconds*, so you don't need to save changes explicitly.
+
+
+Please, {{ CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username and password you are assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
 
 image::che-login.png[cdw, 700, align="center"]
 
@@ -18,18 +24,16 @@ image::crw-icons.png[cdw, 400, align="center"]
 
 [NOTE]
 ====
-If things get weird or your browser appears, you can simply reload the browser tab to refresh the view.
+If things get weird or your browser appears to be broken, you can simply reload the browser tab to refresh the view.
 ====
 
-Many features of CodeReady Workspaces are accessed via *Commands*. You can see a few of the commands listed with links on the home page (e.g., _New File.._, _Git Clone.._, and others).
-
-If you ever need to run commands that you don't see in a menu, you can press kbd:[F1] to open the command window, or the more traditional kbd:[Control+SHIFT+P] (or kbd:[Command+SHIFT+P] on Mac OS X).
+Many features of CodeReady Workspaces are accessed via *Commands*. You can see a few of the commands listed with links on the home page (e.g., _New File.._, _Git Clone.._, and others). If you ever need to run commands that you don't see in a menu, you can press kbd:[F1] to open the command window, or the more traditional kbd:[Control+SHIFT+P] (or kbd:[Command+SHIFT+P] on Mac OS X).
 
 Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
 
 image::gitclonepage.png[cdw, 600, align="center"]
 
-Step through the prompts, using the following value for **Repository URL**. If you use *FireFox*, it may end up pasting extra spaces at the end, so just press backspace after pasting:
+Step through the prompts, using the following value for **Repository URL**. If you use *Firefox*, it may end up pasting extra spaces at the end, so just press backspace after pasting:
 
 [source, shell, role="copypaste"]
 ----
@@ -40,20 +44,18 @@ https://github.com/RedHat-Middleware-Workshops/dg8-workshop-labs
 
 image::gitcloneembedded.png[crw, 600, align="center"]
 
-The project is now imported into your workspace. Following screenshot shows the workspace after the lab projects have been imported.
+Select the folder where you want to clone the repository and continue. The project is now imported into your workspace. The following screenshot shows the workspace after the lab projects have been imported.
 
-1. On the left you can see the project explorer with the heading *EXPLORER:PROJECTS*. Project explorer can be used to navigate to source files. Once you click any source file. it will open up in the editor.
-2. On the right is the `Workspace Command View` with the heading *MYWORKSPACE:WORKSPACE*. In this view we have created point and click commands. These commands will be used through out the workshop labs.
+1. On the left you can see the project explorer with the heading *EXPLORER > DG8-WORKSHOP-LABS*. Project explorer can be used to navigate source files. Once you click any source file. it will open up in the editor.
+2. On the right is the `Workspace Command View` with the heading *WORKSPACE: {{ USER_ID }}-WORKSPACE*. In this view, we have created point-and-click commands. These commands will be used throughout the workshop labs.
 
 image::workspaceview.png[crw, 800, align="center"]
 
 
 
-=== Exercises
+== Exercises
 
-This first lab comprises of 5 Exercises. The exercises will give you a glimpse into some of the features of Red Hat Data Grid, and is a good starting point to learn how to use Red Hat Data Grid with your applications.
-
-==== Summary of the Exercises
+This first lab comprises 5 Exercises. These exercises will give you a glimpse into some of the features of Red Hat Data Grid and is a good starting point to learn how to use Data Grid with your applications. This is a summary of the Exercises:
 
 1. *Exercise 1* - Creating a Cache
 2. *Exercise 2* - JSR-107, JCache
@@ -61,33 +63,35 @@ This first lab comprises of 5 Exercises. The exercises will give you a glimpse i
 4. *Exercise 4* - Streaming data from the Cache
 5. *Exercise 5* - Using Transactions
 
-Each Exercise has a corresponding .java file e.g. `Exercise1.java`. The maven project required for this lab is `dg8-exercises`. Following screenshot shows where the Java files are placed. The package name we have used is `org.acme`
+Each Exercise has a corresponding `.java` file e.g. `Exercise1.java`. The maven project required for this lab is `dg8-exercises`. The following screenshot shows where the Java files are placed. The package name is `org.acme`.
 
 image::workspaceview-exercises.png[exercises, 800, align="center"]
 
 
-All the exercises are marked with a `//TODO:`. Where ever you see this `//TODO:` it signifies that you need to write some code below it. We have added some comments with it, so you know what is required. Incase if the instructions are not understandable, please ask the instructor.
+All exercises are marked with a `//TODO:`. Wherever you see this `//TODO:` it means that you need to write some code below it. We have added some comments, so you know what is required. In case the instructions are not understandable, please ask the instructor.
 
-Moreover you will find that preceding exercise sections will explain the `//TODO` in more details and what needs to be done.
+Moreover, you will find that the preceding exercise sections will explain the `//TODO` in more detail and what needs to be done.
 
 
 === Exercise 1: Creating a local Cache
-First, a bit about Java _Maps_. Why are Maps good for a cache? Maps are fast, they use methods like `hashCode` and `equals` to determine how to add data to the map. This also means they can be fast enough (O(1)) time to read and write the data. That is exceptional performance, and that's what one would expect from a cache. Data storage is in key and value pairs. There is a lot more to `Map`s, but let's start with a basic cache how-to.
 
-A *CacheManager* is the primary mechanism for retrieving a Cache instance and is often used as a starting point to using the cache.
-Essentially if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid/Infinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections.
+First, a bit about Java _Maps_. Why are Maps good for a cache? Maps are fast, they use methods like `hashCode` and `equals` to determine how to add data to the map. This also means they can be fast enough (O(1)) to read and write data. That is exceptional for performance, and that's what one would expect from a cache. Data storage is in key and value pairs. There is a lot more to ``Map``s, but let's start with a basic cache how-to.
 
-CacheManagers are heavyweight objects, and it's not recommended to have more than one *CacheManager* being used per JVM (unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances).
+A *CacheManager* is the primary mechanism for retrieving a Cache instance and is often used as a starting point to use the cache.
 
-Add the following to your main method in class Exercise1
+Essentially, if you were using a `Map` object you would just create a `Map` and store all your key|value pairs in it. However, when you use a tool like Red Hat Data Grid / Infinispan, you get more than just a simple map (e.g. Listeners, events, etc), all of which we will talk about in further sections.
+
+NOTE: CacheManagers are heavyweight objects, and it's not recommended to have more than one *CacheManager* instance per JVM (Unless specific configuration requirements require more than one, but either way, this would be a minimal and finite number of instances).
+
+Add the following to your main method in class Exercise1:
 
 [source, java, role="copypaste"]
 ----
-    // TODO: Construct a simple local cache manager with default configuration
+    // TODO: Construct a simple local cache manager with a default configuration
     DefaultCacheManager cacheManager = new DefaultCacheManager();
 ----
 
-Now that we have `cacheManager`, we can now define what a Cache should look like. We could choose many features from the system (e.g. if we were adding grouping, streams, listeners, strategies for eviction or clustering, etc) we would do that here. The following example just takes the default configuration.
+Now that we have a `cacheManager`, we can now define what a Cache should look like. We could choose many features from the system (e.g. if we were adding grouping, streams, listeners, strategies for eviction or clustering, etc) we would do that here. The following example just takes the default configuration.
 
 [source, java, role="copypaste"]
 ----
@@ -95,7 +99,7 @@ Now that we have `cacheManager`, we can now define what a Cache should look like
     cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
 ----
 
-Perfect, so now we have defined our cache, time for us to get that cache from our *CacheManager*. We have also defined that our cache should have both our Key and Value as `Strings`.
+Perfect! Now that we have defined our cache, it is time for us to get that cache from our *CacheManager*. We have also defined that our cache should have both our Key and Value as `Strings`.
 
 [source, java, role="copypaste"]
 ----
@@ -103,7 +107,7 @@ Perfect, so now we have defined our cache, time for us to get that cache from ou
     Cache<String, String> cache = cacheManager.getCache("local");
 ----
 
-Finally lets put an entry in the Cache. Change the "key" and "value" to anything you'd like.
+Finally, let's put an entry in the Cache. Change the "key" and "value" to anything you'd like.
 
 [source, java, role="copypaste"]
 ----
@@ -127,13 +131,13 @@ Finally, *CacheManager* is a heavy object; it does a lot, so no need to keep it 
     cacheManager.stop();
 ----
 
-Great, now we have all we require to run this Exercise. Let's try to run it.
-You can choose to run it via the Workspace command view by clicking on `Exercise1`. Or you can just open a new terminal from the same view `>_ New Terminal` and run the it manually using maven commands. Both methods would work.
+Great, now we have all we require to run this exercise. Let's do it.
+You can choose to run it via the Workspace command view by clicking on `Exercise1`. Or you can just open a new terminal from the same view `>_ New Terminal` and run it manually using maven commands. Both methods would work.
 
 [IMPORTANT]
 ====
 
-Remember incase of running maven directly via terminal the path to the exercises project is as follows. `/projects/dg8-workshop-labs/dg8-exercises`. Make sure you are in this directory before you run maven commands from the terminal.
+Remember that, in the case of running maven directly via terminal, the path to the exercises project is as follows: `/projects/dg8-workshop-labs/dg8-exercises`. Make sure you are in this directory before you run maven commands from the terminal.
 
 ====
 
@@ -145,10 +149,10 @@ mvn exec:java -Dexec.mainClass=org.acme.Exercise1
 
 [NOTE]
 ====
-The first time a build runs, it may need to download and cache dependencies. Future builds will go much faster!
+The first time a build runs, it may need to download and cache Maven dependencies. Future builds will go much faster!
 ====
 
-You should be able to see an output similar to the following.
+You should see an output similar to the following:
 [source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
@@ -162,7 +166,7 @@ key = value
 We can see the `key = value` printed from our code.
 
 === Exercise 2: JSR-107 JCache
-The term cache is generally referred to as a component that stored data in memory so that its easy to read the value that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple `java.util` packages do now have all the capabilities required, and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to define temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed use cases.
+The term cache is generally referred to as a component that stores data in memory so that it's easy to read. It should be used to store values that might be hard to calculate or that need to be accessed rather quickly. As discussed earlier, simple `java.util` packages do now have all the capabilities required, and wiring them by oneself is complex if not hard enough. The Java Specification Request (JSR-107) has been created to define temporary caching API for Java. The specification defines some Standard APIs for storing and managing data both for local and distributed use cases.
 
 Let's take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan. In `Exercise2.java`, add the following code at the designated comment markers:
 
@@ -177,15 +181,15 @@ Let's take a look at how you can use JSR-107 with Red Hat Data Grid/Infinispan. 
         // TODO: create a cache using the supplied configuration
         Cache<String, String> cache = cacheManager.createCache("myCache", configuration); <5>
 ----
-Let's take a more in-depth look at the code above
+Let's take a more in-depth look at the code above:
 
-<1> We use a `CachingProvider`, which is part of the standards API
-<2> The Caching provider, in turn, gives us a `CacheManager`
-<3> We create a configuration object for our cache (in this case a `MutableConfiguration`)
-<4> Here we also set the type of keys & values in our Cache (If you remember this is different from our previous exercise since we are using the JSR-107 API now)
-<5> and finally we get our cache
+<1> We use a `CachingProvider`, which is part of the standards API.
+<2> The Caching provider, in turn, gives us a `CacheManager`.
+<3> We create a configuration object for our cache (in this case a `MutableConfiguration`).
+<4> Here we also set the type of keys & values in our Cache (If you remember this is different from our previous exercise since we are using the JSR-107 API now).
+<5> and finally we get our cache.
 
-Finally lets put an entry in the Cache. Change the "key" and "value" to anything you'd like.
+Let's put an entry in the Cache. Change the "key" and "value" to anything you'd like.
 [source, java, role="copypaste"]
 ----
         // Store and retrieve value
@@ -193,21 +197,21 @@ Finally lets put an entry in the Cache. Change the "key" and "value" to anything
         System.out.printf("key = %s\n", cache.get("key"));
 ----
 
-And then lets close our `CacheManager`.
+And close the `CacheManager` when you are not going to use it anymore:
 [source, java, role="copypaste"]
 ----
         // TODO: Stop the cache manager and release all resources
         cacheManager.close();
 ----
 
-Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise2` in your MyWorkspace Menu on the right.
+Run the above exercise as follows in the CodeReady terminal, or execute the command `Exercise2` in your Workspace Menu on the right.
 [source, shell, role="copypaste"]
 ----
 mvn clean compile && \
 mvn exec:java -Dexec.mainClass=org.acme.Exercise2
 ----
 
-You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+You should see an output similar to the following. On the last line, you can see your key and value printed.
 [source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
@@ -219,35 +223,44 @@ key = value
 ----
 
 === Exercise 3: Functional API
-The approach taken by the Functional Map API when working with multiple keys is to provide a lazy, pull-style API. All multi-key operations take a collection parameter which indicates the keys to work with (and sometimes contains 'value' information too), and a function to execute for each key/value pair. Each function's ability depends on the entry view received as a function parameter, which changes depending on the underlying map: `ReadEntryView` for `ReadOnlyMap`, `WriteEntryView` for `WriteOnlyMap`, or `ReadWriteView` for `ReadWriteMap`. The return type for all multi-key operations, except the ones from `WriteOnlyMap`, return an instance of `Traversable`, which exposes methods for working with the returned data from each function execution. Let's see an example:
+The approach taken by the Functional Map API when working with multiple keys is to provide a lazy, pull-style API. All multi-key operations take a collection parameter that indicates the keys to work with (and sometimes contains 'value' information too), and a function to execute for each key/value pair. Each function's ability depends on the entry view received as a function parameter, which changes depending on the underlying map: 
 
-- This example demonstrates some of the key aspects of working with multiple entries using the Functional Map API
-- All data-handling methods (including multi-key methods) for `WriteOnlyMap` return `CompletableFuture<Void>`, because there's nothing the function can provide that could not be computed in advance or outside the function.
+* `ReadEntryView` for `ReadOnlyMap`.
+* `WriteEntryView` for `WriteOnlyMap`.
+* `ReadWriteView` for `ReadWriteMap`. 
 
-There is a particular type of multi-key operations which work on all keys/entries stored in Infinispan. The behavior is very similar to the multi-key operations shown above, with the exception that they do not take a collection of keys (or values) as parameters.
+The return type for all multi-key operations, except the ones from `WriteOnlyMap`, is an instance of `Traversable`, which exposes methods to work with the returned data from each function execution. Let's see an example.
+
+This example demonstrates some of the key aspects of working with multiple entries using the Functional Map API. All data-handling methods (including multi-key methods) for `WriteOnlyMap` return `CompletableFuture<Void>`, because there's nothing the function could provide that could not be computed in advance or outside the function.
+
+There is a particular type of multi-key operation that works on all keys/entries stored in Infinispan. The behavior is very similar to the multi-key operations shown above, with the exception that they do not take a collection of keys (or values) as parameters.
 
 There are a few interesting things to note about working with all entries using the Functional Map API:
 
-- When working with all entries, the order of the `Traversable` is not guaranteed
-- Read-only's `keys()` and `entries()` offer the possibility to traverse all keys and entries present in the cache
--- When traversing entries, both keys and values, including metadata, are available
---- Contrary to Java's `ConcurrentMap`, there's no possibility to navigate only the values (and metadata) since there's little to be gained from such a method
---- Once a key's entry has been retrieved, there's no extra cost to provide the key as well.
+* When working with all entries, the order of the `Traversable` is not guaranteed.
+* Read-only's `keys()` and `entries()` offer the possibility to traverse all keys and entries present in the cache.
+* When traversing entries, both keys and values, including metadata, are available:
+** Contrary to Java's `ConcurrentMap`, there's no possibility to navigate only the values (and metadata) since there's little to be gained from such a method.
+** Once a key's entry is retrieved, there's no extra cost to provide the key as well.
 
 
-Let us start by initializing our cache with the `DefaultCacheManager` as we have done so in the previous labs. However, we use the functional API, and hence after getting the cache, our `Map` implementation is different.
+Let us start by initializing our cache with the `DefaultCacheManager` as in the previous labs. However, now we use the functional API, and hence after getting the cache, our `Map` implementation is different.
 
 ==== How to use the Functional API?
-Using an asynchronous API, all methods that return a single result return a `CompletableFuture` which wraps the result. To avoid blocking, it offers the possibility to receive callbacks when the `CompletableFuture` has completed, or it can be chained or composed with other `CompletableFuture` instances. You do not need to write the following snippet, it should already be there. Let's get started with Exercise3.java.
+
+Using an Asynchronous API, all methods with a single result return a `CompletableFuture` wrapping the result itself. To avoid blocking, it offers the possibility to receive callbacks when the `CompletableFuture` is completed, or it can be chained or composed with other `CompletableFuture` instances. Let's get started with Exercise3.java.
 
 [NOTE]
 ====
-Please remove the following lines in the main method.
+For the sake of simplicity, you do not need to write part of the snippet. Please remove the following lines in the main method:
 
       /* UNCOMMENT When starting this exercise
       UNCOMMENT When starting this exercise */
+
+
 ====
 
+The previous note uncomments the following code:
 
 [source, java, role="copypaste"]
 ----
@@ -259,33 +272,36 @@ Please remove the following lines in the main method.
         FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
 ----
 
-Next, what you would want to do is asynchronously write to this cache. Copy and paste the following snippet to Exercise3.java
+
+First, We want to asynchronously write to this cache. Copy and paste the following snippet to Exercise3.java:
 
 [source, java, role="copypaste"]
 ----
         // TODO Execute two parallel write-only operation to store key/value pairs
         CompletableFuture<Void> writeFuture1 = writeOnlyMap.eval("key1", "value1",
-                (v, writeView) -> writeView.set(v)); <1>
+                (v, writeView) -> writeView.set(v));
         CompletableFuture<Void> writeFuture2 = writeOnlyMap.eval("key2", "value2",
                 (v, writeView) -> writeView.set(v));
 ----
 
-<1> Write-only operations require locks to be acquired. They do not require reading previous value or metadata parameter information associated with the cached entry, which sometimes can be expensive since they involve talking to a remote node in the cluster or the persistence layer. Exposing write-only operations makes it easy to take advantage of this vital optimization.
+Write-only operations require locks to be acquired. They do not require reading previous value or metadata parameter information associated with the cached entry, which can be expensive since they involve talking to a remote node in the cluster or the persistence layer. Exposing write-only operations makes it easy to take advantage of this vital optimization.
 
 
 
-And now lets do a read operation in similar
+Second, let's do the same using read operations:
+
 [source, java, role="copypaste"]
 ----
         //TODO When each write-only operation completes, execute a read-only operation to retrieve the value
         CompletableFuture<String> readFuture1 =
-                writeFuture1.thenCompose(r -> readOnlyMap.eval("key1", EntryView.ReadEntryView::get)); <1>
+                writeFuture1.thenCompose(r -> readOnlyMap.eval("key1", EntryView.ReadEntryView::get));
         CompletableFuture<String> readFuture2 =
                 writeFuture2.thenCompose(r -> readOnlyMap.eval("key2", EntryView.ReadEntryView::get));
 ----
-<1> Exposes read-only operations that can be executed against the functional map. The information that can be read per entry in the functional map. Read-only operations have the advantage that no locks are acquired for the duration of the operation.
 
-Finally, let's print the operation as it completes.
+This code snippet exposes read-only operations that can be executed against the functional map. The information can be read per entry in the functional map. Read-only operations have the advantage that no locks are acquired for the duration of the operation.
+
+Third, let's print the operation as it completes.
 
 [source, java, role="copypaste"]
 ----
@@ -297,7 +313,7 @@ Finally, let's print the operation as it completes.
         end.get();
 ----
 
-So we have seen how a `WriteOnly` and `ReadOnly` `Map` works, let's also add the `ReadWriteMap`. Read-write operations offer the possibility of writing values or metadata parameters and returning previously stored information. Read-write operations are also crucial for implementing conditional, compare-and-swap (CAS) operations. Locks need to be acquired before executing the read-write lambda.
+Now that we have seen how a `WriteOnly` and `ReadOnly` `Map` works, let's also add the `ReadWriteMap`. Read-write operations offer the possibility of writing values or metadata parameters and returning previously stored information. Read-write operations are also crucial for implementing conditional, compare-and-swap (CAS) operations. Locks need to be acquired before executing the read-write lambda.
 
 [source, java, role="copypaste"]
 ----
@@ -313,16 +329,15 @@ So we have seen how a `WriteOnly` and `ReadOnly` `Map` works, let's also add the
         });
 ----
 
-Now let's run our code and see how it works.
+Now let's run our code and see how it works. Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise3` in your Workspace Menu on the right.
 
-Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise3` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
 mvn clean compile && \
 mvn exec:java -Dexec.mainClass=org.acme.Exercise3
 ----
 
-You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+You should be able to see an output similar to the following:
 [source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
@@ -343,7 +358,7 @@ value2
 
 === Exercise 4: Streaming data from the cache
 
-Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are `Serializable` without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for java streams executions to be distributed.
+Infinispan Distributed Java Streams can be used to calculate analytics over existing data. Through the overloading of methods, Infinispan can offer a simple way of passing lambdas that are `Serializable` without the need for explicit casting. Being able to produce binary formats for the lambdas is an essential step for Java Streams executions to be distributed.
 
 [NOTE]
 ====
@@ -353,7 +368,7 @@ Please remove the following lines in the main method.
       UNCOMMENT When starting this exercise */
 ====
 
-With the following, we create a lambda to write data into our cache
+Use the following code to create a lambda to write data into our cache:
 
 [source, java, role="copypaste"]
 ----
@@ -364,7 +379,8 @@ With the following, we create a lambda to write data into our cache
                 .forEach(i -> cache.put(i + "-key", i + "-value"));
 ----
 
-And now we read that data summing up the values.
+And now we read that data summing up the values:
+
 [source, java, role="copypaste"]
 ----
         // TODO: Map and reduce the keys
@@ -373,16 +389,15 @@ And now we read that data summing up the values.
                 .collect(() -> Collectors.summingInt(Integer::intValue));
 ----
 
-Now let's run our code and see how it works.
+Let's run our code and see how it works. Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise4` in your Workspace Menu on the right.
 
-Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise4` in your MyWorkspace Menu on the right
 [source, shell, role="copypaste"]
 ----
 mvn clean compile && \
 mvn exec:java -Dexec.mainClass=org.acme.Exercise4
 ----
 
-You should be able to see an output similar to the following. On the last line, you can see your key, the value printed.
+You should be able to see an output similar to the following. On the last line, you can see the result of the MapReduce operation:
 [source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
@@ -395,7 +410,7 @@ Result = 45
 
 === Exercise 5: Using Transactions
 
-Transactions are essential in any business application. Usually, the transaction is used with the dataset, and quite often related to a database. Still, thats not exactly right, if you have a distributed dataset, one needs transactions for business logic to prevail. Infinispan provides transactions. There can be a scenario in which the cluster adds a node or entry has been written by another node. The Infinispan transaction manager is aware of such events and handles them. You can read more about the design of transactions here: https://github.com/infinispan/infinispan-designs
+Transactions are essential in any business application. Usually, the transaction is used with the dataset and is quite often related to a database. Still, that's not exactly right, if you have a distributed dataset, one needs transactions for business logic to prevail. Infinispan provides transaction support. There can be a scenario in which the cluster adds a new node to the cluster or an entry has been written by another node. The Infinispan transaction manager is aware of such events and handles them. You can read more about the design of transactions in the https://github.com/infinispan/infinispan-designs[Infinispan Designs repository].
 
 [NOTE]
 ====
@@ -405,7 +420,7 @@ Please remove the following lines in the main method.
       UNCOMMENT When starting this exercise */
 ====
 
-Lets get the TransactionManager from the cache
+Let's get the TransactionManager from the cache:
 [source, java, role="copypaste"]
 ----
         //TODO Obtain the transaction manager
@@ -436,14 +451,15 @@ Let's also do a rollback scenario. So we write to entries and rollback.
 
 Now let's run our code and see how it works.
 
-Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise5` in your MyWorkspace Menu on the right
+Run the above exercise as follows in the CodeReady terminal, or you can also choose to execute the command `Exercise5` in your Workspace Menu on the right
+
 [source, shell, role="copypaste"]
 ----
 mvn clean compile && \
 mvn exec:java -Dexec.mainClass=org.acme.Exercise5
 ----
 
-You should be able to see an output similar to the following. On the last line you can see your key, value printed.
+You should be able to see an output similar to the following:
 [source, shell, role="copypaste"]
 ----
 [INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
@@ -455,13 +471,13 @@ Jan 18, 2023 7:15:25 AM org.jboss.threads.Version <clinit>
 INFO: JBoss Threads version 2.3.3.Final-redhat-00001
 Jan 18, 2023 7:15:25 AM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
 INFO: ISPN000104: Using EmbeddedTransactionManager
-key1 = null
-key2 = null
+key1 = value1
+key2 = value2
 key1 = value1
 key2 = value2
 ----
 
-So as you can see, even though we wrote the new values, but by rolling back, they do not exist anymore.
+So as you can see, even though we wrote the new values, as we rolled back, the value was rewritten to the initial value of the transaction.
 
 ==== Congratulations!
 
