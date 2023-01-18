@@ -13,7 +13,7 @@ The Operator Lifecycle Manager (OLM) is the backplane that facilitates managemen
 
 With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a team access to an Operator for their slice of the cluster.
 
-Red Hat Data Grid 8.2 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
+Red Hat Data Grid 8 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
 
 === Installing
 If you have not already logged into OpenShift from the CodeReady Workspaces terminal, please do that now.Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. When prompted, your *Username* is `{{ USER_ID }}` and your *Password* is `{{ OPENSHIFT_USER_PASSWORD }}`.
@@ -38,7 +38,7 @@ image::dg_operatoroverview.png[openshift_login, 700]
 
 You can see there are no clusters installed in our namespace. Let's go ahead and do that. 
 
-Click on `Create datagrid` and replace the following YAML with the default sample: 
+Click on `Create infinispan` and replace the following YAML with the default sample in the Yaml View: 
 
 [source, yaml, role="copypaste"]
 ----
@@ -61,7 +61,12 @@ Click *Create* at the bottom.
 
 Check that datagrid nodes have successfully formed clusters.
 
-Now let's retrieve the DataGrif CR for DataGrid Operator.
+Now let's retrieve the DataGrid CR for DataGrid Operator.
+To do this head over the the CodeReady Workspace and login to Openshift. 
+
+image::che_openshift_login.png[openshift_login, 700]
+
+After logging in, initiate a `>_ New Terminal`` in CodeReady workspace as shown in the above screenshot and run the following command
 
 [source, shell, role="copypaste"]
 ----
@@ -167,17 +172,23 @@ image::dg_edit_CR_LoadBalancer.png[Edit and Save, 700]
 
 Perfect now press `save`
 
-Now if you navigate back to `Installed Operators > Operator Details` and then click `datagrid-service` you should see the following page with the expose LoadBalancer link to your Data Grid Console.
+<1> Navigate back to `Installed Operators > Operator Details` and then click `datagrid-service` 
+<2> Then click on `Resources > datagrid-service-external` 
+you should see the following page with the `Service address` and the expose LoadBalancer link to your Data Grid Console.
 
 image::dg_CR_detailview.png[DG cluster detail view, 700]
 
 
 The following is an example, your `LoadBalancer` url will most likely differ:
 
-* `http://ad6cd35d6e6aa46fcb96558204c35f08-872149037.us-east-1.elb.amazonaws.com:11222`
+* `a256fafe1f822452fb4c2fb3e3a5aff6-1344204513.us-east-2.elb.amazonaws.com`
 
 
-If you try to access the url; you would need to provide credentials. 
+If you try to access the url; by providing the protocol `https` and the Datagrid port `11222`, we are currently not using a signed certificate so you can ignore the warning at this moment. 
+
+* `https://a256fafe1f822452fb4c2fb3e3a5aff6-1344204513.us-east-2.elb.amazonaws.com:11222/`
+
+you would need to provide credentials. 
 
 The datagrid operator creates the credentials during installation time and they should be stored in your namespace secrets. Head back your CodeReady Workspace terminal. Let's get the secret with the following command.
 
