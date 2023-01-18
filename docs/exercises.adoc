@@ -151,10 +151,11 @@ The first time a build runs, it may need to download and cache dependencies. Fut
 You should be able to see an output similar to the following.
 [source, shell, role="copypaste"]
 ----
-Jun 22, 2020 6:40:02 PM org.infinispan.factories.GlobalComponentRegistry preStart
-INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Jun 22, 2020 6:40:03 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+[INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
+Jan 18, 2023 7:12:36 AM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarting
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Jan 18, 2023 7:12:36 AM org.infinispan.marshall.core.impl.DelegatingUserMarshaller start
+INFO: ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
 key = value
 ----
 
@@ -209,10 +210,11 @@ mvn exec:java -Dexec.mainClass=org.acme.Exercise2
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
-Jun 22, 2020 6:54:25 PM org.infinispan.factories.GlobalComponentRegistry preStart
-INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Jun 22, 2020 6:54:25 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+[INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
+Jan 18, 2023 7:14:19 AM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarting
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Jan 18, 2023 7:14:19 AM org.infinispan.marshall.core.impl.DelegatingUserMarshaller start
+INFO: ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
 key = value
 ----
 
@@ -323,17 +325,18 @@ mvn exec:java -Dexec.mainClass=org.acme.Exercise3
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
-Jun 22, 2020 6:59:09 PM org.infinispan.factories.GlobalComponentRegistry preStart
-INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Jun 22, 2020 6:59:09 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+[INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
+Jan 18, 2023 7:14:45 AM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarting
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
-Created entries:
+Jan 18, 2023 7:14:45 AM org.infinispan.marshall.core.impl.DelegatingUserMarshaller start
+INFO: ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
+Created entries: 
 key1 = value1
 key2 = value2
-Updated entries:
+Updated entries: 
 ReadOnlySnapshotView{key=key1, value=newValue1, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
 ReadOnlySnapshotView{key=key2, value=newValue2, metadata=MetaParamsInternalMetadata{params=MetaParams{length=1, metas=[MetaLifespan=3600000]}}}
-Previous entry values:
+Previous entry values: 
 value1
 value2
 ----
@@ -382,10 +385,11 @@ mvn exec:java -Dexec.mainClass=org.acme.Exercise4
 You should be able to see an output similar to the following. On the last line, you can see your key, the value printed.
 [source, shell, role="copypaste"]
 ----
-Jun 22, 2020 7:00:04 PM org.infinispan.factories.GlobalComponentRegistry preStart
-INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Jun 22, 2020 7:00:05 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+[INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
+Jan 18, 2023 7:15:09 AM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarting
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
+Jan 18, 2023 7:15:09 AM org.infinispan.marshall.core.impl.DelegatingUserMarshaller start
+INFO: ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
 Result = 45
 ----
 
@@ -442,17 +446,17 @@ mvn exec:java -Dexec.mainClass=org.acme.Exercise5
 You should be able to see an output similar to the following. On the last line you can see your key, value printed.
 [source, shell, role="copypaste"]
 ----
-Jun 22, 2020 7:01:31 PM org.infinispan.factories.GlobalComponentRegistry preStart
-INFO: ISPN000128: Infinispan version: Red Hat Data Grid 'Turia' 10.1.5.Final-redhat-00001
-Jun 22, 2020 7:01:31 PM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarted
+[INFO] --- exec-maven-plugin:3.0.0:java (default-cli) @ dg8-exercises ---
+Jan 18, 2023 7:15:24 AM org.infinispan.lock.impl.ClusteredLockModuleLifecycle cacheManagerStarting
 INFO: ISPN029009: Configuration is not clustered, clustered locks are disabled
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-Jun 22, 2020 7:01:31 PM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
+Jan 18, 2023 7:15:25 AM org.infinispan.marshall.core.impl.DelegatingUserMarshaller start
+INFO: ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
+Jan 18, 2023 7:15:25 AM org.jboss.threads.Version <clinit>
+INFO: JBoss Threads version 2.3.3.Final-redhat-00001
+Jan 18, 2023 7:15:25 AM org.infinispan.transaction.lookup.GenericTransactionManagerLookup useDummyTM
 INFO: ISPN000104: Using EmbeddedTransactionManager
-key1 = value1
-key2 = value2
+key1 = null
+key2 = null
 key1 = value1
 key2 = value2
 ----
@@ -461,7 +465,7 @@ So as you can see, even though we wrote the new values, but by rolling back, the
 
 ==== Congratulations!
 
-You have completed the first introductory exercises to Red Hat Data Grid 8.2.
+You have completed the first introductory exercises to Red Hat Data Grid 8.
 
 1. *Exercise 1* - Creating a Cache
 2. *Exercise 2* - JSR-107, JCache

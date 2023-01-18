@@ -260,7 +260,7 @@ Let's go ahead and deploy the application to OpenShift.
 mvn clean package -DskipTests -f $CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-quarkus-client-example
 ----
 
-Let's wait for this build to be successful! 
+Let's wait for this build to be successful! Usually one would need to run all the commands to build the app, build container and then create deploy yaml files etc. Quarkus Openshift extension does this via its maven plugin in a simple 1 liner command as we did here.
 
 Now navigate to the link:{{ CONSOLE_URL }}[OpenShift web console^] and switch to the topology view
 
