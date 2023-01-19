@@ -14,13 +14,13 @@ In this workshop, we will use Red Hat CodeReady Workspaces, an online IDE based 
 
 Please, {{ CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username and password you are assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
 
-image::che-login.png[cdw, 700, align="center"]
+image::codeready-login.png[codeready-login, 700, align="center"]
 
 By logging in to CodeReady, you get access to your development workspace. We have already created a workspace for you. Your development environment opens up by clicking the workspace on the left menu.
 
 You can see icons on the left for navigating between project explorer, search, version control (e.g., Git), debugging, and other plugins. You'll use these during this workshop. Feel free to click on them and see what they do:
 
-image::crw-icons.png[cdw, 400, align="center"]
+image::codeready-icons.png[codeready-icons, 400, align="center"]
 
 [NOTE]
 ====
@@ -31,7 +31,7 @@ Many features of CodeReady Workspaces are accessed via *Commands*. You can see a
 
 Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
 
-image::gitclonepage.png[cdw, 600, align="center"]
+image::codeready-git-clone-page.png[codeready-git-clone-page, 700, align="center"]
 
 Step through the prompts, using the following value for **Repository URL**. If you use *Firefox*, it may end up pasting extra spaces at the end, so just press backspace after pasting:
 
@@ -42,14 +42,14 @@ https://github.com/RedHat-Middleware-Workshops/dg8-workshop-labs
 
 ----
 
-image::gitcloneembedded.png[crw, 600, align="center"]
+image::codeready-git-clone-embedded.png[codeready-git-clone-embedded, 700, align="center"]
 
 Select the folder where you want to clone the repository and continue. The project is now imported into your workspace. The following screenshot shows the workspace after the lab projects have been imported.
 
 1. On the left you can see the project explorer with the heading *EXPLORER > DG8-WORKSHOP-LABS*. Project explorer can be used to navigate source files. Once you click any source file. it will open up in the editor.
 2. On the right is the `Workspace Command View` with the heading *WORKSPACE: {{ USER_ID }}-WORKSPACE*. In this view, we have created point-and-click commands. These commands will be used throughout the workshop labs.
 
-image::workspaceview.png[crw, 800, align="center"]
+image::codeready-view.png[codeready-view, 700, align="center"]
 
 
 
@@ -65,7 +65,7 @@ This first lab comprises 5 Exercises. These exercises will give you a glimpse in
 
 Each Exercise has a corresponding `.java` file e.g. `Exercise1.java`. The maven project required for this lab is `dg8-exercises`. The following screenshot shows where the Java files are placed. The package name is `org.acme`.
 
-image::workspaceview-exercises.png[exercises, 800, align="center"]
+image::codeready-view-exercises.png[codeready-view-exercises, 700, align="center"]
 
 
 All exercises are marked with a `//TODO:`. Wherever you see this `//TODO:` it means that you need to write some code below it. We have added some comments, so you know what is required. In case the instructions are not understandable, please ask the instructor.
