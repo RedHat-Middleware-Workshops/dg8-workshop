@@ -6,15 +6,15 @@ In this lab, we'll show how to externalize *HTTP Sessions* from *Spring Boot* to
 
 === 1. Developing EmbeddedCache Service
 
-An embedded cache service allows Spring Boot applications to emded HTTP session data in an in-memory data storage when users invoke RESTful endpoints in a frontend web page. Lets’s go through quickly how this works. We'll be using *Spring Session* combined with an *In-Memory Cache* provided by Data Grid.
+An embedded cache service allows Spring Boot applications to embed HTTP session data in an in-memory data storage when users invoke RESTful endpoints in a frontend web page. Let's go through quickly how this works. We'll be using *Spring Session* combined with an *In-Memory Cache* provided by Data Grid.
 
-Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand *dg8-spring-session* directory.
+Go to _Explorer: /projects_ in _CodeReady Workspaces_ Web IDE and expand the *dg8-spring-session* directory.
 
 image::codeready-workspace-embeddedCache-project.png[embeddedCache, 700]
 
-There’re a few interesting things what we need to take a look at in this Spring Boot application before we will develop it in CodeReady Workspaces.
+There are a few interesting things that we need to take a look at in this Spring Boot application before we will develop it in CodeReady Workspaces.
 
-This embeddedCache service is not using the default BOM (Bill of material) that Spring Boot projects typically use. Instead, we are using an Infinispan BOM provided by Red Hat that provides a high-level API to ensure compatibility between major versions of Data Grid. You can also enforce a specific version of Data Grid with the infinispan-bom module. Let's take a look at *infinispan-bom* to your `pom.xml` file as follows:
+This `embeddedCache` service is not using the default BOM (Bill of material) that Spring Boot projects typically use. Instead, we are using an Infinispan BOM provided by Red Hat that provides a high-level API to ensure compatibility between major versions of Data Grid. You can also enforce a specific version of Data Grid with the `infinispan-bom` module. Let's take a look at *infinispan-bom* in your `pom.xml` file as follows:
 
 [source,xml]
 ----
@@ -111,7 +111,7 @@ Now we will build and deploy the project using the following command, which will
 mvn clean package spring-boot:repackage -f $CHE_PROJECTS_ROOT/dg8-workshop-labs/dg8-spring-session
 ----
 
-Create a build configuration for your application using OpenJDK base container image in OpenShift:
+Create a build configuration for your application using the OpenJDK base container image in OpenShift:
 
 [source,sh,role="copypaste"]
 ----
@@ -133,21 +133,21 @@ oc new-app cacheapp && oc expose svc/cacheapp && \
 oc label deployment/cacheapp app.kubernetes.io/part-of=catalog app.openshift.io/runtime=spring --overwrite
 ----
 
-Finally, make sure it’s actually done rolling out. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] for the cache service, and ensure you get the blue circles!
+Finally, make sure it is actually done rolling out. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] for the cache service, and ensure you get the blue circles!
 
 image::embeddedCache-topology.png[embeddedCache, 500]
 
 === 3. Testing EmbeddedCache Service
 
-Let's scale up the cache service to make sure the clustered Spring applications refer to _Spring Session_ in Data Grid. Click on `Up Arrow` once in _Overview_ page:
+Let's scale up the cache service to make sure the clustered Spring applications refer to _Spring Session_ in Data Grid. Click on `Up Arrow` once in the _Overview_ page:
 
 image::embeddedCache-scaleup-start.png[embeddedCache, 700]
 
-Then you will see how the pod is scailing up:
+Then you will see how the pod is scaling up:
 
 image::embeddedCache-scaleup-end.png[embeddedCache, 700]
 
-Let’s go externalizing Spring Session to Data Grid! Access the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^]!
+Let's go externalizing Spring Session to Data Grid! Access the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^]!
 
 image::embeddedCache-ui.png[embeddedCache, 700]
 
@@ -155,7 +155,7 @@ Click on `Invoke the service` then the *created* _Spring Session ID_ is already 
 
 image::embeddedCache-invoke1.png[embeddedCache, 700]
 
-Open a new web browser window then access the the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^].
+Open a new web browser window and access the http://cacheapp-{{ USER_ID }}-cache.{{ ROUTE_SUBDOMAIN}}[Cache Service UI^].
 
 Click on `Invoke the service` once again then you will see the exact same _Spring Session ID_ and _active data_ but the *count* is increased to `2`. So two applications are clustered and refer to the *embedded Infinispan cache:
 
@@ -166,12 +166,12 @@ You will see new *Session ID*, *active data* and the count is reset to *1* again
 
 image::embeddedCache-invoke3.png[embeddedCache, 700]
 
-Let's double-check if the Spring Session is clustered in the all running pods. Go back to the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] and click on 'View logs' in the pods:
+Let's double-check if the Spring Session is clustered in all the running pods. Go back to the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-cache[Topology View^] and click on 'View logs' in the pods:
 
 image::embeddedCache-invoke4.png[embeddedCache, 700]
 
-Now that we know how to react on changes in the cluster topology, we can also react to changes to the data within the cluster. The *CacheListener* separates the roles of our two pods such as putting data in the cache(_-- Entry for CACHE_ENTRY_MODIFIED created_) and showing the cache modifications(_-- Entry for CACHE_ENTRY_MODIFIED modified_):
+Now that we know how to react to changes in the cluster topology, we can also react to changes to the data within the cluster. The *CacheListener* separates the roles of our two pods such as putting data in the cache(_-- Entry for CACHE_ENTRY_MODIFIED created_) and showing the cache modifications(_-- Entry for CACHE_ENTRY_MODIFIED modified_):
 
 image::embeddedCache-logs.png[embeddedCache, 700]
 
-We now have implemented Spring Session with embedded in-memory datagrid for clustering HTTP sessions across Spring Boot microservices. *Congratulations!*
+We now have implemented Spring Session with embedded in-memory Data Grid for clustering HTTP sessions across Spring Boot microservices. *Congratulations!*
