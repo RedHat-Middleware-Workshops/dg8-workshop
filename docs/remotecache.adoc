@@ -313,35 +313,35 @@ You should see a Build Successful message from this run as well.
 Notice that any entries that you might have added to the cache before this deployment are still there. That wasn't the case in the embedded cache, since we were not using any stores and every time the application started the cache was empty. In this case, since the cache is remote, you will still see the entries from last time. It is important to note that there are different ways you can configure and set up the cache. For more details visit the Documentation pages for Red Hat Data Grid.
 
 
-// === Caching with Hibernate and JPA and Quarkus
+=== Caching with Hibernate and JPA and Quarkus
 
-// When using Hibernate ORM in Quarkus, you don't need to have a `persistence.xml` file for configuration. Using such a classic configuration file is an option, but unnecessary unless you have specific advanced needs. Let's see first how Hibernate ORM can be configured without a persistence.xml resource.
+When using Hibernate ORM in Quarkus, you don't need to have a `persistence.xml` file for configuration. Using such a classic configuration file is an option, but unnecessary unless you have specific advanced needs. Let's see first how Hibernate ORM can be configured without a persistence.xml resource.
 
-// In Quarkus, you just need to:
+In Quarkus, you just need to:
 
-// - Add your configuration settings in `application.properties`
-// - Annotate your entities with `@Entity` and any other mapping annotation as usual
+- Add your configuration settings in `application.properties`
+- Annotate your entities with `@Entity` and any other mapping annotation as usual
 
-// Other configuration needs have been automated: Quarkus will make some opinionated choices and educated guesses. 
+Other configuration needs have been automated: Quarkus will make some opinionated choices and educated guesses. 
 
-// [source, java, role="copypaste"]
-// ----
-// package org.acme;
+[source, java, role="copypaste"]
+----
+package org.acme;
 
-// @Entity
-// @Cacheable
-// public class Country {
-//     // ...
+@Entity
+@Cacheable
+public class Country {
+    // ...
 
-//     @OneToMany
-//     @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-//     List<City> cities;
+    @OneToMany
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+    List<City> cities;
 
-//     // ...
-// }
-// ----
+    // ...
+}
+----
 
-// In the above code, just using the `@Cacheable` annotation will make sure that Infinispan is used as the second-level cache for the entities. You also don't need to pick an implementation. A suitable implementation based on technologies Infinispan is included as a transitive dependency of the Hibernate ORM extension and automatically integrated during the build.
+In the above code, just using the `@Cacheable` annotation will make sure that Infinispan is used as the second-level cache for the entities. You also don't need to pick an implementation. A suitable implementation based on technologies Infinispan is included as a transitive dependency of the Hibernate ORM extension and automatically integrated during the build.
 
 === Recap
 
