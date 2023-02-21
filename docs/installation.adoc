@@ -3,42 +3,45 @@
 
 An Operator is a method of packaging, deploying, and managing a Kubernetes-native application. A Kubernetes-native application is an application that is both deployed on Kubernetes and managed using the Kubernetes APIs and tooling. An Operator is essentially a custom controller and encapsulates operational knowledge.
 
-A controller is a core concept in Kubernetes and is implemented as a software loop that runs continuously on Kubernetes comparing, and if necessary, reconciling the expressed desired state and the current state of an object. Objects are well known resources like `Pods`, `Services`, `ConfigMaps`, or `PersistentVolumes`. Operators apply this model at the level of entire applications and are, in effect, application-specific controllers.
+A controller is a core concept in Kubernetes and is implemented as a software loop that runs continuously on Kubernetes comparing, and if necessary, reconciling the expressed desired state and the current state of an object. Objects are well-known resources like `Pods`, `Services`, `ConfigMaps`, or `PersistentVolumes`. Operators apply this model at the level of entire applications and are, in effect, application-specific controllers.
 
 The Operator is a piece of software running in a `Pod` on the cluster, interacting with the Kubernetes API server. It introduces new object types through Custom Resource Definitions, an extension mechanism in Kubernetes. These custom objects are the primary interface for a user; consistent with the resource-based interaction model on the Kubernetes cluster.
 
-An Operator watches for these custom resource types and is notified about their presence or modification. When the Operator receives this notification it will start running a loop to ensure that all the required connections for the application service represented by these objects are actually available and configured in the way the user expressed in the object’s specification.
+An Operator watches for these custom resource types and is notified about their presence or modification. When the Operator receives this notification it will start running a loop to ensure that all the required connections for the application service represented by these objects are available and configured in the way the user expressed in the object's specification.
 
-The Operator Lifecycle Manager (OLM) is the backplane that facilitates management of operators on a Kubernetes cluster. Operators that provide popular applications as a service are going to be long-lived workloads with, potentially, lots of permissions on the cluster.
+The Operator Lifecycle Manager (OLM) is the backplane that facilitates the management of operators on a Kubernetes cluster. Operators that provide applications as a service are going to be long-lived workloads with, potentially, lots of permissions on the cluster.
 
-With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a team access to an Operator for their slice of the cluster.
+With OLM, administrators can control which Operators are available in what namespaces and who can interact with running Operators. The permissions of an Operator are accurately configured automatically to follow a least-privilege approach. OLM manages the overall lifecycle of Operators and their resources, by doing things like resolving dependencies on other Operators, triggering updates to both an Operator and the application it manages, or granting a specific team access to an Operator for their slice of the cluster.
 
-Red Hat Data Grid 8 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is define a Custom Resource as to how and what configuration we want for our Red Hat Data Grid instances. 
+Red Hat Data Grid 8 comes with an Operator. The administrators of the cluster you are working with today have already installed the Data Grid Operator. What we need to do as a user is to create a Custom Resource with the configuration we want for our Red Hat Data Grid instances. 
 
-=== Installing
-If you have not already logged into OpenShift from the CodeReady Workspaces terminal, please do that now.Click on the `Login to Openshift` menu in the right menu called 'My Workspace'. When prompted, your *Username* is `{{ USER_ID }}` and your *Password* is `{{ OPENSHIFT_USER_PASSWORD }}`.
+=== Installing Data Grid
 
-Open a new browser to the link:{{ CONSOLE_URL }}[OpenShift web console^]
+First, you will have to *log in from two different places*: 
 
-image::openshift_login.png[openshift_login, 700]
+* *STEP 1*: If you have not already logged into OpenShift from the CodeReady Workspaces terminal, please do that now. Click on the `Login to Openshift` menu in the right menu called 'Workspace'. When prompted, your *Username* is `{{ USER_ID }}` and your *Password* `{{ OPENSHIFT_USER_PASSWORD }}`.
 
-Login using:
+* *STEP 2*: You will also need to access the OpenShift Web Console. Open a new tab to the link:{{ CONSOLE_URL }}[OpenShift web console^]. You will be prompted to log in. Use the following credentials:
 
-* Username: `{{ USER_ID }}`
-* Password: `{{ OPENSHIFT_USER_PASSWORD }}`
+** Username: `{{ USER_ID }}`.
+** Password: `{{ OPENSHIFT_USER_PASSWORD }}`.
 
-Once Logged in, goto your project `{{ USER_ID }}-cache`
-Click the link Installed Operator on the left, as shown in the picture below.
+image::openshift-login-page.png[openshift_login, 700]
 
-image::dg_operatorinstalled.png[openshift_login, 700]
+Once logged in, you will see two projects. Select the project `{{ USER_ID }}-cache`.
 
-Notice that the DataGrid operator is already installed in your namespace. 
+image::openshift-namespaces.png[openshift-namespaces, 700]
 
-image::dg_operatoroverview.png[openshift_login, 700]
 
-You can see there are no clusters installed in our namespace. Let's go ahead and do that. 
+Now, as shown in the image above, change to the *Administrator* view. Click the link `Operators > Installed Operators` on the Navigation section on the left, as shown in the picture below.
 
-Click on `Create infinispan` and replace the following YAML with the default sample in the Yaml View: 
+image::openshift-installed-operators.png[openshift-installed-operators, 700]
+
+Notice that the Data Grid operator is already installed in your namespace. Select it and move to the *Infinispan Cluster* tab.
+
+image::openshift-datagrid-operator-view.png[openshift-datagrid-operator-view, 700]
+
+You can see that there are no clusters installed in our namespace. Let's go ahead and create one. Click on `Create Infinispan`, select `Configure via: YAML view` and replace the default definition with the following YAML: 
 
 [source, yaml, role="copypaste"]
 ----
@@ -51,26 +54,38 @@ spec:
   replicas: 2 <3>
 ----
 
-<1> Tell Kubernetes/Openshift that the Custom resource type is datagrid
-<2> Specify the name of our cluster as datagrid-service
-<3> Specify the replicas we want for our service
+<1> Tell Kubernetes/Openshift that the Custom Resource type is `Infinispan`.
+<2> Specify the name of our cluster as `datagrid-service`.
+<3> Specify the replicas we want for our service.
 
-Also notice that we are calling our service `datagrid-service`, we will use this name in the following labs to access our cluster.
+NOTE: We are calling our service `datagrid-service`, we will use this name in the following labs to access our cluster.
 
-Click *Create* at the bottom.
+Click *Create* at the bottom. Wait until the Data Grid nodes have successfully formed a cluster.
 
-Check that datagrid nodes have successfully formed clusters.
-
-Now let's retrieve the DataGrid CR for DataGrid Operator.
-To do this head over the the CodeReady Workspace and login to Openshift. 
+Now let's retrieve the Data Grid CR definition from the command line. To do this, head over to the CodeReady Workspace and log in to Openshift. 
 
 image::che_openshift_login.png[openshift_login, 700]
 
-After logging in, initiate a `>_ New Terminal`` in CodeReady workspace as shown in the above screenshot and run the following command
+After logging in, you should see the following message:
+
+[source, shell]
+----
+Login successful.
+
+You have access to the following projects and can switch between them with 'oc project <projectname>':
+
+  * {{ USER_ID }}-cache
+    {{ USER_ID }}-cache2
+
+Using project "{{ USER_ID }}-cache".
+Welcome! See 'oc help' to get started.
+----
+
+Initiate a `>_ New Terminal`` in CodeReady workspace as in the previous section and run the following command
 
 [source, shell, role="copypaste"]
 ----
-kubectl get infinispan -o yaml
+oc get infinispan -o yaml
 ----
 
 The response indicates that datagrid nodes have received clustered views, as in the following example:
@@ -78,9 +93,9 @@ The response indicates that datagrid nodes have received clustered views, as in 
 [source, shell]
 ----
 conditions:
-  - message: 'View: [datagrid-service-0, datagrid-service-1]'
+  - message: 'View: datagrid-service-0-xxxx, datagrid-service-1-xxxx'
     status: "True"
-    type: wellFormed
+    type: WellFormed
 ----
 
 
@@ -88,24 +103,25 @@ You can also wait for the condition check:
 
 [source, shell, role="copypaste"]
 ----
-kubectl wait --for condition=wellFormed --timeout=240s infinispan/datagrid-service
+oc wait --for condition=wellFormed --timeout=240s infinispan/datagrid-service
 ----
 
-Let's retrieve cluster view from logs as follows:
+Let's retrieve the cluster view from logs as follows:
+
 [source, shell, role="copypaste"]
 ----
-kubectl logs datagrid-service-0 | grep ISPN000094
+oc logs datagrid-service-0 | grep ISPN000094
 ----
 
 [source, shell]
 ----
 INFO  [org.infinispan.CLUSTER] (MSC service thread 1-2) \
 ISPN000094: Received new cluster view for channel datagrid-service: \
-[datagrid-service-0|0] (1) [datagrid-service-0]
+[datagrid-service-0-xxxx|0] (1) [datagrid-service-0-xxxx]
 
 INFO  [org.infinispan.CLUSTER] (jgroups-3,datagrid-service-0) \
 ISPN000094: Received new cluster view for channel datagrid-service: \
-[datagrid-service-0|1] (2) [datagrid-service-0, datagrid-service-1]
+[datagrid-service-0-xxxx|1] (2) [datagrid-service-0-xxxx, datagrid-service-1-xxxx]
 ----
 
 You can also look for the pods running the Red Hat Data Grid Operator and the instances by running the following command:
@@ -120,13 +136,15 @@ Above command should render a similar output as below:
 [source, shell]
 ----
 [jboss@workspacel7b3gw19zpoclvcu dg8-operator]$ oc get pods
-NAME                                   READY   STATUS    RESTARTS   AGE
-datagrid-service-0                     1/1     Running   0          2m59s
-datagrid-service-1                     1/1     Running   0          2m14s
-Data Grid-operator-544ff55c59-4s7wl   1/1     Running   1          2d10h
+NAME                                                      READY   STATUS    RESTARTS   AGE
+datagrid-service-0                                        1/1     Running   0          13m
+datagrid-service-1                                        1/1     Running   0          12m
+datagrid-service-config-listener-567dd95fd-hsf99          1/1     Running   0          12m
+grafana-operator-controller-manager-745f467f5b-4kpc5      2/2     Running   2          9h
+infinispan-operator-controller-manager-5b7c8f7874-dfwn8   1/1     Running   1          9h
 ----
 
-All looks great! how about we also check the ClusterIP and its ports etc.
+All looks great! how about we also check the services and its configuration (Type, ports, etc.).
 [source, shell, role="copypaste"]
 ----
 oc get services
@@ -136,28 +154,29 @@ The above command should render a similar output as shown in the example below. 
 
 [source, shell]
 ----
-NAME                        TYPE           CLUSTER-IP       EXTERNAL-IP                                                                    PORT(S)           AGE
-datagrid-service            ClusterIP      172.30.115.185   <none>                                                                         11222/TCP         5m55s
-datagrid-service-external   LoadBalancer   172.30.90.75     abd9b45a50a174648af684c05cba0bd9-1926931502.ap-southeast-1.elb.amazonaws.com   11222:32206/TCP   5m55s
-datagrid-service-ping       ClusterIP      None             <none>                                                                         8888/TCP          5m55s
+NAME                                                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+datagrid-service                                      ClusterIP   172.30.137.236   <none>        11222/TCP   15m
+datagrid-service-admin                                ClusterIP   None             <none>        11223/TCP   15m
+datagrid-service-ping                                 ClusterIP   None             <none>        8888/TCP    15m
+...
 ----
 
-You can see that there are three datagrid-services, 
+You can see that there are three  Data Grid services: 
 
-- 1 for use within the cluster, 
-- 1 for ping service which ensures that the clusters are healthy and operational 
-- and lastly the external service, which we will use to goto the Admin console.
+- `datagrid-service` to use from our applications inside the OCP cluster.
+- `datagrid-service-admin` which is used by the operator to configure and communicate with the cluster.
+- `datagrid-service-ping` which ensures that the clusters are healthy and operational.
 
 
-An Operator updates the installation on the fly, it ensures it can keep the correct state of the cluster at all times. So one should not need to change specific cluster config but define them via the custom resource (CR) which the operator is always watching. Lets try this out. How about adding an external route to our `datagrid-service`.
+An Operator updates the installation on the fly, which ensures it can keep the correct state of the cluster at all times. So one should not need to change specific cluster config but define them via the custom resource (CR) which the operator is always watching. Let's try this out. How about adding an external route to our `datagrid-service`?.
 
-Lets edit the datagrid-service CR. 
+Let's edit the `datagrid-service` CR. 
 
 As shown in the picture below, click on `Edit datagrid`
 
 image::dg_edit_CR.png[Edit CR, 700]
 
-The above should load the yaml with some additional information e.g. timestamp, labels etc that were added by the operator once the cluster instance was created. 
+It should load the YAML with some additional information e.g. timestamp, labels etc that were added by the operator once the cluster instance was created. 
 
 
 We will make changes to the cluster `Spec:`, navigate your cursor to `Replicas` under spec and add the following as shown in the picture below.
@@ -170,44 +189,44 @@ We will make changes to the cluster `Spec:`, navigate your cursor to `Replicas` 
 
 image::dg_edit_CR_LoadBalancer.png[Edit and Save, 700]
 
-Perfect now press `save`
+Perfect now press `save`.
 
-<1> Navigate back to `Installed Operators > Operator Details` and then click `datagrid-service` 
+<1> Navigate back to `Installed Operators > Operator Details` and then click `datagrid-service`.
 <2> Then click on `Resources > datagrid-service-external` 
 you should see the following page with the `Service address` and the expose LoadBalancer link to your Data Grid Console.
 
 image::dg_CR_detailview.png[DG cluster detail view, 700]
 
 
-The following is an example, your `LoadBalancer` url will most likely differ:
+The following is an example, your `LoadBalancer` URL will most likely differ:
 
 * `a256fafe1f822452fb4c2fb3e3a5aff6-1344204513.us-east-2.elb.amazonaws.com`
 
 
-If you try to access the url; by providing the protocol `https` and the Datagrid port `11222`, we are currently not using a signed certificate so you can ignore the warning at this moment. 
+If you try to access the URL; by providing the protocol `https` and the Data Grid port `11222`, we are currently not using a signed certificate so you can ignore the warning at this moment. 
 
 * `https://a256fafe1f822452fb4c2fb3e3a5aff6-1344204513.us-east-2.elb.amazonaws.com:11222/`
 
 you would need to provide credentials. 
 
-The datagrid operator creates the credentials during installation time and they should be stored in your namespace secrets. Head back your CodeReady Workspace terminal. Let's get the secret with the following command.
+The Data Grid operator creates the credentials during installation time and they should be stored in your namespace secrets. Head back to your CodeReady Workspace terminal. Let's get the secret with the following command.
 
 [source, shell, role="copypaste"]
 ----
 oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode
 ----
 
-And now the final test to check we have a running cluster; login with the username developer and the password from the above secret.
+And now the final test to check we have a running cluster: Log in with the username developer and the password from the above secret.
 
 image::dg_adminconsole.png[openshift_login, 900]
 
 
-==== Stopping and starting datagrid clusters
-How to stop and start Datagrid nodes in a graceful, ordered fashion to correctly preserve cluster state.
+==== Stopping and starting Data Grid clusters
+How to stop and start Data Grid nodes in a graceful, ordered fashion to correctly preserve cluster state.
 
-Clusters of Data Grid Service nodes must restart with the same number of nodes that existed before shutdown. This allows datagrid to restore the distribution of data across the cluster. After datagrid Operator fully restarts the cluster you can safely add and remove nodes.
+Clusters of Data Grid Service nodes should restart with the same number of nodes that existed before shutdown. This allows Data Grid to restore the distribution of data across the cluster. After Data Grid Operator fully restarts the cluster you can safely add and remove nodes.
 
-Let's change the CR by changing spec.replicas field to 0 to stop the datagrid cluster.
+Let's change the CR by changing `spec.replicas` field to 0 to stop the Data Grid cluster.
 
 [source, shell, role="copypaste"]
 ----
@@ -219,10 +238,10 @@ Ensure you have the correct number of nodes before you restart the cluster.
 
 [source, shell]
 ----
-$ kubectl get Data Grid example-Data Grid -o=jsonpath='{.status.replicasWantedAtRestart}'
+$ oc get infinispan datagrid-service -o=jsonpath='{.status.replicasWantedAtRestart}'
 ----
 
-Change the spec.replicas field to the same number of nodes to restart the datagrid cluster.
+Change the `spec.replicas` field to the same number of nodes to restart the Data Grid cluster.
 
 [source, shell, role="copypaste"]
 ----
@@ -232,22 +251,24 @@ spec:
 
 ==== Types of Data Grid services
 
-Data Grid has two types of services 
+Data Grid has two types of services:
 
 <1> Cache Service
 <2> DataGrid Service
 
-Services are stateful applications, based on the Data Grid Server image, that provide flexible and robust in-memory data storage. If you do not e.g. specify a value for the spec.service.type field, Data Grid Operator creates Cache Service nodes by default. Each service has different benefits and enables applications to leverage the different features exposed by the Data grid.
+Services are stateful applications, based on the Data Grid Server image, that provides flexible and robust in-memory data storage. If you do not e.g. specify a value for the `spec.service.type` field, the Data Grid Operator creates Cache Service nodes by default. Each service has different benefits and enables applications to leverage the different features exposed by the Data grid.
 
 *Cache Service*
 
-* Use Cache Service if you want a volatile, low-latency data store with minimal configuration. Cache Service nodes:
+Use Cache Service if you want a volatile, low-latency data store with minimal configuration. Cache Service nodes:
+
 * Automatically scale to meet capacity when data storage demands go up or down.
 * Synchronously distribute data to ensure consistency.
 * Replicates each entry in the cache across the cluster.
 * Store cache entries off-heap and use eviction for JVM efficiency.
 * Ensure data consistency with a default partition handling configuration.
-* Because Cache Service nodes are volatile you lose all data when you apply changes to the cluster with the Data Grid CR or update the Data Grid version.
+
+Because Cache Service nodes are volatile you lose all data when you apply changes to the cluster with the Data Grid CR or update the Data Grid version.
 
 *Data Grid Service*
 
@@ -257,16 +278,17 @@ Services are stateful applications, based on the Data Grid Server image, that pr
 * Query values across caches using the Data Grid Query API.
 * Use advanced Data Grid features and capabilities.
 
-You might have noticed that in our current example in this section we used the Cache service, in the upcoming labs we will configure the different services and features entailed thereof.
+You might have noticed that in our current example in this section we used the Cache service, in the upcoming labs, we will configure the different services and features entailed thereof.
 
 
 === Recap
-<1> You created your first CR
-<2> Deployed the CR to Openshift using the DataGrid operator
-<3> You installed your first DataGrid instance
-<4> Exposed the service to the outside world
-<5> Learnt how to stop and start the DataGrid via CR, and track the status/logs
-<6> Differences between the two types of services
 
-*Congratulations!!* you have completed the first Datagrid installation of this workshop. Let's move to the next lab and learn how we can use this instance as a RemoteCache with a Quarkus Application.
+<1> You created your first Infinispan CR.
+<2> Deployed the CR to Openshift using the Data Grid operator.
+<3> You installed your first Data Grid instance.
+<4> Exposed the service to the outside world.
+<5> Learnt how to stop and start the Data Grid via CR, and track the status/logs.
+<6> Differences between the two types of services.
+
+*Congratulations!!* you have completed the first Data Grid installation of this workshop. Let's move to the next lab and learn how we can use this instance as a RemoteCache with a Quarkus Application.
 
