@@ -19,6 +19,19 @@ When using Cache CRs, the following rules apply:
 - If the Cache CR contains both a template and  Cache Configuration, the Data Grid Operator uses the template.
 - If you edit caches using the Cache CR, the modifications will be applied if they affect to mutable fields of the cache configuration. Modifications of unmutable fields will not be reflected on the cluster.
 
+
+Creating a cache with Cache CR in Data Grid Operator is supported only when the spec.service.type field is specified as DataGrid. For example:
+
+Infinispan CR
+[source, yaml, role="copypaste"]
+----
+spec:
+  service:
+    type: DataGrid
+----
+
+Make the above yaml change to the datagrid-servce from `Cache` to `DataGrid` by editing the yaml for the `datagrid-service`.
+
 ==== Creating caches from XML
 
 Complete the following steps to create caches on Data Grid service clusters using a valid infinispan.xml configuration.
