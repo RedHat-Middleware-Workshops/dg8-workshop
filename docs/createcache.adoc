@@ -181,10 +181,16 @@ The data grid operator can also create backups for the state of the cluster.
 
 [source, yaml, role="copypaste"]
 ----
-apiVersion: infinispan.org/v2alpha1
 kind: Backup
+apiVersion: infinispan.org/v2alpha1
 metadata:
-  name: my-backup <1>
+  name: example-backup
+  namespace: user1-cache
 spec:
-  cluster: datagrid-service <2> 
+  cluster: datagrid-service
+  container:
+    cpu: 1000m
+    extraJvmOpts: '-Djava.property=me'
+    memory: 1Gi
 ----
+
